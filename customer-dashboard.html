@@ -1,0 +1,70 @@
+<!-- customer-dashboard.html - Part 5 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard - Menu & Rewards</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <!-- 3D Floating Background Elements -->
+    <ul class="bg-bubbles">
+        <li></li><li></li><li></li><li></li><li></li><li></li>
+    </ul>
+
+    <!-- Floating Cart Icon -->
+    <div id="cart-icon" class="cart-icon">
+        🛒 <span id="cart-count">0</span>
+    </div>
+
+    <!-- Loyalty Rewards Card -->
+    <div class="glass-panel" style="margin-top: 80px;">
+        <h2 style="text-align: center; color: #fff; font-size: 20px;">Your Loyalty Rewards</h2>
+        <div class="tick-container">
+            <div class="tick-box" id="tick-1"></div>
+            <div class="tick-box" id="tick-2"></div>
+            <div class="tick-box" id="tick-3"></div>
+            <div class="tick-box" id="tick-4"></div>
+            <div class="tick-box" id="tick-5"></div>
+            <div class="tick-box" id="tick-6"></div>
+            <div class="tick-box" id="tick-7"></div>
+        </div>
+        <p style="text-align: center; font-size: 13px; color: #e0aaff; margin-top: 15px;">Get 7 ticks for a ₹149 Coupon!</p>
+    </div>
+
+    <!-- Menu Section -->
+    <div class="glass-panel">
+        <h2 style="color: #fff; margin-bottom: 15px; font-size: 20px;">Delicious Menu</h2>
+        
+        <!-- Menu Item 1 -->
+        <div class="menu-item">
+            <div class="item-info">
+                <span class="item-emoji">🍕</span>
+                <div>
+                    <h3>Margherita Pizza</h3>
+                    <p>₹299</p>
+                </div>
+            </div>
+            <button class="add-btn" onclick="flyToCart(event, '🍕')">Add +</button>
+        </div>
+
+        <!-- Menu Item 2 -->
+        <div class="menu-item">
+            <div class="item-info">
+                <span class="item-emoji">🍔</span>
+                <div>
+                    <h3>Premium Burger</h3>
+                    <p>₹199</p>
+                </div>
+            </div>
+            <button class="add-btn" onclick="flyToCart(event, '🍔')">Add +</button>
+        </div>
+    </div>
+
+    <!-- Yeh JS file hum aage banayenge animation ke liye -->
+    <script src="cart-animation.js"></script>
+</body>
+</html>
+
