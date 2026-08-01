@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JOJO CAFE - Premium B2B2C SaaS</title>
+    <title>JOJO CAFE - Premium B2B2C SaaS Cloud</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -23,14 +23,14 @@
     <header class="glass sticky top-0 z-50 px-6 py-4 flex justify-between items-center shadow-lg">
         <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('customer')">
             <div class="bg-gradient-to-r from-amber-500 to-orange-600 p-2 rounded-xl text-white font-bold text-xl shadow-md"><i class="fa-solid fa-mug-hot"></i></div>
-            <div><h1 class="text-xl font-bold tracking-wider text-amber-400">JOJO CAFE</h1><p class="text-xs text-slate-400">Smart B2B2C Experience</p></div>
+            <div><h1 class="text-xl font-bold tracking-wider text-amber-400">JOJO CAFE</h1><p class="text-xs text-slate-400">Cloud Powered SaaS</p></div>
         </div>
         <button onclick="toggleAdminModal()" class="p-3 text-slate-300 hover:text-amber-400 transition rounded-full hover:bg-slate-800"><i class="fa-solid fa-user-shield text-xl"></i></button>
     </header>
     
     <main class="flex-grow container mx-auto px-4 py-6 relative z-10">
 
-        <!-- ================= CUSTOMER UI ================= -->
+        <!-- CUSTOMER UI -->
         <div id="view-customer" class="space-y-6">
             <div class="glass p-6 rounded-2xl shadow-2xl border-l-4 border-amber-500 flex flex-col md:flex-row justify-between items-center">
                 <div>
@@ -72,10 +72,10 @@
                 <div class="glass p-6 rounded-2xl text-center space-y-4"><h4 class="text-lg font-bold text-amber-400">🏆 Top Scorers Leaderboard</h4><div id="leaderboard-list" class="space-y-2 text-sm max-h-40 overflow-y-auto"></div><button onclick="clearLeaderboard()" class="text-xs text-rose-400 underline">Clear Leaderboard</button></div>
             </div>
         </div>
-                <!-- ================= ADMIN UI ================= -->
+                <!-- ADMIN UI -->
         <div id="view-super-admin" class="hidden space-y-6">
             <div class="glass p-6 rounded-2xl flex justify-between items-center border-l-4 border-indigo-500">
-                <div><h2 class="text-2xl font-bold text-indigo-400">Super Admin Portal</h2></div>
+                <div><h2 class="text-2xl font-bold text-indigo-400">Cloud Super Admin Portal</h2></div>
                 <button onclick="switchView('customer')" class="bg-slate-800 px-4 py-2 rounded-xl text-sm">Logout</button>
             </div>
             <div class="glass p-6 rounded-2xl shadow-xl overflow-x-auto">
@@ -86,45 +86,41 @@
             </div>
         </div>
 
-        <!-- ================= OWNER UI (Add Items & QR Gen) ================= -->
+        <!-- OWNER UI -->
         <div id="view-owner" class="hidden space-y-6">
             <div class="glass p-6 rounded-2xl flex justify-between items-center border-l-4 border-amber-500">
                 <div><h2 class="text-2xl font-bold text-amber-400" id="owner-cafe-header">Cafe Dashboard</h2></div>
                 <button onclick="switchView('customer')" class="bg-slate-800 px-4 py-2 rounded-xl text-sm">Logout</button>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Settings & QR Gen -->
                 <div class="space-y-6">
                     <div class="glass p-6 rounded-2xl space-y-4">
                         <h3 class="text-lg font-bold text-amber-400">WhatsApp Orders</h3>
                         <input type="text" id="owner-whatsapp-input" placeholder="Number (e.g. 91768...)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white">
-                        <button onclick="saveOwnerWhatsApp()" class="w-full bg-amber-500 text-slate-950 font-bold py-2 rounded-xl">Save Setup</button>
+                        <button onclick="saveOwnerWhatsApp()" class="w-full bg-amber-500 text-slate-950 font-bold py-2 rounded-xl">Save WhatsApp</button>
                     </div>
                     <div class="glass p-6 rounded-2xl space-y-4">
                         <h3 class="text-lg font-bold text-indigo-400">Generate Table QR</h3>
-                        <p class="text-xs text-slate-400">Print this QR for customers.</p>
                         <input type="text" id="qr-table-num" placeholder="Table Name/Num" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white">
                         <button onclick="genTableQR()" class="w-full bg-indigo-600 text-white font-bold py-2 rounded-xl">Generate QR</button>
                         <div id="qr-result" class="mt-4 hidden text-center bg-white p-2 rounded-xl"><img id="qr-img" class="mx-auto"/><a id="qr-dl" download="Table-QR.png" class="text-indigo-600 font-bold text-sm underline mt-2 block">Download QR</a></div>
                     </div>
                 </div>
-                
-                <!-- Add Items -->
                 <div class="md:col-span-2 glass p-6 rounded-2xl space-y-4">
-                    <h3 class="text-lg font-bold text-amber-400">Menu Management</h3>
+                    <h3 class="text-lg font-bold text-amber-400">Cloud Menu Management</h3>
                     <div class="grid grid-cols-2 gap-2"><input type="text" id="menu-item-name" placeholder="Item Name" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white"><input type="number" id="menu-item-price" placeholder="Price (₹)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white"></div>
-                    <input type="text" id="menu-item-photo" placeholder="Photo URL (e.g., https://...)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white">
-                    <button onclick="addMenuItem()" class="w-full bg-emerald-600 text-white font-bold py-2 rounded-xl">Add to Menu</button>
+                    <input type="text" id="menu-item-photo" placeholder="Photo URL" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white">
+                    <button onclick="addMenuItem()" class="w-full bg-emerald-600 text-white font-bold py-2 rounded-xl">Add to Cloud Menu</button>
                     <div id="owner-menu-list" class="space-y-2 max-h-60 overflow-y-auto mt-4 pt-4 border-t border-slate-800"></div>
                 </div>
             </div>
         </div>
     </main>
-        <!-- ================= AUTH MODAL ================= -->
+        <!-- AUTH MODAL -->
     <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center hidden">
         <div class="glass p-8 rounded-3xl w-full max-w-md space-y-6 relative border border-slate-700">
             <button onclick="toggleAdminModal()" class="absolute top-4 right-4 text-slate-400 text-xl"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-2xl font-bold text-white text-center">Cafe Portal</h3>
+            <h3 class="text-2xl font-bold text-white text-center">Cafe Cloud Portal</h3>
             
             <div class="flex bg-slate-900 p-1 rounded-xl">
                 <button onclick="switchModalTab('owner-login')" id="tab-btn-owner-login" class="flex-1 py-2 text-xs font-bold rounded-lg bg-amber-500 text-slate-950">Login</button>
@@ -137,7 +133,7 @@
                 <p class="text-xs text-slate-400 text-center">Active cafes can login directly here.</p>
                 <input type="text" id="log-name" placeholder="Cafe Name" class="w-full bg-slate-900 rounded-xl px-4 py-2 text-white border border-slate-700">
                 <input type="text" id="log-phone" placeholder="Mobile Number" class="w-full bg-slate-900 rounded-xl px-4 py-2 text-white border border-slate-700">
-                <button onclick="loginCafeOwner()" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl">Login to Dashboard</button>
+                <button onclick="loginCafeOwner()" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl">Login to Cloud Dashboard</button>
             </div>
 
             <!-- Owner Register -->
@@ -145,7 +141,7 @@
                 <p class="text-xs text-slate-400 text-center">New Cafe? Register for Admin Approval.</p>
                 <input type="text" id="reg-name" placeholder="Cafe Name" class="w-full bg-slate-900 rounded-xl px-4 py-2 text-white border border-slate-700">
                 <input type="text" id="reg-phone" placeholder="Mobile Number" class="w-full bg-slate-900 rounded-xl px-4 py-2 text-white border border-slate-700">
-                <button onclick="registerNewCafe()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl">Submit Request</button>
+                <button onclick="registerNewCafe()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl">Submit Cloud Request</button>
                 <div class="bg-amber-500/10 border border-amber-500/50 rounded-xl p-3 text-center mt-4">
                     <p class="text-xs text-amber-400">Need quick activation? Contact Admin on WhatsApp:</p>
                     <p class="text-lg font-bold text-white tracking-widest mt-1">📞 7689874945</p>
@@ -161,7 +157,32 @@
             </div>
         </div>
     </div>
-        <script>
+        <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, setDoc, doc, deleteDoc, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBSI1SsED4ZxOWwHBDH-ugiAa7mrbKmts0",
+            authDomain: "jojo-cafe-db.firebaseapp.com",
+            projectId: "jojo-cafe-db",
+            storageBucket: "jojo-cafe-db.firebasestorage.app",
+            messagingSenderId: "111785215360",
+            appId: "1:111785215360:web:7abc4af99462ac9f836d65"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        window.db = db;
+        window.colRef = collection;
+        window.getDocsRef = getDocs;
+        window.setDocRef = setDoc;
+        window.docRef = doc;
+        window.deleteDocRef = deleteDoc;
+        window.addDocRef = addDoc;
+        window.updateDocRef = updateDoc;
+    </script>
+
+    <script>
         // --- 1. 3D BACKGROUND ---
         let scene, camera, renderer, currentGroup, animStep = 0;
         function initThreeJS() {
@@ -192,13 +213,6 @@
         }
         function animateThreeJS() { if(typeof THREE === 'undefined') return; requestAnimationFrame(animateThreeJS); if(currentGroup) { currentGroup.rotation.x += 0.005; currentGroup.rotation.y += 0.008; } renderer.render(scene, camera); }
 
-        // --- 2. LOCAL DATA INITIALIZATION ---
-        if (!localStorage.getItem('jojo_cafes')) {
-            localStorage.setItem('jojo_cafes', JSON.stringify([{ id: 'cafe_1', name: 'JOJO Central Cafe', phone: '7689874945', status: 'active', whatsapp: '7689874945' }]));
-        }
-        if (!localStorage.getItem('jojo_menu')) {
-            localStorage.setItem('jojo_menu', JSON.stringify([{ id: 1, name: 'Truffle Burger', price: 349, photo: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80', cafeId: 'cafe_1' }]));
-        }
         let currentCafeId = 'cafe_1'; let cart = [];
 
         function switchView(v) { ['customer','super-admin','owner'].forEach(id => document.getElementById('view-'+id).classList.add('hidden')); document.getElementById('view-'+v).classList.remove('hidden'); if(v==='customer') loadCustomerMenu(); if(v==='super-admin') loadSuperAdminMetrics(); if(v==='owner') loadOwnerDashboard(); }
@@ -208,25 +222,28 @@
             document.getElementById('modal-form-'+t).classList.remove('hidden'); document.getElementById('tab-btn-'+t).className = "flex-1 py-2 text-xs font-bold rounded-lg bg-amber-500 text-slate-950"; 
         }
         function switchCustomerTab(t) { ['menu','games'].forEach(id => { document.getElementById('customer-tab-'+id).classList.add('hidden'); document.getElementById('tab-btn-'+id).className = "px-6 py-2 rounded-xl font-semibold bg-slate-800 text-slate-300"; }); document.getElementById('customer-tab-'+t).classList.remove('hidden'); document.getElementById('tab-btn-'+t).className = "px-6 py-2 rounded-xl font-semibold bg-amber-500 text-slate-950 shadow-md"; }
-                   // --- 3. AUTH & ADMIN LOGIC (New Secure Flow) ---
-        function registerNewCafe() {
+                // --- 3. FIRESTORE DATABASE CRUD FUNCTIONS ---
+        async function registerNewCafe() {
             let n = document.getElementById('reg-name').value.trim(), p = document.getElementById('reg-phone').value.trim();
             if(!n || !p) return alert("Please fill all details.");
-            let cafes = JSON.parse(localStorage.getItem('jojo_cafes')) || [];
-            if(cafes.find(c => c.phone === p)) return alert("Mobile already exists. Please login instead.");
-            cafes.push({ id: 'cafe_'+Date.now(), name: n, phone: p, status: 'inactive', whatsapp: p });
-            localStorage.setItem('jojo_cafes', JSON.stringify(cafes));
-            alert("Registration successful! Your request is pending. WhatsApp Admin on 7689874945 to activate.");
-            switchModalTab('owner-login');
+            try {
+                let cafeId = 'cafe_' + Date.now();
+                await window.setDocRef(window.docRef(window.db, "cafes", cafeId), { id: cafeId, name: n, phone: p, status: 'inactive', whatsapp: p });
+                alert("Registration sent to cloud! WhatsApp Admin on 7689874945 to activate.");
+                switchModalTab('owner-login');
+            } catch(e) { alert("Error: " + e.message); }
         }
 
-        function loginCafeOwner() {
+        async function loginCafeOwner() {
             let n = document.getElementById('log-name').value.trim(), p = document.getElementById('log-phone').value.trim();
-            let cafes = JSON.parse(localStorage.getItem('jojo_cafes')) || [];
-            let cafe = cafes.find(c => c.phone === p && c.name.toLowerCase() === n.toLowerCase());
-            if(!cafe) return alert("Cafe not found. Check details or Register.");
-            if(cafe.status !== 'active') return alert("Account is INACTIVE! WhatsApp 7689874945 for activation.");
-            currentCafeId = cafe.id; toggleAdminModal(); switchView('owner');
+            try {
+                let snapshot = await window.getDocsRef(window.colRef(window.db, "cafes"));
+                let found = null;
+                snapshot.forEach(docSnap => { let data = docSnap.data(); if(data.phone === p && data.name.toLowerCase() === n.toLowerCase()) found = data; });
+                if(!found) return alert("Cafe not found in cloud. Check details or Register.");
+                if(found.status !== 'active') return alert("Account is INACTIVE! WhatsApp 7689874945 for activation.");
+                currentCafeId = found.id; toggleAdminModal(); switchView('owner');
+            } catch(e) { alert("Login Error: " + e.message); }
         }
 
         function loginSuperAdmin() { 
@@ -234,16 +251,70 @@
             if(id === '7689874945') { toggleAdminModal(); switchView('super-admin'); } else alert('Invalid Admin Credentials');
         }
 
-        function loadSuperAdminMetrics() { 
-            const cafes=JSON.parse(localStorage.getItem('jojo_cafes'))||[]; 
-            document.getElementById('admin-cafes-table-body').innerHTML=cafes.map(c=>`<tr class="border-b border-slate-800/60"><td class="py-3 px-4 text-white"><b>${c.name}</b><br><span class="text-xs text-slate-400">Mob: ${c.phone}</span></td><td class="py-3 px-4"><span class="px-2 py-1 rounded text-xs ${c.status==='active'?'bg-emerald-500/20 text-emerald-400':'bg-rose-500/20 text-rose-400'}">${c.status.toUpperCase()}</span></td><td class="py-3 px-4"><button onclick="toggleCafeStatus('${c.id}', '${c.status==='active'?'inactive':'active'}')" class="bg-indigo-600 px-3 py-1.5 rounded text-xs font-bold text-white">${c.status==='active'?'Block':'Activate'}</button></td></tr>`).join(''); 
+        async function loadSuperAdminMetrics() { 
+            try {
+                let snapshot = await window.getDocsRef(window.colRef(window.db, "cafes"));
+                let html = "";
+                snapshot.forEach(docSnap => {
+                    let c = docSnap.data();
+                    html += `<tr class="border-b border-slate-800/60"><td class="py-3 px-4 text-white"><b>${c.name}</b><br><span class="text-xs text-slate-400">Mob: ${c.phone}</span></td><td class="py-3 px-4"><span class="px-2 py-1 rounded text-xs ${c.status==='active'?'bg-emerald-500/20 text-emerald-400':'bg-rose-500/20 text-rose-400'}">${c.status.toUpperCase()}</span></td><td class="py-3 px-4"><button onclick="toggleCafeStatus('${c.id}', '${c.status==='active'?'inactive':'active'}')" class="bg-indigo-600 px-3 py-1.5 rounded text-xs font-bold text-white">${c.status==='active'?'Block':'Activate'}</button></td></tr>`;
+                });
+                document.getElementById('admin-cafes-table-body').innerHTML = html || "<tr><td colspan='3' class='text-center py-4 text-slate-400'>No cafes registered in cloud yet.</td></tr>";
+            } catch(e) { console.error(e); }
         }
-        function toggleCafeStatus(id, s) { let c=JSON.parse(localStorage.getItem('jojo_cafes'))||[]; localStorage.setItem('jojo_cafes', JSON.stringify(c.map(x=>x.id===id?{...x,status:s}:x))); loadSuperAdminMetrics(); }
+
+        async function toggleCafeStatus(id, s) { 
+            try {
+                await window.updateDocRef(window.docRef(window.db, "cafes", id), { status: s });
+                loadSuperAdminMetrics();
+            } catch(e) { alert("Error updating status"); }
+        }
         
-        function loadOwnerDashboard() { const cafes=JSON.parse(localStorage.getItem('jojo_cafes'))||[], cCafe=cafes.find(c=>c.id===currentCafeId); document.getElementById('owner-cafe-header').innerText=`${cCafe.name} Dashboard`; document.getElementById('owner-whatsapp-input').value=cCafe.whatsapp||''; document.getElementById('owner-menu-list').innerHTML=(JSON.parse(localStorage.getItem('jojo_menu'))||[]).filter(m=>m.cafeId===currentCafeId).map(item=>`<div class="bg-slate-900 p-3 rounded-lg text-white text-sm mb-2 flex justify-between items-center border border-slate-800"><div><b>${item.name}</b><br><span class="text-amber-400 text-xs">₹${item.price}</span></div><button onclick="deleteMenuItem(${item.id})" class="text-rose-500 bg-rose-500/10 p-2 rounded"><i class="fa-solid fa-trash"></i></button></div>`).join(''); }
-        function saveOwnerWhatsApp() { let c=JSON.parse(localStorage.getItem('jojo_cafes'))||[]; localStorage.setItem('jojo_cafes', JSON.stringify(c.map(x=>x.id===currentCafeId?{...x,whatsapp:document.getElementById('owner-whatsapp-input').value}:x))); alert('WhatsApp updated!'); }
-        function addMenuItem() { let n=document.getElementById('menu-item-name').value, p=document.getElementById('menu-item-price').value, ph=document.getElementById('menu-item-photo').value; if(!n || !p) return alert("Name & Price required"); let all=JSON.parse(localStorage.getItem('jojo_menu'))||[]; all.push({id:Date.now(), name:n, price:parseFloat(p), photo:ph||'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80', cafeId:currentCafeId}); localStorage.setItem('jojo_menu', JSON.stringify(all)); document.getElementById('menu-item-name').value=''; document.getElementById('menu-item-price').value=''; document.getElementById('menu-item-photo').value=''; loadOwnerDashboard(); }
-        function deleteMenuItem(id) { let all=JSON.parse(localStorage.getItem('jojo_menu'))||[]; localStorage.setItem('jojo_menu', JSON.stringify(all.filter(m=>m.id!==id))); loadOwnerDashboard(); }
+        async function loadOwnerDashboard() { 
+            try {
+                let snapshot = await window.getDocsRef(window.colRef(window.db, "cafes"));
+                let cCafe = null;
+                snapshot.forEach(docSnap => { if(docSnap.data().id === currentCafeId) cCafe = docSnap.data(); });
+                if(cCafe) {
+                    document.getElementById('owner-cafe-header').innerText = `${cCafe.name} Dashboard`;
+                    document.getElementById('owner-whatsapp-input').value = cCafe.whatsapp || '';
+                }
+                let menuSnap = await window.getDocsRef(window.colRef(window.db, "menu"));
+                let mHtml = "";
+                menuSnap.forEach(docSnap => {
+                    let item = docSnap.data();
+                    if(item.cafeId === currentCafeId) {
+                        mHtml += `<div class="bg-slate-900 p-3 rounded-lg text-white text-sm mb-2 flex justify-between items-center border border-slate-800"><div><b>${item.name}</b><br><span class="text-amber-400 text-xs">₹${item.price}</span></div><button onclick="deleteMenuItem('${docSnap.id}')" class="text-rose-500 bg-rose-500/10 p-2 rounded"><i class="fa-solid fa-trash"></i></button></div>`;
+                    }
+                });
+                document.getElementById('owner-menu-list').innerHTML = mHtml || "<p class='text-slate-400 text-xs'>No items found.</p>";
+            } catch(e) { console.error(e); }
+        }
+
+        async function saveOwnerWhatsApp() { 
+            let newWa = document.getElementById('owner-whatsapp-input').value;
+            try {
+                await window.updateDocRef(window.docRef(window.db, "cafes", currentCafeId), { whatsapp: newWa });
+                alert('WhatsApp updated in cloud!');
+            } catch(e) { alert("Error saving"); }
+        }
+
+        async function addMenuItem() { 
+            let n = document.getElementById('menu-item-name').value, p = document.getElementById('menu-item-price').value, ph = document.getElementById('menu-item-photo').value;
+            if(!n || !p) return alert("Name & Price required");
+            try {
+                await window.addDocRef(window.colRef(window.db, "menu"), { name: n, price: parseFloat(p), photo: ph || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80', cafeId: currentCafeId });
+                document.getElementById('menu-item-name').value = ''; document.getElementById('menu-item-price').value = ''; document.getElementById('menu-item-photo').value = '';
+                loadOwnerDashboard();
+            } catch(e) { alert("Error adding item"); }
+        }
+
+        async function deleteMenuItem(docId) { 
+            try {
+                await window.deleteDocRef(window.docRef(window.db, "menu", docId));
+                loadOwnerDashboard();
+            } catch(e) { alert("Error deleting"); }
+        }
         
         function genTableQR() { 
             let t = document.getElementById('qr-table-num').value.trim(); if(!t) return alert("Enter Table number");
@@ -251,32 +322,93 @@
             let qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" + url;
             document.getElementById('qr-img').src = qrUrl; document.getElementById('qr-dl').href = qrUrl;
             document.getElementById('qr-result').classList.remove('hidden'); 
-                               }
-                    // --- 4. CUSTOMER MENU, CART & URL HANDLING ---
-        function loadCustomerMenu() {
-            // URL checking for direct QR scan
+        }
+                // --- 4. CUSTOMER MENU, CART & CLOUD LEADERBOARD ---
+        async function loadCustomerMenu() {
             const urlParams = new URLSearchParams(window.location.search);
             if(urlParams.has('cafe')) currentCafeId = urlParams.get('cafe');
             if(urlParams.has('table')) document.getElementById('customer-table').innerHTML = `<option value="${urlParams.get('table')}">${urlParams.get('table')}</option>`;
 
-            const cafes=JSON.parse(localStorage.getItem('jojo_cafes'))||[], cCafe=cafes.find(c=>c.id===currentCafeId), grid=document.getElementById('menu-items-grid');
-            if(!cCafe || cCafe.status==='inactive') { grid.innerHTML=`<div class="col-span-2 text-center border border-rose-500 bg-rose-500/10 rounded-xl text-white p-6"><h3 class="text-xl font-bold">Menu Unavailable</h3><p class="text-sm mt-1">This Cafe is not activated yet.</p></div>`; document.getElementById('current-cafe-title').innerText = "Inactive Cafe"; return; }
-            document.getElementById('current-cafe-title').innerText=cCafe.name;
-            const items=(JSON.parse(localStorage.getItem('jojo_menu'))||[]).filter(m=>m.cafeId===currentCafeId);
-            grid.innerHTML=items.length===0?'<p class="text-white col-span-2 text-center py-6">No items on the menu yet.</p>':items.map(i=>`<div class="glass rounded-xl overflow-hidden shadow-lg"><img src="${i.photo}" class="w-full h-36 object-cover"><div class="p-4"><h4 class="font-bold text-white">${i.name}</h4><p class="text-amber-400 font-extrabold text-lg">₹${i.price}</p><button onclick="addToCart(${i.id}, '${i.name}', ${i.price})" class="mt-3 w-full bg-amber-500 text-slate-950 py-2 font-bold rounded-lg shadow"><i class="fa-solid fa-plus mr-1"></i> Add to Cart</button></div></div>`).join('');
-            renderCart();
+            const grid = document.getElementById('menu-items-grid');
+            try {
+                let cafesSnap = await window.getDocsRef(window.colRef(window.db, "cafes"));
+                let cCafe = null;
+                cafesSnap.forEach(docSnap => { if(docSnap.data().id === currentCafeId) cCafe = docSnap.data(); });
+
+                if(!cCafe || cCafe.status === 'inactive') { 
+                    grid.innerHTML = `<div class="col-span-2 text-center border border-rose-500 bg-rose-500/10 rounded-xl text-white p-6"><h3 class="text-xl font-bold">Menu Unavailable</h3><p class="text-sm mt-1">This Cafe is not activated yet.</p></div>`; 
+                    document.getElementById('current-cafe-title').innerText = "Inactive Cafe"; return; 
+                }
+                document.getElementById('current-cafe-title').innerText = cCafe.name;
+
+                let menuSnap = await window.getDocsRef(window.colRef(window.db, "menu"));
+                let itemsHtml = "";
+                menuSnap.forEach(docSnap => {
+                    let i = docSnap.data();
+                    if(i.cafeId === currentCafeId) {
+                        itemsHtml += `<div class="glass rounded-xl overflow-hidden shadow-lg"><img src="${i.photo}" class="w-full h-36 object-cover"><div class="p-4"><h4 class="font-bold text-white">${i.name}</h4><p class="text-amber-400 font-extrabold text-lg">₹${i.price}</p><button onclick="addToCart('${docSnap.id}', '${i.name}', ${i.price})" class="mt-3 w-full bg-amber-500 text-slate-950 py-2 font-bold rounded-lg shadow"><i class="fa-solid fa-plus mr-1"></i> Add to Cart</button></div></div>`;
+                    }
+                });
+                grid.innerHTML = itemsHtml || '<p class="text-white col-span-2 text-center py-6">No items on the menu yet.</p>';
+                renderCart();
+                updateLeaderboardUI();
+            } catch(e) { console.error(e); }
         }
-        function addToCart(id, n, p) { let e=cart.find(i=>i.id===id); if(e) e.qty++; else cart.push({id,name:n,price:p,qty:1}); renderCart(); }
-        function renderCart() { let t=0; document.getElementById('cart-items-container').innerHTML=cart.length===0?'<p class="text-slate-400 text-sm text-center py-4">Cart is empty.</p>':cart.map(i=>{ t+=i.price*i.qty; return `<div class="flex justify-between items-center text-white text-sm bg-slate-900 p-2 rounded border border-slate-700 mb-2"><div><b>${i.name}</b><br><span class="text-amber-400">₹${i.price}</span> x ${i.qty}</div><div class="flex space-x-2"><button onclick="changeQty(${i.id},-1)" class="bg-slate-700 w-6 h-6 rounded">-</button> <span class="font-bold">${i.qty}</span> <button onclick="changeQty(${i.id},1)" class="bg-slate-700 w-6 h-6 rounded">+</button></div></div>`; }).join(''); document.getElementById('cart-total-price').innerText=`₹${t}`; }
-        function changeQty(id, d) { let i=cart.find(x=>x.id===id); if(i) { i.qty+=d; if(i.qty<=0) cart=cart.filter(x=>x.id!==id); } renderCart(); }
-        function placeWhatsAppOrder() { if(cart.length===0) return alert('Add items to cart first!'); let bill=`*🍽️ NEW ORDER - ${document.getElementById('current-cafe-title').innerText}* %0A🪑 Table: ${document.getElementById('customer-table').value}%0A----------------------%0A`; let tot=0; cart.forEach(i=>{ let s=i.price*i.qty; tot+=s; bill+=`▪️ ${i.name} (x${i.qty}) = ₹${s}%0A`; }); bill+=`----------------------%0A💰 *Total: ₹${tot}*%0A✅ Please prepare my order.`; window.open(`https://wa.me/${(JSON.parse(localStorage.getItem('jojo_cafes'))||[]).find(c=>c.id===currentCafeId).whatsapp}?text=${bill}`); }
 
-        // --- 5. GAMES & LEADERBOARD LOGIC ---
-        function fireConfetti() { if(typeof confetti !== 'undefined') confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } }); }
-        function updateLeaderboardUI() { let lb = JSON.parse(localStorage.getItem('jojo_leaderboard')) || []; lb.sort((a, b) => b.score - a.score); const lbDiv = document.getElementById('leaderboard-list'); if(lb.length === 0) { lbDiv.innerHTML = "<p class='text-slate-400 text-center py-2'>No scores yet.</p>"; } else { lbDiv.innerHTML = lb.slice(0,10).map((entry, idx) => { let medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '🏅'; return `<div class="flex justify-between bg-slate-800/80 p-2 rounded text-white mb-1"><span>${medal} ${entry.name} <span class="text-[10px] text-slate-400">(${entry.game})</span></span><span class="font-bold text-amber-400">${entry.score} pts</span></div>`; }).join(''); } }
-        function saveScore(game, score) { if(score <= 0) return; let name = prompt(`Great! You scored ${score} in ${game}. Enter your name for the Leaderboard:`); if(name && name.trim() !== '') { let lb = JSON.parse(localStorage.getItem('jojo_leaderboard')) || []; lb.push({ name: name.trim(), score: score, game: game }); localStorage.setItem('jojo_leaderboard', JSON.stringify(lb)); updateLeaderboardUI(); } }
-        function clearLeaderboard() { if(confirm("Clear leaderboard?")) { localStorage.removeItem('jojo_leaderboard'); updateLeaderboardUI(); } }
+        function addToCart(id, n, p) { let e = cart.find(i => i.id === id); if(e) e.qty++; else cart.push({id, name: n, price: p, qty: 1}); renderCart(); }
+        function renderCart() { let t = 0; document.getElementById('cart-items-container').innerHTML = cart.length === 0 ? '<p class="text-slate-400 text-sm text-center py-4">Cart is empty.</p>' : cart.map(i => { t += i.price * i.qty; return `<div class="flex justify-between items-center text-white text-sm bg-slate-900 p-2 rounded border border-slate-700 mb-2"><div><b>${i.name}</b><br><span class="text-amber-400">₹${i.price}</span> x ${i.qty}</div><div class="flex space-x-2"><button onclick="changeQty('${i.id}',-1)" class="bg-slate-700 w-6 h-6 rounded">-</button> <span class="font-bold">${i.qty}</span> <button onclick="changeQty('${i.id}',1)" class="bg-slate-700 w-6 h-6 rounded">+</button></div></div>`; }).join(''); document.getElementById('cart-total-price').innerText = `₹${t}`; }
+        function changeQty(id, d) { let i = cart.find(x => x.id === id); if(i) { i.qty += d; if(i.qty <= 0) cart = cart.filter(x => x.id !== id); } renderCart(); }
+        
+        async function placeWhatsAppOrder() { 
+            if(cart.length === 0) return alert('Add items to cart first!'); 
+            let cafesSnap = await window.getDocsRef(window.colRef(window.db, "cafes"));
+            let waNum = "7689874945";
+            cafesSnap.forEach(docSnap => { if(docSnap.data().id === currentCafeId) waNum = docSnap.data().whatsapp || waNum; });
 
+            let bill = `*🍽️ NEW ORDER - ${document.getElementById('current-cafe-title').innerText}* %0A🪑 Table: ${document.getElementById('customer-table').value}%0A----------------------%0A`; 
+            let tot = 0; cart.forEach(i => { let s = i.price * i.qty; tot += s; bill += `▪️ ${i.name} (x${i.qty}) = ₹${s}%0A`; }); 
+            bill += `----------------------%0A💰 *Total: ₹${tot}*%0A✅ Please prepare my order.`; 
+            window.open(`https://wa.me/${waNum}?text=${bill}`); 
+        }
+
+        async function updateLeaderboardUI() { 
+            try {
+                let snapshot = await window.getDocsRef(window.colRef(window.db, "leaderboard"));
+                let lb = [];
+                snapshot.forEach(docSnap => lb.push(docSnap.data()));
+                lb.sort((a, b) => b.score - a.score); 
+                const lbDiv = document.getElementById('leaderboard-list'); 
+                if(lb.length === 0) { lbDiv.innerHTML = "<p class='text-slate-400 text-center py-2'>No scores yet.</p>"; } 
+                else { 
+                    lbDiv.innerHTML = lb.slice(0, 10).map((entry, idx) => { 
+                        let medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '🏅'; 
+                        return `<div class="flex justify-between bg-slate-800/80 p-2 rounded text-white mb-1"><span>${medal} ${entry.name} <span class="text-[10px] text-slate-400">(${entry.game})</span></span><span class="font-bold text-amber-400">${entry.score} pts</span></div>`; 
+                    }).join(''); 
+                } 
+            } catch(e) { console.error(e); }
+        }
+
+        async function saveScore(game, score) { 
+            if(score <= 0) return; 
+            let name = prompt(`Great! You scored ${score} in ${game}. Enter your name for the Leaderboard:`); 
+            if(name && name.trim() !== '') { 
+                try {
+                    await window.addDocRef(window.colRef(window.db, "leaderboard"), { name: name.trim(), score: score, game: game });
+                    updateLeaderboardUI();
+                } catch(e) { alert("Error saving score"); }
+            } 
+        }
+
+        async function clearLeaderboard() { 
+            if(confirm("Clear cloud leaderboard?")) { 
+                try {
+                    let snapshot = await window.getDocsRef(window.colRef(window.db, "leaderboard"));
+                    snapshot.forEach(async (docSnap) => { await window.deleteDocRef(window.docRef(window.db, "leaderboard", docSnap.id)); });
+                    setTimeout(updateLeaderboardUI, 1000);
+                } catch(e) { alert("Error clearing"); }
+            } 
+        }
+                // --- 5. GAMES LOGIC & APP INITIALIZER ---
         let tttBoard = ['','','','','','','','',''], tttActive = true; const winCombos = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
         function makeTTTMove(idx) { if(tttBoard[idx]==='' && tttActive) { tttBoard[idx]='X'; updateTTTUI(); if(checkTTTWin('X')) { tttActive=false; fireConfetti(); return setTimeout(()=>alert("You Win! 🎉"), 100); } if(!tttBoard.includes('')) return setTimeout(()=>alert("Draw! 🤝"), 100); tttActive = false; setTimeout(() => { let empty = tttBoard.map((v,i)=>v===''?i:null).filter(v=>v!==null); if(empty.length > 0) { tttBoard[empty[Math.floor(Math.random()*empty.length)]] = 'O'; updateTTTUI(); if(checkTTTWin('O')) { setTimeout(()=>alert("Computer Wins! 🤖"), 100); } else tttActive = true; } }, 400); } }
         function updateTTTUI() { document.querySelectorAll('.ttt-cell').forEach((b,i)=>b.innerText=tttBoard[i]); }
@@ -292,7 +424,7 @@
         let tapCount=0, tapActive=false;
         function tapClicker() { if(!tapActive) { tapActive=true; tapCount=0; document.getElementById('tap-btn').innerText='TAP FAST 🔥!'; let tl=10; let tmr=setInterval(()=>{ tl--; if(tl<=0){ clearInterval(tmr); tapActive=false; document.getElementById('tap-btn').innerText='Start & Tap!'; alert(`Time up! Score: ${tapCount}`); if(tapCount > 0) saveScore('Tap Fast', tapCount); } }, 1000); } if(tapActive) { tapCount++; document.getElementById('tap-score').innerText=`Score: ${tapCount}`; } }
 
-        window.onload = () => { initThreeJS(); switchView('customer'); loadQuiz(); updateLeaderboardUI(); };
+        window.onload = () => { initThreeJS(); switchView('customer'); loadQuiz(); };
     </script>
 </body>
 </html>
