@@ -1,0 +1,60 @@
+<!-- games.html - Part 8 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games & Leaderboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 3D Floating Background -->
+    <ul class="bg-bubbles">
+        <li></li><li></li><li></li><li></li><li></li><li></li>
+    </ul>
+
+    <!-- Leaderboard Section (Top par) -->
+    <div class="glass-panel" style="margin-top: 20px;">
+        <h2 style="text-align: center; color: #fff; margin-bottom: 15px;">🏆 Leaderboard Top 3</h2>
+        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; color: #e0aaff; font-weight: bold;">
+                <span>1. Rahul M.</span> <span id="rank1-score">1500 pts</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; color: #fff;">
+                <span>2. Amit K.</span> <span>1200 pts</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; color: #fff;">
+                <span>3. Shlok C.</span> <span>950 pts</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Games Section -->
+    <div class="glass-panel">
+        <h2 style="text-align: center; color: #fff; margin-bottom: 20px;">🎮 Play & Win Points</h2>
+
+        <!-- Game 1: Spin the Wheel -->
+        <div style="text-align: center; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.2);">
+            <h3 style="color: #e0aaff; margin-bottom: 15px;">🎡 Spin the Wheel</h3>
+            <div id="wheel" style="font-size: 60px; transition: transform 2s ease-out; display: inline-block;">🎯</div>
+            <br>
+            <button class="btn-3d" onclick="spinWheel()" style="width: auto; margin-top: 20px;">Spin Now!</button>
+            <p id="spin-result" style="color: #fff; margin-top: 15px; font-weight: bold;"></p>
+        </div>
+
+        <!-- Game 2: Lucky Slot Machine -->
+        <div style="text-align: center;">
+            <h3 style="color: #e0aaff; margin-bottom: 15px;">🎰 Lucky Slots</h3>
+            <div id="slots" style="font-size: 45px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px; display: inline-block; letter-spacing: 15px; border: 2px solid #5a189a;">
+                🍎 🍋 🍒
+            </div>
+            <br>
+            <button class="btn-3d" onclick="playSlots()" style="width: auto; margin-top: 20px;">Pull Lever!</button>
+            <p id="slot-result" style="color: #fff; margin-top: 15px; font-weight: bold;"></p>
+        </div>
+    </div>
+
+    <script src="games.js"></script>
+</body>
+</html>
+
