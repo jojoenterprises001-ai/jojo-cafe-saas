@@ -109,7 +109,11 @@
                 <div class="md:col-span-2 glass p-6 rounded-2xl space-y-4">
                     <h3 class="text-lg font-bold text-amber-400">Cloud Menu Management</h3>
                     <div class="grid grid-cols-2 gap-2"><input type="text" id="menu-item-name" placeholder="Item Name" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white"><input type="number" id="menu-item-price" placeholder="Price (₹)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white"></div>
-                    <input type="text" id="menu-item-photo" placeholder="Photo URL" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white">
+                    <div class="space-y-1">
+    <label class="block text-xs text-slate-400">Select Photo from Gallery:</label>
+    <input type="file" id="menu-item-file" accept="image/*" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white text-sm file:mr-4 file:py-1 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-amber-500 file:text-slate-950">
+                    </div>
+                    
                     <button onclick="addMenuItem()" class="w-full bg-emerald-600 text-white font-bold py-2 rounded-xl">Add to Cloud Menu</button>
                     <div id="owner-menu-list" class="space-y-2 max-h-60 overflow-y-auto mt-4 pt-4 border-t border-slate-800"></div>
                 </div>
@@ -300,13 +304,42 @@
         }
 
         async function addMenuItem() { 
-            let n = document.getElementById('menu-item-name').value, p = document.getElementById('menu-item-price').value, ph = document.getElementById('menu-item-photo').value;
-            if(!n || !p) return alert("Name & Price required");
-            try {
-                await window.addDocRef(window.colRef(window.db, "menu"), { name: n, price: parseFloat(p), photo: ph || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80', cafeId: currentCafeId });
-                document.getElementById('menu-item-name').value = ''; document.getElementById('menu-item-price').value = ''; document.getElementById('menu-item-photo').value = '';
-                loadOwnerDashboard();
-            } catch(e) { alert("Error adding item"); }
+    let n = document.getElementById('menu-item-name').value;
+    let p = document.getElementById('menu-item-price').value;
+    let fileInput = document.getElementById('menu-item-file');
+    
+    if(!n || !p) return alert("Please enter Item Name and Price!");
+
+    // Helper to save data with photo
+    async function saveToCloud(photoUrl) {
+        try {
+            await window.addDocRef(window.colRef(window.db, "menu"), { 
+                name: n, 
+                price: parseFloat(p), 
+                photo: photoUrl, 
+                cafeId: currentCafeId 
+            });
+            document.getElementById('menu-item-name').value = ''; 
+            document.getElementById('menu-item-price').value = ''; 
+            fileInput.value = '';
+            loadOwnerDashboard();
+            alert("Item added successfully!");
+        } catch(e) { alert("Error adding item: " + e.message); }
+    }
+
+    // If gallery file is selected
+    if(fileInput.files && fileInput.files[0]) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            saveToCloud(e.target.result); // Base64 image string
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+    } else {
+        // Default photo if none selected
+        saveToCloud('https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80');
+    }
+        }
+        
         }
 
         async function deleteMenuItem(docId) { 
