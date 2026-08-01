@@ -25,11 +25,12 @@
             <div class="bg-gradient-to-r from-amber-500 to-orange-600 p-2 rounded-xl text-white font-bold text-xl shadow-md"><i class="fa-solid fa-mug-hot"></i></div>
             <div><h1 class="text-xl font-bold tracking-wider text-amber-400">JOJO CAFE</h1><p class="text-xs text-slate-400">Smart B2B2C Experience</p></div>
         </div>
-        <button onclick="toggleAdminModal()" class="p-3 text-slate-300 hover:text-amber-400 transition rounded-full hover:bg-slate-800"><i class="fa-solid fa-ellipsis-vertical text-xl"></i></button>
+        <button onclick="toggleAdminModal()" class="p-3 text-slate-300 hover:text-amber-400 transition rounded-full hover:bg-slate-800"><i class="fa-solid fa-user-shield text-xl"></i></button>
     </header>
     
     <main class="flex-grow container mx-auto px-4 py-6 relative z-10">
 
+        <!-- ================= CUSTOMER UI ================= -->
         <div id="view-customer" class="space-y-6">
             <div class="glass p-6 rounded-2xl shadow-2xl border-l-4 border-amber-500 flex flex-col md:flex-row justify-between items-center">
                 <div>
@@ -43,12 +44,12 @@
                     </select>
                 </div>
             </div>
-
-            <div class="flex space-x-4 border-b border-slate-800 pb-2">
-                <button onclick="switchCustomerTab('menu')" id="tab-btn-menu" class="px-6 py-2 rounded-xl font-semibold bg-amber-500 text-slate-950 shadow-md">🍽️ Digital Menu</button>
-                <button onclick="switchCustomerTab('games')" id="tab-btn-games" class="px-6 py-2 rounded-xl font-semibold bg-slate-800 text-slate-300">🎮 Mini-Games & Leaderboard</button>
+                        <div class="flex space-x-4 border-b border-slate-800 pb-2">
+                <button onclick="switchCustomerTab('menu')" id="tab-btn-menu" class="px-6 py-2 rounded-xl font-semibold bg-amber-500 text-slate-950 shadow-md">🍽️ Menu</button>
+                <button onclick="switchCustomerTab('games')" id="tab-btn-games" class="px-6 py-2 rounded-xl font-semibold bg-slate-800 text-slate-300">🎮 Play & Win</button>
             </div>
-                        <div id="customer-tab-menu" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <div id="customer-tab-menu" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4" id="menu-items-grid"></div>
                 <div class="glass p-6 rounded-2xl shadow-xl h-fit sticky top-24 space-y-4">
                     <h3 class="text-xl font-bold text-amber-400 border-b border-slate-800 pb-2"><i class="fa-solid fa-receipt mr-2"></i> Cart</h3>
@@ -59,78 +60,104 @@
             </div>
 
             <div id="customer-tab-games" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
-                
                 <div class="glass p-6 rounded-2xl text-center space-y-4"><h4 class="text-lg font-bold text-amber-400">Tic-Tac-Toe vs AI 🤖</h4>
                     <div class="grid grid-cols-3 gap-2 max-w-[200px] mx-auto">
-                        <button onclick="makeTTTMove(0)" class="h-16 bg-slate-800 text-2xl font-bold rounded-lg text-white ttt-cell"></button>
-                        <button onclick="makeTTTMove(1)" class="h-16 bg-slate-800 text-2xl font-bold rounded-lg text-white ttt-cell"></button>
-                        <button onclick="makeTTTMove(2)" class="h-16 bg-slate-800 text-2xl font-bold rounded-lg text-white ttt-cell"></button>
-                        <button onclick="makeTTTMove(3)" class="h-16 bg-slate-800 text-2xl font-bold rounded-lg text-white ttt-cell"></button>
-                        <button onclick="makeTTTMove(4)" class="h-16 bg-slate-800 text-2xl font-bold rounded-lg text-white ttt-cell"></button>
-                        <button onclick="makeTTTMove(5)" class="h-16 bg-slate-800 text-2xl font-bold rounded-lg text-white ttt-cell"></button>
-                        <button onclick="makeTTTMove(6)" class="h-16 bg-slate-800 text-2xl font-bold rounded-lg text-white ttt-cell"></button>
-                        <button onclick="makeTTTMove(7)" class="h-16 bg-slate-800 text-2xl font-bold rounded-lg text-white ttt-cell"></button>
-                        <button onclick="makeTTTMove(8)" class="h-16 bg-slate-800 text-2xl font-bold rounded-lg text-white ttt-cell"></button>
+                        <button onclick="makeTTTMove(0)" class="h-16 bg-slate-800 text-2xl font-bold rounded-lg text-white ttt-cell"></button><button onclick="makeTTTMove(1)" class="h-16 bg-slate-800 text-2xl font-bold rounded-lg text-white ttt-cell"></button><button onclick="makeTTTMove(2)" class="h-16 bg-slate-800 text-2xl font-bold rounded-lg text-white ttt-cell"></button>
+                        <button onclick="makeTTTMove(3)" class="h-16 bg-slate-800 text-2xl font-bold rounded-lg text-white ttt-cell"></button><button onclick="makeTTTMove(4)" class="h-16 bg-slate-800 text-2xl font-bold rounded-lg text-white ttt-cell"></button><button onclick="makeTTTMove(5)" class="h-16 bg-slate-800 text-2xl font-bold rounded-lg text-white ttt-cell"></button>
+                        <button onclick="makeTTTMove(6)" class="h-16 bg-slate-800 text-2xl font-bold rounded-lg text-white ttt-cell"></button><button onclick="makeTTTMove(7)" class="h-16 bg-slate-800 text-2xl font-bold rounded-lg text-white ttt-cell"></button><button onclick="makeTTTMove(8)" class="h-16 bg-slate-800 text-2xl font-bold rounded-lg text-white ttt-cell"></button>
                     </div><button onclick="resetTTT()" class="text-xs text-amber-400 underline">Reset Game</button>
                 </div>
-
-                <div class="glass p-6 rounded-2xl text-center space-y-4"><h4 class="text-lg font-bold text-amber-400">Brain Teaser Quiz 🧠</h4>
-                    <div id="quiz-box" class="bg-slate-800/50 p-4 rounded-xl"></div>
-                </div>
-
-                <div class="glass p-6 rounded-2xl text-center space-y-4"><h4 class="text-lg font-bold text-amber-400">Tap Challenge</h4>
-                    <div id="tap-score" class="text-4xl text-amber-400 font-extrabold">Score: 0</div>
-                    <button id="tap-btn" onclick="tapClicker()" class="bg-orange-600 text-white font-bold py-3 px-6 rounded-xl mx-auto">Start & Tap!</button>
-                </div>
-
-                <div class="glass p-6 rounded-2xl text-center space-y-4"><h4 class="text-lg font-bold text-amber-400">🏆 Top Scorers Leaderboard</h4>
-                    <div id="leaderboard-list" class="space-y-2 text-sm max-h-40 overflow-y-auto"><p class="text-slate-400 text-sm">No scores yet. Play to rank up!</p></div>
-                    <button onclick="clearLeaderboard()" class="text-xs text-rose-400 underline">Clear Leaderboard</button>
-                </div>
+                <div class="glass p-6 rounded-2xl text-center space-y-4"><h4 class="text-lg font-bold text-amber-400">Brain Teaser Quiz 🧠</h4><div id="quiz-box" class="bg-slate-800/50 p-4 rounded-xl"></div></div>
+                <div class="glass p-6 rounded-2xl text-center space-y-4"><h4 class="text-lg font-bold text-amber-400">Tap Challenge</h4><div id="tap-score" class="text-4xl text-amber-400 font-extrabold">Score: 0</div><button id="tap-btn" onclick="tapClicker()" class="bg-orange-600 text-white font-bold py-3 px-6 rounded-xl mx-auto">Start & Tap!</button></div>
+                <div class="glass p-6 rounded-2xl text-center space-y-4"><h4 class="text-lg font-bold text-amber-400">🏆 Top Scorers Leaderboard</h4><div id="leaderboard-list" class="space-y-2 text-sm max-h-40 overflow-y-auto"></div><button onclick="clearLeaderboard()" class="text-xs text-rose-400 underline">Clear Leaderboard</button></div>
             </div>
         </div>
-               <div id="view-super-admin" class="hidden space-y-6">
+                <!-- ================= ADMIN UI ================= -->
+        <div id="view-super-admin" class="hidden space-y-6">
             <div class="glass p-6 rounded-2xl flex justify-between items-center border-l-4 border-indigo-500">
-                <div><h2 class="text-2xl font-bold text-indigo-400">Admin Portal</h2></div>
+                <div><h2 class="text-2xl font-bold text-indigo-400">Super Admin Portal</h2></div>
                 <button onclick="switchView('customer')" class="bg-slate-800 px-4 py-2 rounded-xl text-sm">Logout</button>
             </div>
             <div class="glass p-6 rounded-2xl shadow-xl overflow-x-auto">
                 <table class="w-full text-left border-collapse">
-                    <thead><tr class="border-b border-slate-800 text-slate-400 text-xs"><th class="py-3 px-4">Cafe</th><th class="py-3 px-4">Status</th><th class="py-3 px-4">Action</th></tr></thead>
+                    <thead><tr class="border-b border-slate-800 text-slate-400 text-xs"><th class="py-3 px-4">Cafe Details</th><th class="py-3 px-4">Status</th><th class="py-3 px-4">Action</th></tr></thead>
                     <tbody id="admin-cafes-table-body" class="divide-y divide-slate-800/60 text-sm"></tbody>
                 </table>
             </div>
         </div>
 
+        <!-- ================= OWNER UI (Add Items & QR Gen) ================= -->
         <div id="view-owner" class="hidden space-y-6">
             <div class="glass p-6 rounded-2xl flex justify-between items-center border-l-4 border-amber-500">
-                <div><h2 class="text-2xl font-bold text-amber-400" id="owner-cafe-header">Dashboard</h2></div>
-                <button onclick="switchView('customer')" class="bg-slate-800 px-4 py-2 rounded-xl text-sm">View Menu</button>
+                <div><h2 class="text-2xl font-bold text-amber-400" id="owner-cafe-header">Cafe Dashboard</h2></div>
+                <button onclick="switchView('customer')" class="bg-slate-800 px-4 py-2 rounded-xl text-sm">Logout</button>
             </div>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="glass p-6 rounded-2xl space-y-4"><h3 class="text-lg font-bold text-amber-400">Settings</h3><input type="text" id="owner-whatsapp-input" placeholder="WhatsApp Number" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white"><button onclick="saveOwnerWhatsApp()" class="w-full bg-amber-500 text-slate-950 font-bold py-2 rounded-xl">Save</button></div>
-                <div class="glass p-6 rounded-2xl space-y-4"><h3 class="text-lg font-bold text-amber-400">Add Item</h3><input type="text" id="menu-item-name" placeholder="Name" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white mb-2"><input type="number" id="menu-item-price" placeholder="Price" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white mb-2"><input type="text" id="menu-item-photo" placeholder="Photo URL" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white mb-2"><button onclick="addMenuItem()" class="w-full bg-emerald-600 text-white font-bold py-2 rounded-xl">Add</button><div id="owner-menu-list" class="space-y-2 max-h-40 overflow-y-auto mt-4"></div></div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Settings & QR Gen -->
+                <div class="space-y-6">
+                    <div class="glass p-6 rounded-2xl space-y-4">
+                        <h3 class="text-lg font-bold text-amber-400">WhatsApp Orders</h3>
+                        <input type="text" id="owner-whatsapp-input" placeholder="Number (e.g. 91768...)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white">
+                        <button onclick="saveOwnerWhatsApp()" class="w-full bg-amber-500 text-slate-950 font-bold py-2 rounded-xl">Save Setup</button>
+                    </div>
+                    <div class="glass p-6 rounded-2xl space-y-4">
+                        <h3 class="text-lg font-bold text-indigo-400">Generate Table QR</h3>
+                        <p class="text-xs text-slate-400">Print this QR for customers.</p>
+                        <input type="text" id="qr-table-num" placeholder="Table Name/Num" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white">
+                        <button onclick="genTableQR()" class="w-full bg-indigo-600 text-white font-bold py-2 rounded-xl">Generate QR</button>
+                        <div id="qr-result" class="mt-4 hidden text-center bg-white p-2 rounded-xl"><img id="qr-img" class="mx-auto"/><a id="qr-dl" download="Table-QR.png" class="text-indigo-600 font-bold text-sm underline mt-2 block">Download QR</a></div>
+                    </div>
+                </div>
+                
+                <!-- Add Items -->
+                <div class="md:col-span-2 glass p-6 rounded-2xl space-y-4">
+                    <h3 class="text-lg font-bold text-amber-400">Menu Management</h3>
+                    <div class="grid grid-cols-2 gap-2"><input type="text" id="menu-item-name" placeholder="Item Name" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white"><input type="number" id="menu-item-price" placeholder="Price (₹)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white"></div>
+                    <input type="text" id="menu-item-photo" placeholder="Photo URL (e.g., https://...)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white">
+                    <button onclick="addMenuItem()" class="w-full bg-emerald-600 text-white font-bold py-2 rounded-xl">Add to Menu</button>
+                    <div id="owner-menu-list" class="space-y-2 max-h-60 overflow-y-auto mt-4 pt-4 border-t border-slate-800"></div>
+                </div>
             </div>
         </div>
     </main>
-
+        <!-- ================= AUTH MODAL ================= -->
     <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center hidden">
         <div class="glass p-8 rounded-3xl w-full max-w-md space-y-6 relative border border-slate-700">
             <button onclick="toggleAdminModal()" class="absolute top-4 right-4 text-slate-400 text-xl"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-2xl font-bold text-white text-center">Login Portal</h3>
+            <h3 class="text-2xl font-bold text-white text-center">Cafe Portal</h3>
+            
             <div class="flex bg-slate-900 p-1 rounded-xl">
-                <button onclick="switchModalTab('admin')" id="modal-tab-admin-btn" class="flex-1 py-2 text-xs font-bold rounded-lg bg-amber-500 text-slate-950">Admin</button>
-                <button onclick="switchModalTab('partner')" id="modal-tab-partner-btn" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400">Partner</button>
+                <button onclick="switchModalTab('owner-login')" id="tab-btn-owner-login" class="flex-1 py-2 text-xs font-bold rounded-lg bg-amber-500 text-slate-950">Login</button>
+                <button onclick="switchModalTab('owner-reg')" id="tab-btn-owner-reg" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400">Register</button>
+                <button onclick="switchModalTab('admin-login')" id="tab-btn-admin-login" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400">Admin</button>
             </div>
-            <div id="modal-form-admin" class="space-y-4">
+
+            <!-- Owner Login -->
+            <div id="modal-form-owner-login" class="space-y-4">
+                <p class="text-xs text-slate-400 text-center">Active cafes can login directly here.</p>
+                <input type="text" id="log-name" placeholder="Cafe Name" class="w-full bg-slate-900 rounded-xl px-4 py-2 text-white border border-slate-700">
+                <input type="text" id="log-phone" placeholder="Mobile Number" class="w-full bg-slate-900 rounded-xl px-4 py-2 text-white border border-slate-700">
+                <button onclick="loginCafeOwner()" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl">Login to Dashboard</button>
+            </div>
+
+            <!-- Owner Register -->
+            <div id="modal-form-owner-reg" class="space-y-4 hidden">
+                <p class="text-xs text-slate-400 text-center">New Cafe? Register for Admin Approval.</p>
+                <input type="text" id="reg-name" placeholder="Cafe Name" class="w-full bg-slate-900 rounded-xl px-4 py-2 text-white border border-slate-700">
+                <input type="text" id="reg-phone" placeholder="Mobile Number" class="w-full bg-slate-900 rounded-xl px-4 py-2 text-white border border-slate-700">
+                <button onclick="registerNewCafe()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl">Submit Request</button>
+                <div class="bg-amber-500/10 border border-amber-500/50 rounded-xl p-3 text-center mt-4">
+                    <p class="text-xs text-amber-400">Need quick activation? Contact Admin on WhatsApp:</p>
+                    <p class="text-lg font-bold text-white tracking-widest mt-1">📞 7689874945</p>
+                </div>
+            </div>
+
+            <!-- Admin Login -->
+            <div id="modal-form-admin-login" class="space-y-4 hidden">
+                <p class="text-xs text-slate-400 text-center">Super Admin Access Only</p>
                 <input type="text" id="admin-login-id" placeholder="Admin ID" class="w-full bg-slate-900 rounded-xl px-4 py-2 text-white border border-slate-700">
-                <input type="password" id="admin-login-pass" placeholder="Secure Password" class="w-full bg-slate-900 rounded-xl px-4 py-2 text-white border border-slate-700">
-                <button onclick="loginSuperAdmin()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl">Login Admin</button>
-            </div>
-            <div id="modal-form-partner" class="space-y-4 hidden">
-                <input type="text" id="partner-reg-name" placeholder="Cafe Name" class="w-full bg-slate-900 rounded-xl px-4 py-2 text-white border border-slate-700">
-                <input type="text" id="partner-reg-phone" placeholder="Phone" class="w-full bg-slate-900 rounded-xl px-4 py-2 text-white border border-slate-700">
-                <button onclick="registerCafePartner()" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl">Register Cafe</button>
+                <input type="password" id="admin-login-pass" placeholder="Password" class="w-full bg-slate-900 rounded-xl px-4 py-2 text-white border border-slate-700">
+                <button onclick="loginSuperAdmin()" class="w-full bg-rose-600 text-white font-bold py-3 rounded-xl">Login Admin</button>
             </div>
         </div>
     </div>
@@ -145,8 +172,7 @@
                 renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); renderer.setSize(window.innerWidth, window.innerHeight); container.appendChild(renderer.domElement);
                 camera.position.z = 25; scene.add(new THREE.AmbientLight(0xffffff, 0.5));
                 const pointLight = new THREE.PointLight(0xffffff, 2); pointLight.position.set(20, 20, 20); scene.add(pointLight);
-                currentGroup = new THREE.Group(); scene.add(currentGroup);
-                buildShape(0); animateThreeJS();
+                currentGroup = new THREE.Group(); scene.add(currentGroup); buildShape(0); animateThreeJS();
                 setInterval(() => { animStep = (animStep + 1) % 5; buildShape(animStep); }, 3000);
             } catch(e) { document.getElementById('dynamic-vibe-tag').innerText = "✨ App Basic Mode"; }
         }
@@ -166,150 +192,105 @@
         }
         function animateThreeJS() { if(typeof THREE === 'undefined') return; requestAnimationFrame(animateThreeJS); if(currentGroup) { currentGroup.rotation.x += 0.005; currentGroup.rotation.y += 0.008; } renderer.render(scene, camera); }
 
-        // --- 2. DATA, TABS & LEADERBOARD UI ---
-        if (!localStorage.getItem('jojo_cafes')) localStorage.setItem('jojo_cafes', JSON.stringify([{ id: 'cafe_1', name: 'JOJO Central Cafe', phone: '917689874945', status: 'active', whatsapp: '917689874945' }]));
-        if (!localStorage.getItem('jojo_menu')) localStorage.setItem('jojo_menu', JSON.stringify([{ id: 1, name: 'Truffle Burger', price: 349, photo: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80', cafeId: 'cafe_1' }]));
+        // --- 2. LOCAL DATA INITIALIZATION ---
+        if (!localStorage.getItem('jojo_cafes')) {
+            localStorage.setItem('jojo_cafes', JSON.stringify([{ id: 'cafe_1', name: 'JOJO Central Cafe', phone: '7689874945', status: 'active', whatsapp: '7689874945' }]));
+        }
+        if (!localStorage.getItem('jojo_menu')) {
+            localStorage.setItem('jojo_menu', JSON.stringify([{ id: 1, name: 'Truffle Burger', price: 349, photo: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80', cafeId: 'cafe_1' }]));
+        }
         let currentCafeId = 'cafe_1'; let cart = [];
-
-        function updateLeaderboardUI() {
-            let lb = JSON.parse(localStorage.getItem('jojo_leaderboard')) || [];
-            lb.sort((a, b) => b.score - a.score);
-            const lbDiv = document.getElementById('leaderboard-list');
-            if(lb.length === 0) { lbDiv.innerHTML = "<p class='text-slate-400'>No scores yet. Play to rank up!</p>"; } 
-            else {
-                lbDiv.innerHTML = lb.slice(0,5).map((entry, idx) => {
-                    let medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '🏅';
-                    return `<div class="flex justify-between bg-slate-800 p-2 rounded text-white mb-1"><span>${medal} ${entry.name} <span class="text-xs text-slate-400">(${entry.game})</span></span><span class="font-bold text-amber-400">${entry.score} pts</span></div>`;
-                }).join('');
-            }
-        }
-        function saveScore(game, score) {
-            if(score <= 0) return;
-            let name = prompt(`Great! You scored ${score} in ${game}. Enter your name for the Leaderboard:`);
-            if(name && name.trim() !== '') {
-                let lb = JSON.parse(localStorage.getItem('jojo_leaderboard')) || [];
-                lb.push({ name: name.trim(), score: score, game: game });
-                localStorage.setItem('jojo_leaderboard', JSON.stringify(lb));
-                updateLeaderboardUI();
-            }
-        }
-        function clearLeaderboard() { if(confirm("Clear leaderboard?")) { localStorage.removeItem('jojo_leaderboard'); updateLeaderboardUI(); } }
 
         function switchView(v) { ['customer','super-admin','owner'].forEach(id => document.getElementById('view-'+id).classList.add('hidden')); document.getElementById('view-'+v).classList.remove('hidden'); if(v==='customer') loadCustomerMenu(); if(v==='super-admin') loadSuperAdminMetrics(); if(v==='owner') loadOwnerDashboard(); }
         function toggleAdminModal() { document.getElementById('admin-modal').classList.toggle('hidden'); }
-        function switchModalTab(t) { ['admin','partner'].forEach(id => { document.getElementById('modal-form-'+id).classList.add('hidden'); document.getElementById('modal-tab-'+id+'-btn').className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-400"; }); document.getElementById('modal-form-'+t).classList.remove('hidden'); document.getElementById('modal-tab-'+t+'-btn').className = "flex-1 py-2 text-xs font-bold rounded-lg bg-amber-500 text-slate-950"; }
+        function switchModalTab(t) { 
+            ['owner-login','owner-reg','admin-login'].forEach(id => { document.getElementById('modal-form-'+id).classList.add('hidden'); document.getElementById('tab-btn-'+id).className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-400"; }); 
+            document.getElementById('modal-form-'+t).classList.remove('hidden'); document.getElementById('tab-btn-'+t).className = "flex-1 py-2 text-xs font-bold rounded-lg bg-amber-500 text-slate-950"; 
+        }
         function switchCustomerTab(t) { ['menu','games'].forEach(id => { document.getElementById('customer-tab-'+id).classList.add('hidden'); document.getElementById('tab-btn-'+id).className = "px-6 py-2 rounded-xl font-semibold bg-slate-800 text-slate-300"; }); document.getElementById('customer-tab-'+t).classList.remove('hidden'); document.getElementById('tab-btn-'+t).className = "px-6 py-2 rounded-xl font-semibold bg-amber-500 text-slate-950 shadow-md"; }
+                   // --- 3. AUTH & ADMIN LOGIC (New Secure Flow) ---
+        function registerNewCafe() {
+            let n = document.getElementById('reg-name').value.trim(), p = document.getElementById('reg-phone').value.trim();
+            if(!n || !p) return alert("Please fill all details.");
+            let cafes = JSON.parse(localStorage.getItem('jojo_cafes')) || [];
+            if(cafes.find(c => c.phone === p)) return alert("Mobile already exists. Please login instead.");
+            cafes.push({ id: 'cafe_'+Date.now(), name: n, phone: p, status: 'inactive', whatsapp: p });
+            localStorage.setItem('jojo_cafes', JSON.stringify(cafes));
+            alert("Registration successful! Your request is pending. WhatsApp Admin on 7689874945 to activate.");
+            switchModalTab('owner-login');
+        }
 
-        // --- 3. ADMIN/OWNER ---
-        function loginSuperAdmin() { toggleAdminModal(); switchView('super-admin'); }
-        function loadSuperAdminMetrics() { const cafes=JSON.parse(localStorage.getItem('jojo_cafes'))||[]; document.getElementById('admin-cafes-table-body').innerHTML=cafes.map(c=>`<tr class="border-b border-slate-800/60"><td class="py-3 px-4 text-white">${c.name}</td><td class="py-3 px-4">${c.status}</td><td class="py-3 px-4"><button onclick="toggleCafeStatus('${c.id}', '${c.status==='active'?'inactive':'active'}')" class="bg-amber-600 px-2 py-1 rounded text-xs text-white">Toggle</button></td></tr>`).join(''); }
+        function loginCafeOwner() {
+            let n = document.getElementById('log-name').value.trim(), p = document.getElementById('log-phone').value.trim();
+            let cafes = JSON.parse(localStorage.getItem('jojo_cafes')) || [];
+            let cafe = cafes.find(c => c.phone === p && c.name.toLowerCase() === n.toLowerCase());
+            if(!cafe) return alert("Cafe not found. Check details or Register.");
+            if(cafe.status !== 'active') return alert("Account is INACTIVE! WhatsApp 7689874945 for activation.");
+            currentCafeId = cafe.id; toggleAdminModal(); switchView('owner');
+        }
+
+        function loginSuperAdmin() { 
+            let id = document.getElementById('admin-login-id').value, pass = document.getElementById('admin-login-pass').value;
+            if(id === '7689874945') { toggleAdminModal(); switchView('super-admin'); } else alert('Invalid Admin Credentials');
+        }
+
+        function loadSuperAdminMetrics() { 
+            const cafes=JSON.parse(localStorage.getItem('jojo_cafes'))||[]; 
+            document.getElementById('admin-cafes-table-body').innerHTML=cafes.map(c=>`<tr class="border-b border-slate-800/60"><td class="py-3 px-4 text-white"><b>${c.name}</b><br><span class="text-xs text-slate-400">Mob: ${c.phone}</span></td><td class="py-3 px-4"><span class="px-2 py-1 rounded text-xs ${c.status==='active'?'bg-emerald-500/20 text-emerald-400':'bg-rose-500/20 text-rose-400'}">${c.status.toUpperCase()}</span></td><td class="py-3 px-4"><button onclick="toggleCafeStatus('${c.id}', '${c.status==='active'?'inactive':'active'}')" class="bg-indigo-600 px-3 py-1.5 rounded text-xs font-bold text-white">${c.status==='active'?'Block':'Activate'}</button></td></tr>`).join(''); 
+        }
         function toggleCafeStatus(id, s) { let c=JSON.parse(localStorage.getItem('jojo_cafes'))||[]; localStorage.setItem('jojo_cafes', JSON.stringify(c.map(x=>x.id===id?{...x,status:s}:x))); loadSuperAdminMetrics(); }
-        function registerCafePartner() { toggleAdminModal(); switchView('owner'); }
-        function loadOwnerDashboard() { const cafes=JSON.parse(localStorage.getItem('jojo_cafes'))||[], cCafe=cafes.find(c=>c.id===currentCafeId); document.getElementById('owner-whatsapp-input').value=cCafe.whatsapp||''; document.getElementById('owner-menu-list').innerHTML=(JSON.parse(localStorage.getItem('jojo_menu'))||[]).filter(m=>m.cafeId===currentCafeId).map(item=>`<div class="bg-slate-900 p-2 text-white text-xs mb-1 flex justify-between">${item.name} - ₹${item.price} <button onclick="deleteMenuItem(${item.id})" class="text-rose-500">X</button></div>`).join(''); }
-        function saveOwnerWhatsApp() { let c=JSON.parse(localStorage.getItem('jojo_cafes'))||[]; localStorage.setItem('jojo_cafes', JSON.stringify(c.map(x=>x.id===currentCafeId?{...x,whatsapp:document.getElementById('owner-whatsapp-input').value}:x))); alert('Saved'); }
-        function addMenuItem() { let all=JSON.parse(localStorage.getItem('jojo_menu'))||[]; all.push({id:Date.now(), name:document.getElementById('menu-item-name').value, price:parseFloat(document.getElementById('menu-item-price').value), photo:document.getElementById('menu-item-photo').value||'https://via.placeholder.com/150', cafeId:currentCafeId}); localStorage.setItem('jojo_menu', JSON.stringify(all)); loadOwnerDashboard(); }
+        
+        function loadOwnerDashboard() { const cafes=JSON.parse(localStorage.getItem('jojo_cafes'))||[], cCafe=cafes.find(c=>c.id===currentCafeId); document.getElementById('owner-cafe-header').innerText=`${cCafe.name} Dashboard`; document.getElementById('owner-whatsapp-input').value=cCafe.whatsapp||''; document.getElementById('owner-menu-list').innerHTML=(JSON.parse(localStorage.getItem('jojo_menu'))||[]).filter(m=>m.cafeId===currentCafeId).map(item=>`<div class="bg-slate-900 p-3 rounded-lg text-white text-sm mb-2 flex justify-between items-center border border-slate-800"><div><b>${item.name}</b><br><span class="text-amber-400 text-xs">₹${item.price}</span></div><button onclick="deleteMenuItem(${item.id})" class="text-rose-500 bg-rose-500/10 p-2 rounded"><i class="fa-solid fa-trash"></i></button></div>`).join(''); }
+        function saveOwnerWhatsApp() { let c=JSON.parse(localStorage.getItem('jojo_cafes'))||[]; localStorage.setItem('jojo_cafes', JSON.stringify(c.map(x=>x.id===currentCafeId?{...x,whatsapp:document.getElementById('owner-whatsapp-input').value}:x))); alert('WhatsApp updated!'); }
+        function addMenuItem() { let n=document.getElementById('menu-item-name').value, p=document.getElementById('menu-item-price').value, ph=document.getElementById('menu-item-photo').value; if(!n || !p) return alert("Name & Price required"); let all=JSON.parse(localStorage.getItem('jojo_menu'))||[]; all.push({id:Date.now(), name:n, price:parseFloat(p), photo:ph||'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80', cafeId:currentCafeId}); localStorage.setItem('jojo_menu', JSON.stringify(all)); document.getElementById('menu-item-name').value=''; document.getElementById('menu-item-price').value=''; document.getElementById('menu-item-photo').value=''; loadOwnerDashboard(); }
         function deleteMenuItem(id) { let all=JSON.parse(localStorage.getItem('jojo_menu'))||[]; localStorage.setItem('jojo_menu', JSON.stringify(all.filter(m=>m.id!==id))); loadOwnerDashboard(); }
-                    // --- 4. CUSTOMER MENU & CART ---
+        
+        function genTableQR() { 
+            let t = document.getElementById('qr-table-num').value.trim(); if(!t) return alert("Enter Table number");
+            let url = encodeURIComponent(window.location.href.split('?')[0] + "?cafe=" + currentCafeId + "&table=" + t);
+            let qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" + url;
+            document.getElementById('qr-img').src = qrUrl; document.getElementById('qr-dl').href = qrUrl;
+            document.getElementById('qr-result').classList.remove('hidden'); 
+                               }
+                    // --- 4. CUSTOMER MENU, CART & URL HANDLING ---
         function loadCustomerMenu() {
+            // URL checking for direct QR scan
+            const urlParams = new URLSearchParams(window.location.search);
+            if(urlParams.has('cafe')) currentCafeId = urlParams.get('cafe');
+            if(urlParams.has('table')) document.getElementById('customer-table').innerHTML = `<option value="${urlParams.get('table')}">${urlParams.get('table')}</option>`;
+
             const cafes=JSON.parse(localStorage.getItem('jojo_cafes'))||[], cCafe=cafes.find(c=>c.id===currentCafeId), grid=document.getElementById('menu-items-grid');
-            if(!cCafe || cCafe.status==='inactive') { grid.innerHTML=`<div class="text-center border border-rose-500 text-white p-4">Menu Blocked</div>`; return; }
+            if(!cCafe || cCafe.status==='inactive') { grid.innerHTML=`<div class="col-span-2 text-center border border-rose-500 bg-rose-500/10 rounded-xl text-white p-6"><h3 class="text-xl font-bold">Menu Unavailable</h3><p class="text-sm mt-1">This Cafe is not activated yet.</p></div>`; document.getElementById('current-cafe-title').innerText = "Inactive Cafe"; return; }
             document.getElementById('current-cafe-title').innerText=cCafe.name;
             const items=(JSON.parse(localStorage.getItem('jojo_menu'))||[]).filter(m=>m.cafeId===currentCafeId);
-            grid.innerHTML=items.map(i=>`<div class="glass rounded-xl overflow-hidden"><img src="${i.photo}" class="w-full h-32 object-cover"><div class="p-4"><h4 class="font-bold text-white">${i.name}</h4><p class="text-amber-400">₹${i.price}</p><button onclick="addToCart(${i.id}, '${i.name}', ${i.price})" class="mt-2 w-full bg-amber-500 text-slate-950 py-1 font-bold rounded">Add</button></div></div>`).join('');
+            grid.innerHTML=items.length===0?'<p class="text-white col-span-2 text-center py-6">No items on the menu yet.</p>':items.map(i=>`<div class="glass rounded-xl overflow-hidden shadow-lg"><img src="${i.photo}" class="w-full h-36 object-cover"><div class="p-4"><h4 class="font-bold text-white">${i.name}</h4><p class="text-amber-400 font-extrabold text-lg">₹${i.price}</p><button onclick="addToCart(${i.id}, '${i.name}', ${i.price})" class="mt-3 w-full bg-amber-500 text-slate-950 py-2 font-bold rounded-lg shadow"><i class="fa-solid fa-plus mr-1"></i> Add to Cart</button></div></div>`).join('');
             renderCart();
         }
         function addToCart(id, n, p) { let e=cart.find(i=>i.id===id); if(e) e.qty++; else cart.push({id,name:n,price:p,qty:1}); renderCart(); }
-        function renderCart() {
-            let t=0; document.getElementById('cart-items-container').innerHTML=cart.length===0?'<p class="text-white">Empty</p>':cart.map(i=>{ t+=i.price*i.qty; return `<div class="flex justify-between text-white text-sm mb-2"><div>${i.name}<br>₹${i.price} x ${i.qty}</div><div><button onclick="changeQty(${i.id},-1)" class="bg-slate-700 px-2">-</button> ${i.qty} <button onclick="changeQty(${i.id},1)" class="bg-slate-700 px-2">+</button></div></div>`; }).join('');
-            document.getElementById('cart-total-price').innerText=`₹${t}`;
-        }
+        function renderCart() { let t=0; document.getElementById('cart-items-container').innerHTML=cart.length===0?'<p class="text-slate-400 text-sm text-center py-4">Cart is empty.</p>':cart.map(i=>{ t+=i.price*i.qty; return `<div class="flex justify-between items-center text-white text-sm bg-slate-900 p-2 rounded border border-slate-700 mb-2"><div><b>${i.name}</b><br><span class="text-amber-400">₹${i.price}</span> x ${i.qty}</div><div class="flex space-x-2"><button onclick="changeQty(${i.id},-1)" class="bg-slate-700 w-6 h-6 rounded">-</button> <span class="font-bold">${i.qty}</span> <button onclick="changeQty(${i.id},1)" class="bg-slate-700 w-6 h-6 rounded">+</button></div></div>`; }).join(''); document.getElementById('cart-total-price').innerText=`₹${t}`; }
         function changeQty(id, d) { let i=cart.find(x=>x.id===id); if(i) { i.qty+=d; if(i.qty<=0) cart=cart.filter(x=>x.id!==id); } renderCart(); }
-        function placeWhatsAppOrder() { if(cart.length===0) return; let bill=`*ORDER* %0ATable: ${document.getElementById('customer-table').value}%0A`; cart.forEach(i=>bill+=`${i.name} x${i.qty}%0A`); window.open(`https://wa.me/${(JSON.parse(localStorage.getItem('jojo_cafes'))||[]).find(c=>c.id===currentCafeId).whatsapp}?text=${bill}`); }
+        function placeWhatsAppOrder() { if(cart.length===0) return alert('Add items to cart first!'); let bill=`*🍽️ NEW ORDER - ${document.getElementById('current-cafe-title').innerText}* %0A🪑 Table: ${document.getElementById('customer-table').value}%0A----------------------%0A`; let tot=0; cart.forEach(i=>{ let s=i.price*i.qty; tot+=s; bill+=`▪️ ${i.name} (x${i.qty}) = ₹${s}%0A`; }); bill+=`----------------------%0A💰 *Total: ₹${tot}*%0A✅ Please prepare my order.`; window.open(`https://wa.me/${(JSON.parse(localStorage.getItem('jojo_cafes'))||[]).find(c=>c.id===currentCafeId).whatsapp}?text=${bill}`); }
 
-        // --- 5. GAMES LOGIC & LEADERBOARD INTEGRATION ---
+        // --- 5. GAMES & LEADERBOARD LOGIC ---
         function fireConfetti() { if(typeof confetti !== 'undefined') confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } }); }
-        
-        let tttBoard = ['','','','','','','','',''], tttActive = true;
-        const winCombos = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-        
-        function makeTTTMove(idx) { 
-            if(tttBoard[idx]==='' && tttActive) { 
-                tttBoard[idx]='X'; updateTTTUI();
-                if(checkTTTWin('X')) { tttActive=false; fireConfetti(); return setTimeout(()=>alert("You Win! 🎉"), 100); }
-                if(!tttBoard.includes('')) return setTimeout(()=>alert("Draw! 🤝"), 100);
-                
-                tttActive = false;
-                setTimeout(() => {
-                    let empty = tttBoard.map((v,i)=>v===''?i:null).filter(v=>v!==null);
-                    if(empty.length > 0) {
-                        tttBoard[empty[Math.floor(Math.random()*empty.length)]] = 'O'; updateTTTUI();
-                        if(checkTTTWin('O')) { setTimeout(()=>alert("Computer Wins! 🤖"), 100); }
-                        else tttActive = true;
-                    }
-                }, 400); 
-            } 
-        }
+        function updateLeaderboardUI() { let lb = JSON.parse(localStorage.getItem('jojo_leaderboard')) || []; lb.sort((a, b) => b.score - a.score); const lbDiv = document.getElementById('leaderboard-list'); if(lb.length === 0) { lbDiv.innerHTML = "<p class='text-slate-400 text-center py-2'>No scores yet.</p>"; } else { lbDiv.innerHTML = lb.slice(0,10).map((entry, idx) => { let medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '🏅'; return `<div class="flex justify-between bg-slate-800/80 p-2 rounded text-white mb-1"><span>${medal} ${entry.name} <span class="text-[10px] text-slate-400">(${entry.game})</span></span><span class="font-bold text-amber-400">${entry.score} pts</span></div>`; }).join(''); } }
+        function saveScore(game, score) { if(score <= 0) return; let name = prompt(`Great! You scored ${score} in ${game}. Enter your name for the Leaderboard:`); if(name && name.trim() !== '') { let lb = JSON.parse(localStorage.getItem('jojo_leaderboard')) || []; lb.push({ name: name.trim(), score: score, game: game }); localStorage.setItem('jojo_leaderboard', JSON.stringify(lb)); updateLeaderboardUI(); } }
+        function clearLeaderboard() { if(confirm("Clear leaderboard?")) { localStorage.removeItem('jojo_leaderboard'); updateLeaderboardUI(); } }
+
+        let tttBoard = ['','','','','','','','',''], tttActive = true; const winCombos = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+        function makeTTTMove(idx) { if(tttBoard[idx]==='' && tttActive) { tttBoard[idx]='X'; updateTTTUI(); if(checkTTTWin('X')) { tttActive=false; fireConfetti(); return setTimeout(()=>alert("You Win! 🎉"), 100); } if(!tttBoard.includes('')) return setTimeout(()=>alert("Draw! 🤝"), 100); tttActive = false; setTimeout(() => { let empty = tttBoard.map((v,i)=>v===''?i:null).filter(v=>v!==null); if(empty.length > 0) { tttBoard[empty[Math.floor(Math.random()*empty.length)]] = 'O'; updateTTTUI(); if(checkTTTWin('O')) { setTimeout(()=>alert("Computer Wins! 🤖"), 100); } else tttActive = true; } }, 400); } }
         function updateTTTUI() { document.querySelectorAll('.ttt-cell').forEach((b,i)=>b.innerText=tttBoard[i]); }
         function checkTTTWin(p) { return winCombos.some(c=>c.every(i=>tttBoard[i]===p)); }
         function resetTTT() { tttBoard = ['','','','','','','','','']; tttActive = true; updateTTTUI(); }
 
-        const quizData = [
-            {q: "What is the capital of India?", o: ["Mumbai", "New Delhi", "Kolkata", "Chennai"], a: 1},
-            {q: "Which is the Red Planet?", o: ["Earth", "Mars", "Jupiter", "Venus"], a: 1},
-            {q: "Largest mammal?", o: ["Elephant", "Blue Whale", "Giraffe", "Shark"], a: 1},
-            {q: "How many continents are there?", o: ["5", "6", "7", "8"], a: 2},
-            {q: "2 + 2 * 2 = ?", o: ["8", "6", "4", "10"], a: 1},
-            {q: "Which gas do plants absorb?", o: ["Oxygen", "CO2", "Nitrogen", "Helium"], a: 1},
-            {q: "National Bird of India?", o: ["Peacock", "Parrot", "Pigeon", "Eagle"], a: 0},
-            {q: "Fastest land animal?", o: ["Lion", "Cheetah", "Horse", "Tiger"], a: 1},
-            {q: "10 * 10 = ?", o: ["20", "100", "200", "0"], a: 1},
-            {q: "Days in a leap year?", o: ["365", "366", "364", "360"], a: 1},
-            {q: "Sun rises in the?", o: ["North", "South", "East", "West"], a: 2},
-            {q: "National Flower of India?", o: ["Rose", "Lotus", "Lily", "Sunflower"], a: 1},
-            {q: "Water boils at (*C)?", o: ["0", "50", "100", "150"], a: 2},
-            {q: "Shape of an egg?", o: ["Circle", "Square", "Oval", "Triangle"], a: 2},
-            {q: "Number of months in a year?", o: ["10", "11", "12", "13"], a: 2},
-            {q: "How many primary colors?", o: ["2", "3", "4", "5"], a: 1},
-            {q: "Opposite of Hot?", o: ["Warm", "Cold", "Boiling", "Sunny"], a: 1},
-            {q: "Who built the Taj Mahal?", o: ["Akbar", "Shah Jahan", "Babar", "Aurangzeb"], a: 1},
-            {q: "Smallest state in India?", o: ["Goa", "Sikkim", "Kerala", "Punjab"], a: 0},
-            {q: "First Prime Minister of India?", o: ["Gandhi", "Bose", "Nehru", "Patel"], a: 2}
-        ];
+        const quizData = [ {q: "Capital of India?", o: ["Mumbai", "Delhi", "Kolkata", "Chennai"], a: 1}, {q: "Red Planet?", o: ["Earth", "Mars", "Jupiter", "Venus"], a: 1}, {q: "2 + 2 * 2 = ?", o: ["8", "6", "4", "10"], a: 1}, {q: "National Bird?", o: ["Peacock", "Parrot", "Eagle", "Crow"], a: 0}, {q: "Days in Leap Year?", o: ["365", "366", "364", "360"], a: 1}, {q: "Opposite of Hot?", o: ["Warm", "Cold", "Boiling", "Sunny"], a: 1}, {q: "Largest mammal?", o: ["Elephant", "Blue Whale", "Giraffe", "Shark"], a: 1} ];
         let currQ = 0, quizScore = 0;
-        function loadQuiz() {
-            if(currQ >= quizData.length) {
-                document.getElementById('quiz-box').innerHTML = `<h3 class='text-xl text-amber-400'>Finished!</h3><p class='text-white'>Score: ${quizScore}/20</p><button onclick='resetQuiz()' class='mt-2 bg-amber-500 text-slate-900 px-4 py-1 rounded font-bold'>Play Again</button>`;
-                if(quizScore > 0) setTimeout(() => saveScore('GK Quiz', quizScore), 500);
-                if(quizScore >= 10) fireConfetti(); return;
-            }
-            const q = quizData[currQ];
-            let h = `<p class='text-white font-bold mb-2'>Q${currQ+1}: ${q.q}</p><div class='grid grid-cols-2 gap-2'>`;
-            q.o.forEach((opt, i) => h += `<button onclick='checkQuiz(${i})' class='bg-slate-700 text-white p-2 rounded text-sm hover:bg-slate-600'>${opt}</button>`);
-            document.getElementById('quiz-box').innerHTML = h + `</div><p class='text-xs text-slate-400 mt-2'>Score: ${quizScore}</p>`;
-        }
-        function checkQuiz(idx) {
-            if(idx === quizData[currQ].a) { quizScore++; if(typeof confetti!=='undefined') confetti({particleCount: 30, spread: 40, origin: {y: 0.8}}); } 
-            else alert(`Wrong! Correct answer: ${quizData[currQ].o[quizData[currQ].a]}`);
-            currQ++; loadQuiz();
-        }
+        function loadQuiz() { if(currQ >= quizData.length) { document.getElementById('quiz-box').innerHTML = `<h3 class='text-xl text-amber-400'>Finished!</h3><p class='text-white'>Score: ${quizScore}/${quizData.length}</p><button onclick='resetQuiz()' class='mt-3 w-full bg-amber-500 text-slate-900 py-2 rounded font-bold'>Play Again</button>`; if(quizScore > 0) setTimeout(() => saveScore('GK Quiz', quizScore * 10), 500); if(quizScore >= 4) fireConfetti(); return; } const q = quizData[currQ]; let h = `<p class='text-white font-bold mb-3'>Q${currQ+1}: ${q.q}</p><div class='grid grid-cols-2 gap-2'>`; q.o.forEach((opt, i) => h += `<button onclick='checkQuiz(${i})' class='bg-slate-700 text-white p-2 rounded text-sm hover:bg-slate-600 border border-slate-600'>${opt}</button>`); document.getElementById('quiz-box').innerHTML = h + `</div><p class='text-xs text-slate-400 mt-4 text-right'>Score: ${quizScore*10}</p>`; }
+        function checkQuiz(idx) { if(idx === quizData[currQ].a) { quizScore++; if(typeof confetti!=='undefined') confetti({particleCount: 30, spread: 40, origin: {y: 0.8}}); } else alert(`Wrong! Correct: ${quizData[currQ].o[quizData[currQ].a]}`); currQ++; loadQuiz(); }
         function resetQuiz() { currQ=0; quizScore=0; loadQuiz(); }
 
         let tapCount=0, tapActive=false;
-        function tapClicker() {
-            if(!tapActive) { 
-                tapActive=true; tapCount=0; document.getElementById('tap-btn').innerText='TAP!'; 
-                let tl=10; 
-                let tmr=setInterval(()=>{
-                    tl--; 
-                    if(tl<=0){
-                        clearInterval(tmr); tapActive=false; document.getElementById('tap-btn').innerText='Start'; 
-                        alert(`Time up! Score: ${tapCount}`);
-                        if(tapCount > 0) saveScore('Tap Fast', tapCount);
-                    }
-                }, 1000); 
-            }
-            if(tapActive) { tapCount++; document.getElementById('tap-score').innerText=`Score: ${tapCount}`; }
-        }
+        function tapClicker() { if(!tapActive) { tapActive=true; tapCount=0; document.getElementById('tap-btn').innerText='TAP FAST 🔥!'; let tl=10; let tmr=setInterval(()=>{ tl--; if(tl<=0){ clearInterval(tmr); tapActive=false; document.getElementById('tap-btn').innerText='Start & Tap!'; alert(`Time up! Score: ${tapCount}`); if(tapCount > 0) saveScore('Tap Fast', tapCount); } }, 1000); } if(tapActive) { tapCount++; document.getElementById('tap-score').innerText=`Score: ${tapCount}`; } }
 
         window.onload = () => { initThreeJS(); switchView('customer'); loadQuiz(); updateLeaderboardUI(); };
     </script>
