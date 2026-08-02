@@ -1,30 +1,42 @@
-// ===== SIMPLE ADMIN PASSWORD LOGIN =====
-const ADMIN_PASSWORD = 'jojo2026'; // change this to your own secret password
+// ===== FIREBASE AUTH LOGIN =====
+const auth = firebase.auth();
 
 function checkAdminLogin() {
+  const email = document.getElementById('adminEmail').value.trim();
   const pass = document.getElementById('adminPassword').value;
   const errorEl = document.getElementById('loginError');
+  errorEl.style.display = 'none';
 
-  if (pass === ADMIN_PASSWORD) {
-    sessionStorage.setItem('isAdmin', 'true');
+  if (!email || !pass) {
+    errorEl.innerText = 'Enter email and password';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  auth.signInWithEmailAndPassword(email, pass)
+    .then(() => {
+      // onAuthStateChanged below will handle showing the panel
+    })
+    .catch((err) => {
+      errorEl.innerText = 'Wrong email or password';
+      errorEl.style.display = 'block';
+    });
+}
+
+// ===== AUTH STATE LISTENER (auto login if already signed in) =====
+auth.onAuthStateChanged((user) => {
+  if (user) {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
     loadCafes('pending');
   } else {
-    errorEl.innerText = 'Wrong password';
-    errorEl.style.display = 'block';
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('adminPanel').style.display = 'none';
   }
-}
-
-if (sessionStorage.getItem('isAdmin') === 'true') {
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('adminPanel').style.display = 'block';
-  loadCafes('pending');
-}
+});
 
 function adminLogout() {
-  sessionStorage.removeItem('isAdmin');
-  window.location.reload();
+  auth.signOut();
 }
 
 // ===== TABS =====
