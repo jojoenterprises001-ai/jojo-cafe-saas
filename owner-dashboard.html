@@ -58,6 +58,11 @@
   .locked-overlay {
     text-align: center; padding: 40px 20px; color: #888;
   }
+  .whatsapp-btn {
+    display: inline-block; background: #25D366; color: #fff;
+    padding: 14px 28px; border-radius: 30px; text-decoration: none;
+    font-weight: bold; font-size: 15px; margin-top: 10px;
+  }
 </style>
 </head>
 <body>
@@ -106,8 +111,9 @@
 </div>
 
 <div id="lockedContent" class="locked-overlay" style="display:none;">
-  <h3 id="lockedTitle">⏳ Waiting for Approval</h3>
-  <p style="margin-top:10px;">Your cafe registration is pending Super Admin approval. Please check back soon.</p>
+  <h3 id="lockedTitle">⏳ Activation Pending</h3>
+  <p style="margin-top:10px; margin-bottom:20px;">Your cafe is registered but not active yet. Send us a WhatsApp message to activate your account.</p>
+  <a id="whatsappBtn" href="#" target="_blank" class="whatsapp-btn">📲 Message on WhatsApp</a>
 </div>
 
 <script src="owner-logic.js"></script>
