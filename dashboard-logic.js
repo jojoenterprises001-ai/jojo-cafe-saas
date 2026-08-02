@@ -105,4 +105,5 @@ function placeOrder() {
   }).catch((err) => {
     showToast('Error placing order: ' + err.message);
   });
-      }
+    }
+    
