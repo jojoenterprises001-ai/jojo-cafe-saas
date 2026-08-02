@@ -160,28 +160,70 @@ function deleteMenuItem(itemId) {
   }
 }
 
-// ===== QR CODE GENERATOR =====
+// ===== GENERATE DYNAMIC QR CODE =====
 function generateQR() {
-  const qrContainer = document.getElementById('qrcode');
-  qrContainer.innerHTML = '';
-  const menuUrl = window.location.origin + window.location.pathname.replace('owner-dashboard.html', 'customer-login.html') + '?cafe=' + ownerMobile;
-  new QRCode(qrContainer, {
-    text: menuUrl,
-    width: 180,
-    height: 180,
-    colorDark: '#667eea',
-    colorLight: '#ffffff'
-  });
+    const tableInput = document.getElementById('tableNumberInput');
+    const qrContainer = document.getElementById('qrcode');
+    
+    // अगर इनपुट बॉक्स नहीं मिला (HTML अपडेट नहीं हुआ है)
+    if (!tableInput) {
+        alert("Please update HTML file first to add table input!");
+        return;
+    }
+
+    const tableNumber = tableInput.value.trim();
+
+    if (!tableNumber) {
+        alert("Please enter a table number first! (e.g., 1, 2, 3)");
+        return;
+    }
+
+    const ownerMobile = localStorage.getItem('ownerMobile');
+    
+    // असली लिंक बनाना (जिसमें कैफे का नंबर और टेबल का नंबर दोनों होंगे)
+    const baseUrl = window.location.origin + window.location.pathname.replace('owner-dashboard.html', 'index.html');
+    const dynamicUrl = `${baseUrl}?cafe=${encodeURIComponent(ownerMobile)}&table=${encodeURIComponent(tableNumber)}`;
+
+    qrContainer.innerHTML = ""; // पुराना QR साफ करें
+
+    // API से नया QR कोड जनरेट करना
+    const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(dynamicUrl)}`;
+    
+    const img = document.createElement("img");
+    img.src = qrImageUrl;
+    img.id = "qrImage"; 
+    img.style.borderRadius = "8px";
+    
+    qrContainer.appendChild(img);
 }
 
+// ===== DOWNLOAD QR CODE =====
 function downloadQR() {
-  const canvas = document.querySelector('#qrcode canvas');
-  if (!canvas) return;
-  const link = document.createElement('a');
-  link.download = cafeData.cafeName + '-QR.png';
-  link.href = canvas.toDataURL();
-  link.click();
-}
+    const img = document.getElementById('qrImage');
+    const tableInput = document.getElementById('tableNumberInput');
+    const tableNumber = tableInput ? tableInput.value.trim() : 'Unknown';
+
+    if (!img) {
+        alert("Please generate a QR code first!");
+        return;
+    }
+
+    // QR कोड इमेज को डाउनलोड करना
+    fetch(img.src)
+        .then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = `Table_${tableNumber}_QRCode.png`; // फाइल का नाम टेबल नंबर के साथ सेव होगा
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        })
+        .catch(() => alert("Error downloading QR code. Please try again."));
+      }
+
 
 // ===== LOGOUT =====
 function ownerLogout() {
