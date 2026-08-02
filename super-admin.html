@@ -1,0 +1,58 @@
+<!-- super-admin.html - Part 10 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin Control - VIP</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 3D Floating Background -->
+    <ul class="bg-bubbles">
+        <li></li><li></li><li></li><li></li><li></li><li></li>
+    </ul>
+
+    <div class="glass-panel" style="margin-top: 10vh;">
+        <h1 style="text-align: center; color: #fff; margin-bottom: 20px;">👑 Master Admin Panel</h1>
+        
+        <!-- Cafe Requests List -->
+        <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.2);">
+            <h3 style="color: #e0aaff; margin-bottom: 15px;">Pending Cafe Requests</h3>
+            
+            <!-- Single Cafe Card -->
+            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                <h4 style="color: #fff; font-size: 18px;">Rahul's Cafe</h4>
+                <p style="color: #ddd; font-size: 14px; margin-bottom: 10px;">Mobile: 9876543210</p>
+                
+                <!-- Auto-Deactivate Settings -->
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <select id="validity-RahulCafe" class="input-field" style="width: auto; flex-grow: 1;">
+                        <option value="7">7 Days Trial</option>
+                        <option value="30">30 Days Plan</option>
+                        <option value="custom">Custom Date</option>
+                    </select>
+                    <input type="date" id="custom-date-RahulCafe" class="input-field" style="width: auto; display: none;">
+                </div>
+                
+                <button class="btn-3d" onclick="approveCafe('RahulCafe')" style="background: linear-gradient(145deg, #00b4d8, #0077b6); box-shadow: 0 4px 0 #023e8a; margin-top: 10px;">
+                    Approve & Set Expiry ✅
+                </button>
+            </div>
+
+            <!-- Active Cafes List -->
+            <h3 style="color: #e0aaff; margin-top: 30px; margin-bottom: 15px;">Active Cafes</h3>
+            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; border-left: 5px solid #25D366;">
+                <h4 style="color: #fff;">Sharma Restaurant</h4>
+                <p style="color: #25D366; font-size: 12px; font-weight: bold;">Status: Active (Expires in 4 days)</p>
+                <button class="btn-3d" onclick="deactivateCafe('SharmaRest')" style="background: linear-gradient(145deg, #ef233c, #d90429); box-shadow: 0 4px 0 #8d0801; margin-top: 10px;">
+                    Deactivate Now 🚫
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin-logic.js"></script>
+</body>
+</html>
+
