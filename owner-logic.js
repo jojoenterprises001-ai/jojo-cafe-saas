@@ -287,7 +287,7 @@ function generateTableQR() {
 
   const baseUrl = window.location.origin + window.location.pathname.replace('owner-dashboard.html', 'customer-login.html');
   const menuUrl = baseUrl + '?cafe=' + ownerMobile + '&table=' + tableNum;
-
+alert(menuUrl);
   new QRCode(qrContainer, {
     text: menuUrl,
     width: 180,
