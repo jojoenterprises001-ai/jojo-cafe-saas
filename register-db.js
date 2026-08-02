@@ -1,34 +1,53 @@
-// register-db.js - Part 15
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.innerText = msg;
+  el.style.display = 'block';
+  document.getElementById('successMsg').style.display = 'none';
+}
 
-// Form submit hone par function chalega
-document.getElementById('cafe-register-form').addEventListener('submit', function(e) {
-    e.preventDefault(); // Page reload hone se rokna
+function showSuccess(msg) {
+  const el = document.getElementById('successMsg');
+  el.innerText = msg;
+  el.style.display = 'block';
+  document.getElementById('errorMsg').style.display = 'none';
+}
 
-    const cafeName = document.getElementById('cafe-name-input').value;
-    const mobile = document.getElementById('mobile-input').value;
+function handleRegister() {
+  const cafeName = document.getElementById('cafeName').value.trim();
+  const ownerName = document.getElementById('ownerName').value.trim();
+  const ownerMobile = document.getElementById('ownerMobile').value.trim();
+  const cafeAddress = document.getElementById('cafeAddress').value.trim();
 
-    // Button ko loading state mein daalna
-    const submitBtn = document.getElementById('submit-btn');
-    submitBtn.innerText = "Registering... ⏳";
-    submitBtn.disabled = true;
+  if (!cafeName) return showError('Please enter cafe name');
+  if (!ownerName) return showError('Please enter owner name');
+  if (!/^[0-9]{10}$/.test(ownerMobile)) return showError('Enter a valid 10-digit mobile number');
+  if (!cafeAddress) return showError('Please enter cafe address');
 
-    // Firebase (Firestore) mein data save karna
-    db.collection("Cafes").add({
-        cafeName: cafeName,
-        mobileNumber: mobile,
-        status: "pending",       // Default status pending hoga
-        registeredAt: firebase.firestore.FieldValue.serverTimestamp() // Time of registration
-    })
-    .then((docRef) => {
-        console.log("Cafe Registered with ID: ", docRef.id);
-        // Successful hone par WhatsApp wale page par bhej dena
-        window.location.href = "whatsapp-trial.html";
-    })
-    .catch((error) => {
-        console.error("Error adding document: ", error);
-        alert("Kuch gadbad hui! Please try again.");
-        submitBtn.innerText = "Register Cafe 🚀";
-        submitBtn.disabled = false;
+  // Use mobile number as the Cafe document ID for easy login lookup
+  const cafeRef = db.collection('Cafes').doc(ownerMobile);
+
+  cafeRef.get().then((doc) => {
+    if (doc.exists) {
+      return showError('This mobile number is already registered.');
+    }
+
+    cafeRef.set({
+      cafeName: cafeName,
+      ownerName: ownerName,
+      ownerMobile: ownerMobile,
+      address: cafeAddress,
+      status: 'pending',       // pending -> approved by Super Admin
+      plan: null,              // '7days' or '30days' set on approval
+      expiryDate: null,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+      showSuccess('✅ Registered! Wait for admin approval, then login using your mobile number.');
+      document.getElementById('cafeName').value = '';
+      document.getElementById('ownerName').value = '';
+      document.getElementById('ownerMobile').value = '';
+      document.getElementById('cafeAddress').value = '';
+    }).catch((err) => {
+      showError('Error: ' + err.message);
     });
-});
-
+  });
+            }
