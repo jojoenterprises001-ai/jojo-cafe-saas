@@ -1,85 +1,76 @@
-let cartCount = 0;
-let cartTotal = 0;
-let cartItems = []; // Asli items yahan store honge
-
-// Animation and Add to Cart Logic
-function flyToCart(event, itemEmoji, itemName, itemPrice) {
-    const button = event.target;
-    const rect = button.getBoundingClientRect();
-    
-    const flyingElement = document.createElement('div');
-    flyingElement.classList.add('flying-item');
-    flyingElement.innerText = itemEmoji;
-    flyingElement.style.left = rect.left + 'px';
-    flyingElement.style.top = rect.top + 'px';
-    document.body.appendChild(flyingElement);
-    
-    const cart = document.getElementById('cart-icon');
-    const cartRect = cart.getBoundingClientRect();
-    
-    setTimeout(() => {
-        flyingElement.style.left = (cartRect.left + 15) + 'px';
-        flyingElement.style.top = (cartRect.top + 10) + 'px';
-        flyingElement.style.transform = 'scale(0.2) rotate(360deg)';
-        flyingElement.style.opacity = '0.5';
-    }, 50);
-    
-    setTimeout(() => {
-        flyingElement.remove();
-        cart.style.transform = 'scale(1.2)';
-        setTimeout(() => cart.style.transform = 'scale(1)', 200);
-        
-        // 1. Navbar mein number badhana
-        cartCount++;
-        document.getElementById('cart-count').innerText = cartCount;
-
-        // 2. Asli Bill ke liye data save karna
-        cartTotal += itemPrice;
-        cartItems.push({ name: itemName, price: itemPrice, emoji: itemEmoji });
-        
-    }, 850); 
+// ===== ADD TO CART with flying animation =====
+function addToCart(id, name, price, emoji, event) {
+  const existing = cart.find(i => i.id === id);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    cart.push({ id, name, price, emoji, qty: 1 });
+  }
+  updateCartCount();
+  flyToCart(event, emoji);
 }
 
-// CART Kholne ka Logic (Jab Cart Icon par click ho)
-document.getElementById('cart-icon').addEventListener('click', function() {
-    if (cartCount === 0) {
-        alert("Your cart is empty! Please add some items.");
-        return;
-    }
-
-    const modal = document.getElementById('cart-modal');
-    const list = document.getElementById('cart-items-list');
-    
-    // Purani list saaf karna aur nayi dikhana
-    list.innerHTML = '';
-    cartItems.forEach(item => {
-        list.innerHTML += `
-        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 8px 0;">
-            <span style="color: #fff;">${item.emoji} ${item.name}</span>
-            <span style="font-weight: bold;">₹${item.price}</span>
-        </div>`;
-    });
-    
-    // Total price set karna
-    document.getElementById('cart-total').innerText = cartTotal;
-    
-    // Popup dikhana
-    modal.style.display = 'block';
-});
-
-// CART Band Karne Ka Logic
-function closeCart() {
-    document.getElementById('cart-modal').style.display = 'none';
+function updateCartCount() {
+  const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
+  document.getElementById('cartCount').innerText = totalQty;
 }
 
-// Order Place Karne ka Logic
-function placeOrder() {
-    alert(`🎉 Order Placed Successfully!\nTotal Bill: ₹${cartTotal}\nPlease show this to the counter.`);
-    
-    // Order hone ke baad Cart khali kar dena
-    cartItems = [];
-    cartTotal = 0;
-    cartCount = 0;
-    document.getElementById('cart-count').innerText = 0;
-    closeCart();
+function flyToCart(event, emoji) {
+  if (!event) return;
+  const btn = event.target;
+  const btnRect = btn.getBoundingClientRect();
+  const cartBtn = document.querySelector('.topbar-right .icon-btn:nth-child(2)');
+  const cartRect = cartBtn.getBoundingClientRect();
+
+  const flyEl = document.createElement('div');
+  flyEl.className = 'flying-emoji';
+  flyEl.innerText = emoji;
+  flyEl.style.left = btnRect.left + 'px';
+  flyEl.style.top = btnRect.top + 'px';
+  document.body.appendChild(flyEl);
+
+  requestAnimationFrame(() => {
+    flyEl.style.left = cartRect.left + 'px';
+    flyEl.style.top = cartRect.top + 'px';
+    flyEl.style.opacity = '0.3';
+    flyEl.style.transform = 'scale(0.3)';
+  });
+
+  setTimeout(() => flyEl.remove(), 650);
+}
+
+// ===== RENDER CART MODAL =====
+function renderCart() {
+  const list = document.getElementById('cartItemsList');
+  if (cart.length === 0) {
+    list.innerHTML = '<p style="text-align:center; color:#999; padding:20px 0;">Your cart is empty</p>';
+    document.getElementById('cartTotal').innerText = '₹0';
+    return;
+  }
+  list.innerHTML = '';
+  let total = 0;
+  cart.forEach((item, index) => {
+    total += item.price * item.qty;
+    const row = document.createElement('div');
+    row.className = 'cart-row';
+    row.innerHTML = `
+      <div class="item-info">${item.emoji} ${item.name}<br><small>₹${item.price} each</small></div>
+      <div class="qty-controls">
+        <button onclick="changeQty(${index}, -1)">−</button>
+        <span>${item.qty}</span>
+        <button onclick="changeQty(${index}, 1)">+</button>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+  document.getElementById('cartTotal').innerText = '₹' + total;
+}
+
+function changeQty(index, delta) {
+  cart[index].qty += delta;
+  if (cart[index].qty <= 0) {
+    cart.splice(index, 1);
+  }
+  updateCartCount();
+  renderCart();
 }
