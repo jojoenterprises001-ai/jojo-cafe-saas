@@ -1,73 +1,181 @@
-// owner-logic.js - Updated with Real Firebase Logic
+// ===== OWNER LOGIN CHECK =====
+// Owner logs in via prompt on first load, stored in localStorage
+let ownerMobile = localStorage.getItem('ownerMobile');
 
-// 1. Asli Tick Dene ka function
-function giveTick() {
-    const phone = document.getElementById('customer-phone-tick').value;
-    const btn = document.getElementById('tick-btn');
-
-    if(phone.length < 10) {
-        alert("Please enter a valid 10-digit mobile number!");
-        return;
-    }
-
-    btn.innerText = "Adding... ⏳";
-    btn.disabled = true;
-
-    // Database mein customer ko dhundhna aur tick badhana
-    const customerRef = db.collection("Customers").doc(phone);
-
-    customerRef.get().then((doc) => {
-        if (doc.exists) {
-            // Agar customer pehle se hai, toh uske tick 1 se badha do
-            let currentTicks = doc.data().ticks || 0;
-            if(currentTicks >= 7) {
-                alert("This customer already has 7 ticks! Time to redeem coupon.");
-            } else {
-                customerRef.update({ ticks: currentTicks + 1 }).then(() => {
-                    alert(`Success! Tick added. Total Ticks: ${currentTicks + 1}`);
-                });
-            }
-        } else {
-            // Agar naya customer hai (login nahi kiya pehle), toh naya account bana do
-            customerRef.set({
-                mobile: phone,
-                ticks: 1,
-                lastAdded: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                alert("New Customer Created & 1 Tick Added!");
-            });
-        }
-        
-        // Form theek karna
-        document.getElementById('customer-phone-tick').value = '';
-        btn.innerText = "Add 1 Tick ➔";
-        btn.disabled = false;
-        
-    }).catch((error) => {
-        console.error("Error: ", error);
-        alert("Kuch gadbad hui, wapas try karein!");
-        btn.innerText = "Add 1 Tick ➔";
-        btn.disabled = false;
-    });
+if (!ownerMobile) {
+  ownerMobile = prompt('Enter your registered mobile number:');
+  if (ownerMobile && /^[0-9]{10}$/.test(ownerMobile.trim())) {
+    ownerMobile = ownerMobile.trim();
+    localStorage.setItem('ownerMobile', ownerMobile);
+  } else {
+    alert('Invalid mobile number. Redirecting to registration.');
+    window.location.href = 'owner-register.html';
+  }
 }
 
-// 2. Redeem Coupon (Ticks ko wapas 0 karna)
-function redeemCoupon() {
-    const phone = document.getElementById('coupon-phone').value;
-    if(phone.length < 10) {
-        alert("Valid number daaliye!");
-        return;
-    }
+let cafeData = null;
 
-    const customerRef = db.collection("Customers").doc(phone);
-    customerRef.get().then((doc) => {
-        if (doc.exists && doc.data().ticks >= 7) {
-            customerRef.update({ ticks: 0 }).then(() => {
-                alert("🎉 Coupon Verified & Applied! Ticks reset to 0.");
-                document.getElementById('coupon-phone').value = '';
-            });
-        } else {
-            alert("Customer ke paas abhi 7 ticks nahi hain!");
-        }
+// ===== LOAD CAFE INFO (real-time so approval reflects instantly) =====
+db.collection('Cafes').doc(ownerMobile).onSnapshot((doc) => {
+  if (!doc.exists) {
+    alert('Cafe not found. Please register first.');
+    window.location.href = 'owner-register.html';
+    return;
+  }
+  cafeData = doc.data();
+  document.getElementById('cafeNameTitle').innerText = cafeData.cafeName;
+  document.getElementById('ownerNameText').innerText = cafeData.ownerName + ' • ' + cafeData.address;
+
+  const badge = document.getElementById('statusBadge');
+  if (cafeData.status === 'approved') {
+    badge.innerText = '✓ Approved' + (cafeData.plan ? ' • ' + cafeData.plan : '');
+    badge.className = 'status-badge status-approved';
+    document.getElementById('dashboardContent').style.display = 'block';
+    document.getElementById('lockedContent').style.display = 'none';
+    generateQR();
+    loadMenuList();
+  } else {
+    badge.innerText = '⏳ Pending Approval';
+    badge.className = 'status-badge status-pending';
+    document.getElementById('dashboardContent').style.display = 'none';
+    document.getElementById('lockedContent').style.display = 'block';
+  }
+});
+
+// ===== GIVE LOYALTY TICK =====
+function giveTick() {
+  const mobile = document.getElementById('tickMobile').value.trim();
+  const msg = document.getElementById('tickMsg');
+
+  if (!/^[0-9]{10}$/.test(mobile)) {
+    msg.style.color = 'red';
+    msg.innerText = 'Enter a valid 10-digit number';
+    return;
+  }
+
+  const custRef = db.collection('Customers').doc(mobile);
+  custRef.get().then((doc) => {
+    if (!doc.exists) {
+      msg.style.color = 'red';
+      msg.innerText = 'Customer not found. They must login first.';
+      return;
+    }
+    const currentTicks = doc.data().ticks || 0;
+    const newTicks = Math.min(currentTicks + 1, 7);
+    custRef.update({ ticks: newTicks }).then(() => {
+      msg.style.color = 'green';
+      msg.innerText = `✅ Tick added! Now at ${newTicks}/7`;
+      document.getElementById('tickMobile').value = '';
     });
+  });
+}
+
+// ===== REDEEM COUPON =====
+function redeemCoupon() {
+  const mobile = document.getElementById('redeemMobile').value.trim();
+  const msg = document.getElementById('redeemMsg');
+
+  if (!/^[0-9]{10}$/.test(mobile)) {
+    msg.style.color = 'red';
+    msg.innerText = 'Enter a valid 10-digit number';
+    return;
+  }
+
+  const custRef = db.collection('Customers').doc(mobile);
+  custRef.get().then((doc) => {
+    if (!doc.exists) {
+      msg.style.color = 'red';
+      msg.innerText = 'Customer not found';
+      return;
+    }
+    const ticks = doc.data().ticks || 0;
+    if (ticks < 7) {
+      msg.style.color = 'red';
+      msg.innerText = `Only ${ticks}/7 ticks. Not eligible yet.`;
+      return;
+    }
+    custRef.update({ ticks: 0 }).then(() => {
+      msg.style.color = 'green';
+      msg.innerText = '🎉 Coupon redeemed! Ticks reset to 0.';
+      document.getElementById('redeemMobile').value = '';
+    });
+  });
+}
+
+// ===== MENU MANAGER =====
+function addMenuItem() {
+  const name = document.getElementById('itemName').value.trim();
+  const price = document.getElementById('itemPrice').value.trim();
+  const emoji = document.getElementById('itemEmoji').value.trim() || '🍽️';
+  const msg = document.getElementById('menuMsg');
+
+  if (!name || !price) {
+    msg.style.color = 'red';
+    msg.innerText = 'Enter item name and price';
+    return;
+  }
+
+  db.collection('Menu').add({
+    cafeId: ownerMobile,
+    name: name,
+    price: Number(price),
+    emoji: emoji,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => {
+    msg.style.color = 'green';
+    msg.innerText = '✅ Item added to menu!';
+    document.getElementById('itemName').value = '';
+    document.getElementById('itemPrice').value = '';
+    document.getElementById('itemEmoji').value = '';
+  });
+}
+
+function loadMenuList() {
+  db.collection('Menu').where('cafeId', '==', ownerMobile).onSnapshot((snapshot) => {
+    const list = document.getElementById('menuList');
+    if (snapshot.empty) {
+      list.innerHTML = '<p style="color:#999; font-size:13px;">No items yet.</p>';
+      return;
+    }
+    list.innerHTML = '';
+    snapshot.forEach((doc) => {
+      const item = doc.data();
+      const row = document.createElement('div');
+      row.className = 'menu-list-item';
+      row.innerHTML = `
+        <span>${item.emoji} ${item.name} — ₹${item.price}</span>
+        <button class="del-btn" onclick="deleteMenuItem('${doc.id}')">Delete</button>
+      `;
+      list.appendChild(row);
+    });
+  });
+}
+
+function deleteMenuItem(itemId) {
+  if (confirm('Delete this item?')) {
+    db.collection('Menu').doc(itemId).delete();
+  }
+}
+
+// ===== QR CODE GENERATOR =====
+function generateQR() {
+  const qrContainer = document.getElementById('qrcode');
+  qrContainer.innerHTML = '';
+  const menuUrl = window.location.origin + window.location.pathname.replace('owner-dashboard.html', 'customer-login.html') + '?cafe=' + ownerMobile;
+  new QRCode(qrContainer, {
+    text: menuUrl,
+    width: 180,
+    height: 180,
+    colorDark: '#667eea',
+    colorLight: '#ffffff'
+  });
+}
+
+function downloadQR() {
+  const canvas = document.querySelector('#qrcode canvas');
+  if (!canvas) return;
+  const link = document.createElement('a');
+  link.download = cafeData.cafeName + '-QR.png';
+  link.href = canvas.toDataURL();
+  link.click();
 }
