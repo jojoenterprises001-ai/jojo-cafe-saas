@@ -1,37 +1,108 @@
-<!-- super-admin.html - Part 17 (Updated with Firebase) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Admin Control - VIP</title>
-    <link rel="stylesheet" href="style.css">
-    
-    <!-- Firebase Libraries -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Admin - Jojo Cafe</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<style>
+  * { box-sizing: border-box; margin:0; padding:0; font-family:'Segoe UI', sans-serif; }
+  body { background: #1a1a2e; padding-bottom: 40px; min-height: 100vh; }
+  .topbar {
+    background: #16213e; padding: 18px 20px; color: #fff;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .topbar h2 { font-size: 20px; }
+  .logout-btn { background: #ff4757; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-size:13px; cursor:pointer; }
+
+  .tabs { display: flex; gap: 8px; padding: 15px; }
+  .tab-btn {
+    flex: 1; padding: 10px; background: #16213e; color: #aaa; border: none;
+    border-radius: 10px; font-size: 13px; font-weight: bold; cursor: pointer;
+  }
+  .tab-btn.active { background: #667eea; color: #fff; }
+
+  .cafe-card {
+    background: #16213e; margin: 10px 15px; border-radius: 14px; padding: 16px;
+    color: #fff;
+  }
+  .cafe-card h3 { font-size: 16px; margin-bottom: 4px; }
+  .cafe-card p { font-size: 13px; color: #aaa; margin-bottom: 3px; }
+  .cafe-card .mobile-id { color: #667eea; font-weight: bold; }
+
+  .plan-row { display: flex; gap: 8px; margin-top: 12px; }
+  .plan-btn {
+    flex: 1; padding: 10px; border: none; border-radius: 8px;
+    font-size: 12px; font-weight: bold; cursor: pointer; color: #fff;
+  }
+  .plan-trial { background: #f39c12; }
+  .plan-paid { background: #27ae60; }
+  .plan-reject { background: #ff4757; }
+
+  .status-tag {
+    display: inline-block; padding: 3px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: bold; margin-top: 6px;
+  }
+  .tag-approved { background: #27ae60; color: #fff; }
+  .tag-expired { background: #ff4757; color: #fff; }
+
+  .empty-msg { text-align: center; color: #666; padding: 40px 20px; }
+
+  .login-screen {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; padding: 20px;
+  }
+  .login-card {
+    background: #16213e; border-radius: 20px; padding: 35px 25px;
+    width: 100%; max-width: 380px; text-align: center;
+  }
+  .login-card h1 { color: #fff; margin-bottom: 20px; }
+  .login-card input {
+    width: 100%; padding: 14px; margin-bottom: 15px;
+    border: 2px solid #2a2a4a; border-radius: 10px; font-size: 16px;
+    background: #0f0f23; color: #fff; outline: none;
+  }
+  .login-card button {
+    width: 100%; padding: 14px; background: #667eea; color: #fff;
+    border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;
+  }
+  #loginError { color: #ff4757; font-size: 13px; margin-bottom: 10px; display:none; }
+
+  .action-btn {
+    margin-top: 10px; width: 100%; padding: 10px; background: #667eea;
+    color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer;
+  }
+</style>
 </head>
 <body>
-    <!-- 3D Floating Background -->
-    <ul class="bg-bubbles">
-        <li></li><li></li><li></li><li></li><li></li><li></li>
-    </ul>
 
-    <div class="glass-panel" style="margin-top: 10vh;">
-        <h1 style="text-align: center; color: #fff; margin-bottom: 20px;">👑 Master Admin Panel</h1>
-        
-        <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.2);">
-            <h3 style="color: #e0aaff; margin-bottom: 15px;">Pending Cafe Requests</h3>
-            
-            <!-- Asli database ka data yahan aayega -->
-            <div id="pending-cafes-list">
-                <p style="color: #fff; text-align: center;">Loading cafes from database... ⏳</p>
-            </div>
-        </div>
-    </div>
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <h1>👑 Super Admin</h1>
+    <div id="loginError"></div>
+    <input type="password" id="adminPassword" placeholder="Enter Admin Password">
+    <button onclick="checkAdminLogin()">Login</button>
+  </div>
+</div>
 
-    <!-- Firebase Config aur Naya Admin Logic -->
-    <script src="firebase-config.js"></script>
-    <script src="admin-logic.js"></script>
+<!-- ADMIN PANEL -->
+<div id="adminPanel" style="display:none;">
+  <div class="topbar">
+    <h2>👑 Super Admin</h2>
+    <button class="logout-btn" onclick="adminLogout()">Logout</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tabPending" onclick="switchTab('pending')">Pending</button>
+    <button class="tab-btn" id="tabApproved" onclick="switchTab('approved')">Approved</button>
+  </div>
+
+  <div id="cafeList"></div>
+</div>
+
+<script src="admin-logic.js"></script>
 </body>
 </html>
