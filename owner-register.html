@@ -1,4 +1,4 @@
-<!-- owner-register.html - Part 3 -->
+<!-- owner-register.html - Updated with Firebase -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,9 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cafe Owner Registration</title>
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Firebase Libraries Load Karna Zaroori Hai -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <!-- Firebase Storage (Photos ke liye, abhi add kar rahe aage kaam aayega) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 </head>
 <body>
-    <!-- 3D Floating Background Elements -->
     <ul class="bg-bubbles">
         <li></li><li></li><li></li><li></li><li></li><li></li>
     </ul>
@@ -17,13 +22,17 @@
         <h1 style="color: #fff;">Register Your Cafe</h1>
         <p style="color: #e0aaff; margin-bottom: 20px;">Join the premium network</p>
         
-        <!-- Registration Form -->
-        <form action="whatsapp-trial.html" method="GET">
-            <input type="text" class="input-field" placeholder="Enter Cafe Name" required>
-            <input type="number" class="input-field" placeholder="Enter Mobile Number" required>
-            <button type="submit" class="btn-3d">Register Cafe 🚀</button>
+        <!-- Registration Form - Updated IDs -->
+        <form id="cafe-register-form">
+            <input type="text" id="cafe-name-input" class="input-field" placeholder="Enter Cafe Name" required>
+            <input type="number" id="mobile-input" class="input-field" placeholder="Enter Mobile Number" required>
+            <button type="submit" id="submit-btn" class="btn-3d">Register Cafe 🚀</button>
         </form>
     </div>
+
+    <!-- Humari Firebase Config aur Database Logic -->
+    <script src="firebase-config.js"></script>
+    <script src="register-db.js"></script>
 </body>
 </html>
 
