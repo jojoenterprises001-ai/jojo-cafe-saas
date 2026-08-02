@@ -1,38 +1,64 @@
-<!-- owner-register.html - Updated with Firebase -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cafe Owner Registration</title>
-    <link rel="stylesheet" href="style.css">
-    
-    <!-- Firebase Libraries Load Karna Zaroori Hai -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <!-- Firebase Storage (Photos ke liye, abhi add kar rahe aage kaam aayega) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register Your Cafe - Jojo</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<style>
+  * { box-sizing: border-box; margin:0; padding:0; font-family:'Segoe UI', sans-serif; }
+  body {
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .card {
+    background: #fff; border-radius: 20px; padding: 35px 25px;
+    width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+  .card h1 { color: #667eea; text-align: center; margin-bottom: 5px; font-size: 26px; }
+  .card p { color: #888; text-align: center; margin-bottom: 25px; font-size: 14px; }
+  label { font-size: 13px; color: #555; margin-bottom: 5px; display: block; }
+  input {
+    width: 100%; padding: 14px; margin-bottom: 15px;
+    border: 2px solid #eee; border-radius: 10px; font-size: 16px; outline: none;
+  }
+  input:focus { border-color: #667eea; }
+  button {
+    width: 100%; padding: 14px; background: #667eea; color: #fff;
+    border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;
+  }
+  button:active { transform: scale(0.97); }
+  #errorMsg { color: red; font-size: 13px; margin-bottom: 10px; display:none; text-align:center; }
+  #successMsg { color: green; font-size: 14px; margin-bottom: 10px; display:none; text-align:center; font-weight:bold; }
+</style>
 </head>
 <body>
-    <ul class="bg-bubbles">
-        <li></li><li></li><li></li><li></li><li></li><li></li>
-    </ul>
 
-    <div class="glass-panel" style="margin-top: 15vh; text-align: center;">
-        <h1 style="color: #fff;">Register Your Cafe</h1>
-        <p style="color: #e0aaff; margin-bottom: 20px;">Join the premium network</p>
-        
-        <!-- Registration Form - Updated IDs -->
-        <form id="cafe-register-form">
-            <input type="text" id="cafe-name-input" class="input-field" placeholder="Enter Cafe Name" required>
-            <input type="number" id="mobile-input" class="input-field" placeholder="Enter Mobile Number" required>
-            <button type="submit" id="submit-btn" class="btn-3d">Register Cafe 🚀</button>
-        </form>
-    </div>
+<div class="card">
+  <h1>🏪 Register Your Cafe</h1>
+  <p>Get started with Jojo Cafe SaaS</p>
+  <div id="errorMsg"></div>
+  <div id="successMsg"></div>
 
-    <!-- Humari Firebase Config aur Database Logic -->
-    <script src="firebase-config.js"></script>
-    <script src="register-db.js"></script>
+  <label>Cafe Name</label>
+  <input type="text" id="cafeName" placeholder="e.g. Sunrise Cafe">
+
+  <label>Owner Name</label>
+  <input type="text" id="ownerName" placeholder="Your full name">
+
+  <label>Mobile Number</label>
+  <input type="tel" id="ownerMobile" placeholder="10-digit mobile number" maxlength="10">
+
+  <label>Cafe Address</label>
+  <input type="text" id="cafeAddress" placeholder="City / Area">
+
+  <button onclick="handleRegister()">Register Cafe →</button>
+</div>
+
+<script src="register-db.js"></script>
 </body>
 </html>
-
