@@ -30,7 +30,7 @@ db.collection('Cafes').doc(ownerMobile).onSnapshot((doc) => {
     badge.className = 'status-badge status-approved';
     document.getElementById('dashboardContent').style.display = 'block';
     document.getElementById('lockedContent').style.display = 'none';
-    generateQR();
+    
     loadMenuList();
   } else if (cafeData.status === 'approved' && isExpired) {
     badge.innerText = '⚠ Expired';
@@ -271,11 +271,23 @@ function deleteMenuItem(itemId) {
   }
 }
 
-// ===== QR CODE GENERATOR =====
-function generateQR() {
+// ===== TABLE-WISE QR CODE GENERATOR =====
+let currentTableNumber = null;
+
+function generateTableQR() {
+  const tableNum = document.getElementById('tableNumberInput').value.trim();
+  if (!tableNum || tableNum < 1) {
+    alert('Enter a valid table number');
+    return;
+  }
+  currentTableNumber = tableNum;
+
   const qrContainer = document.getElementById('qrcode');
   qrContainer.innerHTML = '';
-  const menuUrl = window.location.origin + window.location.pathname.replace('owner-dashboard.html', 'customer-login.html') + '?cafe=' + ownerMobile;
+
+  const baseUrl = window.location.origin + window.location.pathname.replace('owner-dashboard.html', 'customer-login.html');
+  const menuUrl = baseUrl + '?cafe=' + ownerMobile + '&table=' + tableNum;
+
   new QRCode(qrContainer, {
     text: menuUrl,
     width: 180,
@@ -283,13 +295,16 @@ function generateQR() {
     colorDark: '#667eea',
     colorLight: '#ffffff'
   });
+
+  document.getElementById('qrTableLabel').innerText = 'Table ' + tableNum;
+  document.getElementById('qrResultBox').style.display = 'block';
 }
 
 function downloadQR() {
   const canvas = document.querySelector('#qrcode canvas');
   if (!canvas) return;
   const link = document.createElement('a');
-  link.download = cafeData.cafeName + '-QR.png';
+  link.download = cafeData.cafeName + '-Table' + currentTableNumber + '-QR.png';
   link.href = canvas.toDataURL();
   link.click();
 }
