@@ -1,26 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SaaS Platform - Main Menu</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jojo Cafe - Welcome</title>
+<style>
+  * { box-sizing: border-box; margin:0; padding:0; font-family: 'Segoe UI', sans-serif; }
+  body {
+    background: linear-gradient(135deg,#ff7e5f,#feb47b);
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .container {
+    background: #fff; border-radius: 24px; padding: 40px 28px;
+    width: 100%; max-width: 420px; box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+    text-align: center;
+  }
+  .container h1 { font-size: 32px; color: #ff7e5f; margin-bottom: 5px; }
+  .container p { color: #888; margin-bottom: 30px; font-size: 14px; }
+
+  .menu-btn {
+    display: flex; align-items: center; gap: 14px;
+    width: 100%; padding: 16px 18px; margin-bottom: 14px;
+    border: 2px solid #f0f0f0; border-radius: 14px;
+    background: #fff; text-decoration: none; color: #333;
+    font-size: 16px; font-weight: 600; text-align: left;
+    transition: 0.2s;
+  }
+  .menu-btn:active { transform: scale(0.97); background: #fff8f5; }
+  .menu-btn .icon { font-size: 24px; }
+  .menu-btn .sub { display: block; font-size: 12px; color: #999; font-weight: 400; margin-top: 2px; }
+
+  .customer-btn { border-color: #ffcbb3; }
+  .owner-btn { border-color: #c9d4ff; }
+  .register-btn { border-color: #c9f0d4; }
+  .admin-btn { border-color: #333; background: #1a1a2e; color: #fff; }
+  .admin-btn .sub { color: #aaa; }
+</style>
 </head>
 <body>
-    <ul class="bg-bubbles"><li></li><li></li><li></li><li></li><li></li><li></li></ul>
-    
-    <div class="glass-panel" style="margin-top: 15vh; text-align: center;">
-        <h1 style="color: #fff; margin-bottom: 30px;">Welcome to Cafe SaaS</h1>
-        
-        <!-- Sabhi Pages Ke Links Yahan Hain -->
-        <a href="customer-login.html" class="btn-3d" style="display: block; margin-bottom: 15px; background: linear-gradient(145deg, #9d4edd, #5a189a); text-decoration: none;">👤 Customer Menu & Games</a>
-        
-        <a href="owner-dashboard.html" class="btn-3d" style="display: block; margin-bottom: 15px; background: linear-gradient(145deg, #25D366, #128C7E); text-decoration: none;">🏪 Cafe Owner Login</a>
-        
-        <a href="owner-register.html" class="btn-3d" style="display: block; margin-bottom: 15px; background: linear-gradient(145deg, #ffb703, #fb8500); text-decoration: none;">📝 Register New Cafe</a>
-        
-        <a href="super-admin.html" class="btn-3d" style="display: block; background: linear-gradient(145deg, #ef233c, #d90429); text-decoration: none;">👑 Master Admin Panel</a>
-    </div>
+
+<div class="container">
+  <h1>☕ Jojo Cafe</h1>
+  <p>Smart Cafe Management System</p>
+
+  <a href="customer-login.html" class="menu-btn customer-btn">
+    <span class="icon">👤</span>
+    <span>
+      Customer Portal
+      <span class="sub">Scan QR code at your table to order</span>
+    </span>
+  </a>
+
+  <a href="owner-login.html" class="menu-btn owner-btn">
+    <span class="icon">🏪</span>
+    <span>
+      Cafe Owner Login
+      <span class="sub">Manage your cafe dashboard</span>
+    </span>
+  </a>
+
+  <a href="owner-register.html" class="menu-btn register-btn">
+    <span class="icon">📝</span>
+    <span>
+      Register New Cafe
+      <span class="sub">Get started with Jojo Cafe SaaS</span>
+    </span>
+  </a>
+
+  <a href="super-admin.html" class="menu-btn admin-btn">
+    <span class="icon">👑</span>
+    <span>
+      Super Admin Panel
+      <span class="sub">Manage cafe approvals</span>
+    </span>
+  </a>
+</div>
+
 </body>
 </html>
-
