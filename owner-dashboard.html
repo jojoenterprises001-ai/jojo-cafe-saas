@@ -123,7 +123,13 @@
       <button style="margin-top:10px; width:100%; background:#4CAF50;" onclick="downloadQR()">Download this QR</button>
     </div>
   </div>
-
+<div class="section">
+        <h3>✅ Give Loyalty Tick</h3>
+        <input type="tel" id="tickMobile" placeholder="Customer's 10-digit mobile number" maxlength="10">
+        <input type="number" id="tickBillAmount" placeholder="Bill Amount (₹) — min ₹299 required">
+        <button class="btn-full" onclick="giveTick()">Add Tick +1</button>
+        <p id="tickMsg"></p>
+</div>
   <div class="section">
     <h3>🎁 Redeem Coupon</h3>
     <input type="tel" id="redeemMobile" placeholder="Customer's 10-digit mobile number" maxlength="10">
