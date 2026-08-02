@@ -1,16 +1,8 @@
 // ===== OWNER LOGIN CHECK =====
-// Owner logs in via prompt on first load, stored in localStorage
 let ownerMobile = localStorage.getItem('ownerMobile');
 
 if (!ownerMobile) {
-  ownerMobile = prompt('Enter your registered mobile number:');
-  if (ownerMobile && /^[0-9]{10}$/.test(ownerMobile.trim())) {
-    ownerMobile = ownerMobile.trim();
-    localStorage.setItem('ownerMobile', ownerMobile);
-  } else {
-    alert('Invalid mobile number. Redirecting to registration.');
-    window.location.href = 'owner-register.html';
-  }
+  window.location.href = 'owner-login.html';
 }
 
 let cafeData = null;
@@ -19,6 +11,7 @@ let cafeData = null;
 db.collection('Cafes').doc(ownerMobile).onSnapshot((doc) => {
   if (!doc.exists) {
     alert('Cafe not found. Please register first.');
+    localStorage.removeItem('ownerMobile');
     window.location.href = 'owner-register.html';
     return;
   }
@@ -39,8 +32,18 @@ db.collection('Cafes').doc(ownerMobile).onSnapshot((doc) => {
     badge.className = 'status-badge status-pending';
     document.getElementById('dashboardContent').style.display = 'none';
     document.getElementById('lockedContent').style.display = 'block';
+    setupWhatsAppButton();
   }
 });
+
+// ===== WHATSAPP ACTIVATION REQUEST =====
+function setupWhatsAppButton() {
+  const adminNumber = '917689874945'; // your WhatsApp number with country code
+  const message = `Hi, please activate my cafe.\n\nCafe Name: ${cafeData.cafeName}\nOwner: ${cafeData.ownerName}\nMobile ID: ${ownerMobile}\n\nPlease start my 7-day free trial.`;
+  const encodedMsg = encodeURIComponent(message);
+  const waLink = `https://wa.me/${adminNumber}?text=${encodedMsg}`;
+  document.getElementById('whatsappBtn').href = waLink;
+}
 
 // ===== GIVE LOYALTY TICK =====
 function giveTick() {
@@ -178,4 +181,10 @@ function downloadQR() {
   link.download = cafeData.cafeName + '-QR.png';
   link.href = canvas.toDataURL();
   link.click();
+}
+
+// ===== LOGOUT =====
+function ownerLogout() {
+  localStorage.removeItem('ownerMobile');
+  window.location.href = 'owner-login.html';
 }
