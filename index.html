@@ -1,4 +1,4 @@
-<!-- index.html - Part 2 (Customer Login) -->
+<!-- index.html - Updated with Firebase & Redirect -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Login - Cafe VIP</title>
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Firebase Libraries -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 </head>
 <body>
-
-    <!-- 3D Floating Background Elements -->
     <ul class="bg-bubbles">
         <li></li><li></li><li></li><li></li><li></li><li></li>
     </ul>
@@ -21,17 +23,12 @@
         <form id="customerLoginForm">
             <input type="text" id="custName" class="input-field" placeholder="Enter Your Name" required>
             <input type="number" id="custMobile" class="input-field" placeholder="Enter Mobile Number" required>
-            <button type="button" class="btn-3d" onclick="loginCustomer()">Enter Dashboard 🚀</button>
+            <button type="submit" id="cust-login-btn" class="btn-3d">Enter Dashboard 🚀</button>
         </form>
     </div>
 
-    <!-- Firebase Code Baad Mein Aayega -->
-    <script>
-        function loginCustomer() {
-            // Part 13 mein database add hoga
-            alert("Customer 3D button clicked! Logic coming soon...");
-        }
-    </script>
+    <!-- Firebase Config aur Customer Login Logic -->
+    <script src="firebase-config.js"></script>
+    <script src="customer-login.js"></script>
 </body>
 </html>
-
