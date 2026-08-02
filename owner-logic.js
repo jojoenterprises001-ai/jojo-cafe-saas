@@ -1,53 +1,73 @@
-// owner-logic.js - Part 13
+// owner-logic.js - Updated with Real Firebase Logic
 
-// 1. Give Tick Logic
+// 1. Asli Tick Dene ka function
 function giveTick() {
     const phone = document.getElementById('customer-phone-tick').value;
+    const btn = document.getElementById('tick-btn');
+
     if(phone.length < 10) {
         alert("Please enter a valid 10-digit mobile number!");
         return;
     }
-    alert(`Success! 1 Tick added to ${phone}.`);
-    document.getElementById('customer-phone-tick').value = '';
-}
 
-// 2. Redeem Coupon Logic
-function redeemCoupon() {
-    const code = document.getElementById('coupon-code').value;
-    if(code === '') {
-        alert("Please enter a coupon code!");
-        return;
-    }
-    alert(`Coupon ${code} verified successfully!\nDiscount applied and customer ticks reset to 0.`);
-    document.getElementById('coupon-code').value = '';
-}
+    btn.innerText = "Adding... ⏳";
+    btn.disabled = true;
 
-// 3. Image Upload Preview Logic (Gallery Access)
-const photoInput = document.getElementById('item-photo');
-const previewBox = document.getElementById('image-preview-box');
-const previewImg = document.getElementById('image-preview');
+    // Database mein customer ko dhundhna aur tick badhana
+    const customerRef = db.collection("Customers").doc(phone);
 
-photoInput.addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    if(file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            previewImg.src = e.target.result;
-            previewBox.style.display = 'block';
+    customerRef.get().then((doc) => {
+        if (doc.exists) {
+            // Agar customer pehle se hai, toh uske tick 1 se badha do
+            let currentTicks = doc.data().ticks || 0;
+            if(currentTicks >= 7) {
+                alert("This customer already has 7 ticks! Time to redeem coupon.");
+            } else {
+                customerRef.update({ ticks: currentTicks + 1 }).then(() => {
+                    alert(`Success! Tick added. Total Ticks: ${currentTicks + 1}`);
+                });
+            }
+        } else {
+            // Agar naya customer hai (login nahi kiya pehle), toh naya account bana do
+            customerRef.set({
+                mobile: phone,
+                ticks: 1,
+                lastAdded: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                alert("New Customer Created & 1 Tick Added!");
+            });
         }
-        reader.readAsDataURL(file);
-    }
-});
-
-// 4. Save Menu Item
-function saveMenuItem() {
-    const name = document.getElementById('item-name').value;
-    const price = document.getElementById('item-price').value;
-    
-    if(!name || !price) {
-        alert("Please enter both Name and Price!");
-        return;
-    }
-    alert(`Menu Updated!\nItem: ${name}\nPrice: ₹${price}\nPhoto attached successfully!`);
+        
+        // Form theek karna
+        document.getElementById('customer-phone-tick').value = '';
+        btn.innerText = "Add 1 Tick ➔";
+        btn.disabled = false;
+        
+    }).catch((error) => {
+        console.error("Error: ", error);
+        alert("Kuch gadbad hui, wapas try karein!");
+        btn.innerText = "Add 1 Tick ➔";
+        btn.disabled = false;
+    });
 }
 
+// 2. Redeem Coupon (Ticks ko wapas 0 karna)
+function redeemCoupon() {
+    const phone = document.getElementById('coupon-phone').value;
+    if(phone.length < 10) {
+        alert("Valid number daaliye!");
+        return;
+    }
+
+    const customerRef = db.collection("Customers").doc(phone);
+    customerRef.get().then((doc) => {
+        if (doc.exists && doc.data().ticks >= 7) {
+            customerRef.update({ ticks: 0 }).then(() => {
+                alert("🎉 Coupon Verified & Applied! Ticks reset to 0.");
+                document.getElementById('coupon-phone').value = '';
+            });
+        } else {
+            alert("Customer ke paas abhi 7 ticks nahi hain!");
+        }
+    });
+}
