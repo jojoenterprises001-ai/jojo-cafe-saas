@@ -313,4 +313,4 @@ function downloadQR() {
 function ownerLogout() {
   localStorage.removeItem('ownerMobile');
   window.location.href = 'owner-login.html';
-                                  }
+}
