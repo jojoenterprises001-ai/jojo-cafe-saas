@@ -1,25 +1,23 @@
-// customer-login.js
-
+// customer-login.js - Updated to remember user
 document.getElementById('customerLoginForm').addEventListener('submit', function(e) {
-    e.preventDefault(); // Page ko reload hone se rokna
+    e.preventDefault();
 
     const name = document.getElementById('custName').value;
     const mobile = document.getElementById('custMobile').value;
     const btn = document.getElementById('cust-login-btn');
 
-    // Button ko loading state mein daalna
     btn.innerText = "Loading... ⏳";
     btn.disabled = true;
 
-    // Database mein Customer ko save karna
     db.collection("Customers").doc(mobile).set({
         name: name,
         mobile: mobile,
-        ticks: 0, // Shuru mein 0 tick rahenge
+        ticks: firebase.firestore.FieldValue.increment(0), // Ticks ko safe rakhne ke liye
         lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true }) // merge: true se purane customer ke ticks delete nahi honge
+    }, { merge: true })
     .then(() => {
-        // Data save hone ke baad seedha Dashboard par bhej dena
+        // JADOO YAHAN HAI: Mobile number browser mein save kar liya
+        localStorage.setItem("loggedInMobile", mobile);
         window.location.href = "customer-dashboard.html";
     })
     .catch((error) => {
@@ -29,4 +27,4 @@ document.getElementById('customerLoginForm').addEventListener('submit', function
         btn.disabled = false;
     });
 });
-      
+                             
