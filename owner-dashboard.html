@@ -1,46 +1,115 @@
-<!-- owner-dashboard.html - Updated with Firebase -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cafe Owner Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Owner Dashboard - Jojo Cafe</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin:0; padding:0; font-family:'Segoe UI', sans-serif; }
+  body { background: #f4f4fb; padding-bottom: 40px; }
+  .topbar {
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    padding: 18px 20px; color: #fff;
+  }
+  .topbar h2 { font-size: 20px; }
+  .topbar p { font-size: 12px; opacity: 0.9; margin-top:2px; }
+  .status-badge {
+    display: inline-block; margin-top: 8px; padding: 4px 12px;
+    border-radius: 20px; font-size: 12px; font-weight: bold;
+  }
+  .status-pending { background: #fff3cd; color: #856404; }
+  .status-approved { background: #d4edda; color: #155724; }
 
-    <!-- Firebase Libraries -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  .section {
+    background: #fff; margin: 15px; border-radius: 16px; padding: 18px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+  .section h3 { font-size: 16px; margin-bottom: 12px; color: #333; }
+
+  input {
+    width: 100%; padding: 12px; margin-bottom: 10px;
+    border: 2px solid #eee; border-radius: 10px; font-size: 15px; outline: none;
+  }
+  input:focus { border-color: #667eea; }
+  button {
+    padding: 12px 20px; background: #667eea; color: #fff;
+    border: none; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer;
+  }
+  .btn-full { width: 100%; }
+  .btn-green { background: #4CAF50; }
+  .btn-row { display: flex; gap: 10px; }
+  .btn-row input { flex: 1; margin-bottom:0; }
+
+  #tickMsg, #menuMsg { font-size: 13px; margin-top: 8px; text-align:center; font-weight:bold; }
+
+  .menu-list-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 14px;
+  }
+  .menu-list-item .del-btn {
+    background: #ff4757; padding: 6px 10px; font-size: 12px; border-radius: 6px;
+  }
+
+  #qrcode { display: flex; justify-content: center; margin: 15px 0; }
+  .locked-overlay {
+    text-align: center; padding: 40px 20px; color: #888;
+  }
+</style>
 </head>
 <body>
-    <ul class="bg-bubbles">
-        <li></li><li></li><li></li><li></li><li></li><li></li>
-    </ul>
 
-    <div class="glass-panel" style="margin-top: 5vh;">
-        <h1 style="text-align: center; color: #fff; margin-bottom: 20px;">🏪 Owner Dashboard</h1>
-        
-        <!-- Section 1: Give Ticks -->
-        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; margin-bottom: 20px;">
-            <h3 style="color: #e0aaff; margin-bottom: 10px;">✅ Give Loyalty Tick</h3>
-            <p style="font-size: 12px; color: #ccc; margin-bottom: 10px;">For orders above ₹299.</p>
-            <input type="number" id="customer-phone-tick" class="input-field" placeholder="Customer Mobile Number" required>
-            <button class="btn-3d" id="tick-btn" onclick="giveTick()" style="background: linear-gradient(145deg, #25D366, #128C7E);">
-                Add 1 Tick ➔
-            </button>
-        </div>
+<div class="topbar">
+  <h2 id="cafeNameTitle">Loading...</h2>
+  <p id="ownerNameText"></p>
+  <span class="status-badge" id="statusBadge">Checking...</span>
+</div>
 
-        <!-- Section 2: Redeem Coupon -->
-        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; margin-bottom: 20px;">
-            <h3 style="color: #e0aaff; margin-bottom: 10px;">🎁 Redeem Coupon</h3>
-            <input type="number" id="coupon-phone" class="input-field" placeholder="Customer Mobile Number">
-            <button class="btn-3d" onclick="redeemCoupon()" style="background: linear-gradient(145deg, #ffb703, #fb8500);">
-                Reset Ticks & Redeem ➔
-            </button>
-        </div>
+<div id="dashboardContent" style="display:none;">
+
+  <div class="section">
+    <h3>✅ Give Loyalty Tick</h3>
+    <input type="tel" id="tickMobile" placeholder="Customer's 10-digit mobile number" maxlength="10">
+    <button class="btn-full" onclick="giveTick()">Add Tick +1</button>
+    <p id="tickMsg"></p>
+  </div>
+
+  <div class="section">
+    <h3>🎁 Redeem Coupon (7 Ticks)</h3>
+    <input type="tel" id="redeemMobile" placeholder="Customer's 10-digit mobile number" maxlength="10">
+    <button class="btn-full btn-green" onclick="redeemCoupon()">Verify & Redeem</button>
+    <p id="redeemMsg"></p>
+  </div>
+
+  <div class="section">
+    <h3>🍽️ Menu Manager</h3>
+    <input type="text" id="itemName" placeholder="Item name (e.g. Cappuccino)">
+    <div class="btn-row">
+      <input type="number" id="itemPrice" placeholder="Price ₹">
+      <input type="text" id="itemEmoji" placeholder="Emoji ☕" maxlength="4">
     </div>
+    <button class="btn-full" onclick="addMenuItem()">Add Item to Menu</button>
+    <p id="menuMsg"></p>
+    <div id="menuList" style="margin-top:15px;"></div>
+  </div>
 
-    <!-- Firebase Config aur Asli Logic -->
-    <script src="firebase-config.js"></script>
-    <script src="owner-logic.js"></script>
+  <div class="section">
+    <h3>📱 Your Cafe QR Code</h3>
+    <div id="qrcode"></div>
+    <p style="text-align:center; font-size:13px; color:#888;">Print & place on tables. Customers scan to open your menu.</p>
+    <button class="btn-full" style="margin-top:10px;" onclick="downloadQR()">Download QR Code</button>
+  </div>
+
+</div>
+
+<div id="lockedContent" class="locked-overlay" style="display:none;">
+  <h3 id="lockedTitle">⏳ Waiting for Approval</h3>
+  <p style="margin-top:10px;">Your cafe registration is pending Super Admin approval. Please check back soon.</p>
+</div>
+
+<script src="owner-logic.js"></script>
 </body>
 </html>
