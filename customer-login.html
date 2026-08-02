@@ -1,34 +1,53 @@
-<!-- index.html - Updated with Firebase & Redirect -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Login - Cafe VIP</title>
-    <link rel="stylesheet" href="style.css">
-    
-    <!-- Firebase Libraries -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jojo Cafe - Login</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<style>
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg,#ff7e5f,#feb47b);
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .card {
+    background: #fff; border-radius: 20px; padding: 35px 25px;
+    width: 90%; max-width: 380px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    text-align: center;
+  }
+  .card h1 { color: #ff7e5f; margin-bottom: 5px; font-size: 28px; }
+  .card p { color: #888; margin-bottom: 25px; font-size: 14px; }
+  input {
+    width: 100%; padding: 14px; margin-bottom: 15px;
+    border: 2px solid #eee; border-radius: 10px; font-size: 16px;
+    outline: none; transition: 0.2s;
+  }
+  input:focus { border-color: #ff7e5f; }
+  button {
+    width: 100%; padding: 14px; background: #ff7e5f; color: #fff;
+    border: none; border-radius: 10px; font-size: 16px; font-weight: bold;
+    cursor: pointer; transition: 0.2s;
+  }
+  button:active { transform: scale(0.97); }
+  #errorMsg { color: red; font-size: 13px; margin-bottom: 10px; display:none; }
+</style>
 </head>
 <body>
-    <ul class="bg-bubbles">
-        <li></li><li></li><li></li><li></li><li></li><li></li>
-    </ul>
 
-    <div class="glass-panel" style="margin-top: 15vh; text-align: center;">
-        <h1 style="margin-bottom: 20px; color: #fff;">Welcome to Cafe!</h1>
-        <p style="margin-bottom: 20px; font-size: 14px; color: #e0aaff;">Enter your details to unlock Games & Coupons</p>
-        
-        <form id="customerLoginForm">
-            <input type="text" id="custName" class="input-field" placeholder="Enter Your Name" required>
-            <input type="number" id="custMobile" class="input-field" placeholder="Enter Mobile Number" required>
-            <button type="submit" id="cust-login-btn" class="btn-3d">Enter Dashboard 🚀</button>
-        </form>
-    </div>
+<div class="card">
+  <h1>☕ Jojo Cafe</h1>
+  <p>Enter your details to see the menu</p>
+  <div id="errorMsg"></div>
+  <input type="text" id="custName" placeholder="Your Name" maxlength="30">
+  <input type="tel" id="custMobile" placeholder="10-digit Mobile Number" maxlength="10">
+  <button onclick="handleLogin()">Continue →</button>
+</div>
 
-    <!-- Firebase Config aur Customer Login Logic -->
-    <script src="firebase-config.js"></script>
-    <script src="customer-login.js"></script>
+<script src="customer-login.js"></script>
 </body>
 </html>
