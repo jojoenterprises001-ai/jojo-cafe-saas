@@ -32,11 +32,15 @@
   .menu-btn .icon { font-size: 24px; }
   .menu-btn .sub { display: block; font-size: 12px; color: #999; font-weight: 400; margin-top: 2px; }
 
-  .customer-btn { border-color: #ffcbb3; }
   .owner-btn { border-color: #c9d4ff; }
   .register-btn { border-color: #c9f0d4; }
   .admin-btn { border-color: #333; background: #1a1a2e; color: #fff; }
   .admin-btn .sub { color: #aaa; }
+
+  .note {
+    background: #fff8f0; border: 1px dashed #ffcbb3; border-radius: 12px;
+    padding: 14px; font-size: 12px; color: #a05a3c; margin-bottom: 16px;
+  }
 </style>
 </head>
 <body>
@@ -45,13 +49,9 @@
   <h1>☕ Jojo Cafe</h1>
   <p>Smart Cafe Management System</p>
 
-  <a href="customer-login.html" class="menu-btn customer-btn">
-    <span class="icon">👤</span>
-    <span>
-      Customer Portal
-      <span class="sub">Scan QR code at your table to order</span>
-    </span>
-  </a>
+  <div class="note">
+    👤 Customers: Please scan the QR code on your table to view the menu and order.
+  </div>
 
   <a href="owner-login.html" class="menu-btn owner-btn">
     <span class="icon">🏪</span>
