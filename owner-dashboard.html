@@ -7,6 +7,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
+<script src="photo-library.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   * { box-sizing: border-box; margin:0; padding:0; font-family:'Segoe UI', sans-serif; }
@@ -23,6 +24,7 @@
   }
   .status-pending { background: #fff3cd; color: #856404; }
   .status-approved { background: #d4edda; color: #155724; }
+  .status-expired { background: #f8d7da; color: #721c24; }
 
   .section {
     background: #fff; margin: 15px; border-radius: 16px; padding: 18px;
@@ -44,12 +46,14 @@
   .btn-row { display: flex; gap: 10px; }
   .btn-row input { flex: 1; margin-bottom:0; }
 
-  #tickMsg, #menuMsg { font-size: 13px; margin-top: 8px; text-align:center; font-weight:bold; }
+  #tickMsg, #menuMsg, #redeemMsg { font-size: 13px; margin-top: 8px; text-align:center; font-weight:bold; }
 
   .menu-list-item {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 14px;
+    padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 14px; gap:10px;
   }
+  .menu-list-item img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
+  .menu-list-item .item-details { flex: 1; }
   .menu-list-item .del-btn {
     background: #ff4757; padding: 6px 10px; font-size: 12px; border-radius: 6px;
   }
@@ -63,6 +67,40 @@
     padding: 14px 28px; border-radius: 30px; text-decoration: none;
     font-weight: bold; font-size: 15px; margin-top: 10px;
   }
+
+  /* Photo Picker */
+  .photo-picker-label {
+    font-size: 13px; color: #555; margin-bottom: 8px; display: block;
+  }
+  .selected-photo-preview {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+    padding: 10px; background: #f4f4fb; border-radius: 10px;
+  }
+  .selected-photo-preview img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
+  .selected-photo-preview span { font-size: 13px; color: #667eea; font-weight: bold; }
+  .choose-photo-btn {
+    background: #eef0ff; color: #667eea; width: 100%; margin-bottom: 12px;
+  }
+
+  .photo-modal-overlay {
+    display: none; position: fixed; top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.6); z-index: 200; align-items: flex-end; justify-content: center;
+  }
+  .photo-modal-overlay.active { display: flex; }
+  .photo-modal-box {
+    background: #fff; width: 100%; max-width: 480px; border-radius: 20px 20px 0 0;
+    padding: 18px; max-height: 75vh; overflow-y: auto;
+  }
+  .photo-modal-box h3 { margin-bottom: 12px; }
+  .category-title { font-size: 13px; color: #999; margin: 14px 0 8px; font-weight: bold; text-transform: uppercase; }
+  .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .photo-grid-item { text-align: center; cursor: pointer; }
+  .photo-grid-item img {
+    width: 100%; aspect-ratio: 1; border-radius: 10px; object-fit: cover; border: 2px solid transparent;
+  }
+  .photo-grid-item img:active { border-color: #667eea; }
+  .photo-grid-item p { font-size: 11px; margin-top: 4px; color: #555; }
+  .close-photo-modal { text-align:right; color:#999; font-size:20px; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -78,13 +116,15 @@
   <div class="section">
     <h3>✅ Give Loyalty Tick</h3>
     <input type="tel" id="tickMobile" placeholder="Customer's 10-digit mobile number" maxlength="10">
+    <input type="number" id="tickBillAmount" placeholder="Bill Amount (₹) — min ₹299 required">
     <button class="btn-full" onclick="giveTick()">Add Tick +1</button>
     <p id="tickMsg"></p>
   </div>
 
   <div class="section">
-    <h3>🎁 Redeem Coupon (7 Ticks)</h3>
+    <h3>🎁 Redeem Coupon</h3>
     <input type="tel" id="redeemMobile" placeholder="Customer's 10-digit mobile number" maxlength="10">
+    <input type="text" id="redeemCode" placeholder="Enter Coupon Code">
     <button class="btn-full btn-green" onclick="redeemCoupon()">Verify & Redeem</button>
     <p id="redeemMsg"></p>
   </div>
@@ -92,36 +132,42 @@
   <div class="section">
     <h3>🍽️ Menu Manager</h3>
     <input type="text" id="itemName" placeholder="Item name (e.g. Cappuccino)">
-    <div class="btn-row">
-      <input type="number" id="itemPrice" placeholder="Price ₹">
-      <input type="text" id="itemEmoji" placeholder="Emoji ☕" maxlength="4">
+    <input type="number" id="itemPrice" placeholder="Price ₹">
+
+    <span class="photo-picker-label">Item Photo:</span>
+    <div id="selectedPhotoPreview" class="selected-photo-preview" style="display:none;">
+      <img id="previewImg" src="">
+      <span id="previewName"></span>
     </div>
+    <button class="choose-photo-btn" onclick="openPhotoPicker()">📷 Choose Photo</button>
+
     <button class="btn-full" onclick="addMenuItem()">Add Item to Menu</button>
     <p id="menuMsg"></p>
     <div id="menuList" style="margin-top:15px;"></div>
   </div>
 
   <div class="section">
-  <h3>📱 Generate Table QR Code</h3>
-  
-  <!-- टेबल नंबर डालने के लिए नया इनपुट बॉक्स -->
-  <input type="number" id="tableNumberInput" placeholder="Enter Table Number (e.g., 1, 2, 3)" style="margin-bottom: 10px;">
-  <button class="btn-full" onclick="generateQR()" style="background: #4CAF50; margin-bottom: 15px;">Generate QR for this Table</button>
-
-  <!-- यहाँ QR कोड दिखाई देगा -->
-  <div id="qrcode" style="display: flex; justify-content: center;"></div>
-  
-  <p style="text-align:center; font-size:13px; color:#888; margin-top: 10px;">Print & place on tables. Customers scan to open your menu.</p>
-  <button class="btn-full" style="margin-top:10px;" onclick="downloadQR()">Download QR Code</button>
+    <h3>📱 Your Cafe QR Code</h3>
+    <div id="qrcode"></div>
+    <p style="text-align:center; font-size:13px; color:#888;">Print & place on tables. Customers scan to open your menu.</p>
+    <button class="btn-full" style="margin-top:10px;" onclick="downloadQR()">Download QR Code</button>
   </div>
- 
 
 </div>
 
 <div id="lockedContent" class="locked-overlay" style="display:none;">
   <h3 id="lockedTitle">⏳ Activation Pending</h3>
-  <p style="margin-top:10px; margin-bottom:20px;">Your cafe is registered but not active yet. Send us a WhatsApp message to activate your account.</p>
+  <p id="lockedMsg" style="margin-top:10px; margin-bottom:20px;">Your cafe is registered but not active yet. Send us a WhatsApp message to activate your account.</p>
   <a id="whatsappBtn" href="#" target="_blank" class="whatsapp-btn">📲 Message on WhatsApp</a>
+</div>
+
+<!-- Photo Picker Modal -->
+<div id="photoModal" class="photo-modal-overlay">
+  <div class="photo-modal-box">
+    <div class="close-photo-modal" onclick="closePhotoPicker()">✕</div>
+    <h3>Choose a Photo</h3>
+    <div id="photoGridContainer"></div>
+  </div>
 </div>
 
 <script src="owner-logic.js"></script>
