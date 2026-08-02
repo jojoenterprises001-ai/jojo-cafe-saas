@@ -1,72 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Dashboard - Menu & Rewards</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="dashboard.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jojo Cafe - Menu</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
-    <ul class="bg-bubbles"><li></li><li></li><li></li><li></li><li></li><li></li></ul>
 
-    <!-- Floating Cart Icon -->
-    <div id="cart-icon" class="cart-icon" style="cursor: pointer;">
-        🛒 <span id="cart-count">0</span>
+<div class="topbar">
+  <div class="topbar-left">
+    <h2>☕ Jojo Cafe</h2>
+    <p id="welcomeText">Hi!</p>
+  </div>
+  <div class="topbar-right">
+    <button class="icon-btn" onclick="openLoyalty()">🎁</button>
+    <button class="icon-btn" onclick="openCart()">
+      🛒 <span id="cartCount">0</span>
+    </button>
+  </div>
+</div>
+
+<div id="menuContainer" class="menu-grid">
+  <p style="text-align:center; width:100%; color:#999;">Loading menu...</p>
+</div>
+
+<!-- Cart Modal -->
+<div id="cartModal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>Your Cart</h3>
+      <span class="close-btn" onclick="closeCart()">✕</span>
     </div>
-
-    <!-- 🛒 ASLI CART BILLING POPUP (Hidden Default) -->
-    <div id="cart-modal" class="glass-panel" style="display: none; position: fixed; top: 15%; left: 5%; width: 90%; z-index: 10001; background: rgba(10, 10, 10, 0.95); border: 2px solid #e0aaff;">
-        <h2 style="color: #fff; text-align: center; border-bottom: 1px solid #444; padding-bottom: 10px;">Your Bill Order</h2>
-        <div id="cart-items-list" style="color: #e0aaff; margin: 15px 0; max-height: 200px; overflow-y: auto;">
-            <!-- Items Javascript se yahan aayenge -->
-        </div>
-        <h3 style="color: #25D366; text-align: right; border-top: 1px solid #444; padding-top: 10px;">Total Bill: ₹<span id="cart-total">0</span></h3>
-        
-        <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button class="btn-3d" onclick="closeCart()" style="background: #ef233c; flex: 1;">Cancel</button>
-            <button class="btn-3d" onclick="placeOrder()" style="background: #25D366; flex: 1;">Place Order</button>
-        </div>
+    <div id="cartItemsList"></div>
+    <div class="bill-total">
+      <span>Total</span>
+      <span id="cartTotal">₹0</span>
     </div>
+    <button class="place-order-btn" onclick="placeOrder()">Place Order</button>
+  </div>
+</div>
 
-    <!-- Loyalty Rewards Card -->
-    <div class="glass-panel" style="margin-top: 80px;">
-        <h2 style="text-align: center; color: #fff; font-size: 20px;">Your Loyalty Rewards</h2>
-        <div class="tick-container">
-            <div class="tick-box" id="tick-1"></div><div class="tick-box" id="tick-2"></div><div class="tick-box" id="tick-3"></div><div class="tick-box" id="tick-4"></div><div class="tick-box" id="tick-5"></div><div class="tick-box" id="tick-6"></div><div class="tick-box" id="tick-7"></div>
-        </div>
-        <p style="text-align: center; font-size: 13px; color: #e0aaff; margin-top: 15px;">Get 7 ticks for a ₹149 Coupon!</p>
-        <!-- Games Section Link -->
-        <a href="games.html" class="btn-3d" style="display: block; margin-top: 15px; text-decoration: none; text-align: center;">🎮 Play Games</a>
+<!-- Loyalty Modal -->
+<div id="loyaltyModal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>Loyalty Card</h3>
+      <span class="close-btn" onclick="closeLoyalty()">✕</span>
     </div>
+    <p style="text-align:center; color:#888; margin-bottom:15px;">Collect 7 ticks, get a free reward!</p>
+    <div class="ticks-grid" id="ticksGrid"></div>
+    <p id="couponMsg" style="text-align:center; color:green; font-weight:bold; margin-top:15px; display:none;">
+      🎉 Coupon Unlocked! Show this screen to the owner.
+    </p>
+  </div>
+</div>
 
-    <!-- Menu Section -->
-    <div class="glass-panel">
-        <h2 style="color: #fff; margin-bottom: 15px; font-size: 20px;">Delicious Menu</h2>
-        
-        <!-- Menu Item 1 (Passed Name and Price to function) -->
-        <div class="menu-item">
-            <div class="item-info">
-                <span class="item-emoji">🍕</span>
-                <div><h3>Margherita Pizza</h3><p>₹299</p></div>
-            </div>
-            <button class="add-btn" onclick="flyToCart(event, '🍕', 'Margherita Pizza', 299)">Add +</button>
-        </div>
+<!-- Order Success Toast -->
+<div id="toast" class="toast"></div>
 
-        <!-- Menu Item 2 -->
-        <div class="menu-item">
-            <div class="item-info">
-                <span class="item-emoji">🍔</span>
-                <div><h3>Premium Burger</h3><p>₹199</p></div>
-            </div>
-            <button class="add-btn" onclick="flyToCart(event, '🍔', 'Premium Burger', 199)">Add +</button>
-        </div>
-    </div>
-
-    <script src="cart-animation.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="firebase-config.js"></script>
-    <script src="dashboard-logic.js"></script>
+<script src="dashboard-logic.js"></script>
+<script src="cart-animation.js"></script>
 </body>
 </html>
