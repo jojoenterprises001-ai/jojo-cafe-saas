@@ -102,11 +102,19 @@
   </div>
 
   <div class="section">
-    <h3>📱 Your Cafe QR Code</h3>
-    <div id="qrcode"></div>
-    <p style="text-align:center; font-size:13px; color:#888;">Print & place on tables. Customers scan to open your menu.</p>
-    <button class="btn-full" style="margin-top:10px;" onclick="downloadQR()">Download QR Code</button>
+  <h3>📱 Generate Table QR Code</h3>
+  
+  <!-- टेबल नंबर डालने के लिए नया इनपुट बॉक्स -->
+  <input type="number" id="tableNumberInput" placeholder="Enter Table Number (e.g., 1, 2, 3)" style="margin-bottom: 10px;">
+  <button class="btn-full" onclick="generateQR()" style="background: #4CAF50; margin-bottom: 15px;">Generate QR for this Table</button>
+
+  <!-- यहाँ QR कोड दिखाई देगा -->
+  <div id="qrcode" style="display: flex; justify-content: center;"></div>
+  
+  <p style="text-align:center; font-size:13px; color:#888; margin-top: 10px;">Print & place on tables. Customers scan to open your menu.</p>
+  <button class="btn-full" style="margin-top:10px;" onclick="downloadQR()">Download QR Code</button>
   </div>
+ 
 
 </div>
 
