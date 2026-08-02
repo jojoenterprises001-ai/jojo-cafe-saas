@@ -55,12 +55,11 @@ function loadGame(gameName) {
   else if (gameName === 'memory') renderMemoryGame(container);
   else if (gameName === 'quiz') renderQuiz(container);
 }
-
 // Auto-load game if URL has ?game= param
 const urlParams = new URLSearchParams(window.location.search);
 const gameParam = urlParams.get('game');
 if (gameParam) {
-  window.addEventListener('DOMContentLoaded', () => loadGame(gameParam));
+  loadGame(gameParam);
 }
 
 // =====================================================
