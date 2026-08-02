@@ -114,11 +114,14 @@
 <div id="dashboardContent" style="display:none;">
 
   <div class="section">
-    <h3>✅ Give Loyalty Tick</h3>
-    <input type="tel" id="tickMobile" placeholder="Customer's 10-digit mobile number" maxlength="10">
-    <input type="number" id="tickBillAmount" placeholder="Bill Amount (₹) — min ₹299 required">
-    <button class="btn-full" onclick="giveTick()">Add Tick +1</button>
-    <p id="tickMsg"></p>
+    <h3>📱 Table QR Generator</h3>
+    <input type="number" id="tableNumberInput" placeholder="Enter Table Number (e.g. 5)" min="1">
+    <button class="btn-full" onclick="generateTableQR()">Generate QR for this Table</button>
+    <div id="qrResultBox" style="display:none; text-align:center; margin-top:15px; background:#f9f9f9; padding:15px; border-radius:12px;">
+      <p style="font-weight:bold; margin-bottom:10px;" id="qrTableLabel"></p>
+      <div id="qrcode"></div>
+      <button style="margin-top:10px; width:100%; background:#4CAF50;" onclick="downloadQR()">Download this QR</button>
+    </div>
   </div>
 
   <div class="section">
