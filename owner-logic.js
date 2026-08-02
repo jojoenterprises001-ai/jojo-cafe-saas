@@ -181,7 +181,7 @@ function generateQR() {
     const ownerMobile = localStorage.getItem('ownerMobile');
     
     // असली लिंक बनाना (जिसमें कैफे का नंबर और टेबल का नंबर दोनों होंगे)
-    const baseUrl = window.location.origin + window.location.pathname.replace('owner-dashboard.html', 'index.html');
+    const baseUrl = window.location.origin + window.location.pathname.replace('owner-dashboard.html', 'customer-login.html');
     const dynamicUrl = `${baseUrl}?cafe=${encodeURIComponent(ownerMobile)}&table=${encodeURIComponent(tableNumber)}`;
 
     qrContainer.innerHTML = ""; // पुराना QR साफ करें
