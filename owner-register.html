@@ -33,7 +33,25 @@
   }
   button:active { transform: scale(0.97); }
   #errorMsg { color: red; font-size: 13px; margin-bottom: 10px; display:none; text-align:center; }
-  #successMsg { color: green; font-size: 14px; margin-bottom: 10px; display:none; text-align:center; font-weight:bold; }
+  .hint { font-size: 11px; color: #999; margin-top: -10px; margin-bottom: 15px; }
+
+  /* Success popup */
+  .overlay {
+    display: none; position: fixed; top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 999;
+  }
+  .overlay.active { display: flex; }
+  .popup {
+    background: #fff; border-radius: 18px; padding: 30px 24px;
+    width: 90%; max-width: 360px; text-align: center;
+  }
+  .popup h2 { color: #27ae60; margin-bottom: 10px; font-size: 20px; }
+  .popup p { color: #666; font-size: 14px; margin-bottom: 20px; }
+  .wa-btn {
+    display: inline-block; background: #25D366; color: #fff;
+    padding: 14px 24px; border-radius: 30px; text-decoration: none;
+    font-weight: bold; font-size: 15px;
+  }
 </style>
 </head>
 <body>
@@ -42,7 +60,6 @@
   <h1>🏪 Register Your Cafe</h1>
   <p>Get started with Jojo Cafe SaaS</p>
   <div id="errorMsg"></div>
-  <div id="successMsg"></div>
 
   <label>Cafe Name</label>
   <input type="text" id="cafeName" placeholder="e.g. Sunrise Cafe">
@@ -50,13 +67,27 @@
   <label>Owner Name</label>
   <input type="text" id="ownerName" placeholder="Your full name">
 
-  <label>Mobile Number</label>
+  <label>Login Mobile Number</label>
   <input type="tel" id="ownerMobile" placeholder="10-digit mobile number" maxlength="10">
+  <p class="hint">Use this number to login to your dashboard</p>
+
+  <label>WhatsApp Order Number</label>
+  <input type="tel" id="whatsappNumber" placeholder="10-digit WhatsApp number" maxlength="10">
+  <p class="hint">Customer orders will be sent to this WhatsApp number</p>
 
   <label>Cafe Address</label>
   <input type="text" id="cafeAddress" placeholder="City / Area">
 
   <button onclick="handleRegister()">Register Cafe →</button>
+</div>
+
+<!-- Success Popup with WhatsApp Activation -->
+<div id="successOverlay" class="overlay">
+  <div class="popup">
+    <h2>✅ Registered!</h2>
+    <p>Your 7-Day Free Trial request is created!<br>Click below to message Admin for activation.</p>
+    <a id="waActivateBtn" href="#" target="_blank" class="wa-btn">📲 Message Admin on WhatsApp</a>
+  </div>
 </div>
 
 <script src="register-db.js"></script>
