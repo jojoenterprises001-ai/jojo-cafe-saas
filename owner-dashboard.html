@@ -1,4 +1,4 @@
-<!-- owner-dashboard.html - Part 12 -->
+<!-- owner-dashboard.html - Updated with Firebase -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,9 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cafe Owner Dashboard</title>
     <link rel="stylesheet" href="style.css">
+
+    <!-- Firebase Libraries -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 </head>
 <body>
-    <!-- 3D Floating Background -->
     <ul class="bg-bubbles">
         <li></li><li></li><li></li><li></li><li></li><li></li>
     </ul>
@@ -16,48 +19,28 @@
     <div class="glass-panel" style="margin-top: 5vh;">
         <h1 style="text-align: center; color: #fff; margin-bottom: 20px;">🏪 Owner Dashboard</h1>
         
-        <!-- Section 1: Give Ticks (Anti-Cheat) -->
+        <!-- Section 1: Give Ticks -->
         <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; margin-bottom: 20px;">
             <h3 style="color: #e0aaff; margin-bottom: 10px;">✅ Give Loyalty Tick</h3>
-            <p style="font-size: 12px; color: #ccc; margin-bottom: 10px;">For orders above ₹299. (Ticks cannot be removed)</p>
+            <p style="font-size: 12px; color: #ccc; margin-bottom: 10px;">For orders above ₹299.</p>
             <input type="number" id="customer-phone-tick" class="input-field" placeholder="Customer Mobile Number" required>
-            <button class="btn-3d" onclick="giveTick()" style="background: linear-gradient(145deg, #25D366, #128C7E); box-shadow: 0 4px 0 #075E54;">
+            <button class="btn-3d" id="tick-btn" onclick="giveTick()" style="background: linear-gradient(145deg, #25D366, #128C7E);">
                 Add 1 Tick ➔
             </button>
         </div>
 
         <!-- Section 2: Redeem Coupon -->
         <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; margin-bottom: 20px;">
-            <h3 style="color: #e0aaff; margin-bottom: 10px;">🎁 Redeem ₹149 Coupon</h3>
-            <input type="text" id="coupon-code" class="input-field" placeholder="Enter 6-digit Coupon Code" style="text-transform: uppercase;">
-            <button class="btn-3d" onclick="redeemCoupon()" style="background: linear-gradient(145deg, #ffb703, #fb8500); box-shadow: 0 4px 0 #cc5500;">
-                Verify & Redeem ➔
+            <h3 style="color: #e0aaff; margin-bottom: 10px;">🎁 Redeem Coupon</h3>
+            <input type="number" id="coupon-phone" class="input-field" placeholder="Customer Mobile Number">
+            <button class="btn-3d" onclick="redeemCoupon()" style="background: linear-gradient(145deg, #ffb703, #fb8500);">
+                Reset Ticks & Redeem ➔
             </button>
-        </div>
-
-        <!-- Section 3: Edit Menu (Gallery Upload) -->
-        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px;">
-            <h3 style="color: #e0aaff; margin-bottom: 10px;">🍔 Edit Menu Items</h3>
-            
-            <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 10px;">
-                <input type="text" id="item-name" class="input-field" placeholder="Item Name (e.g. Pizza)">
-                <input type="number" id="item-price" class="input-field" placeholder="Price (₹)">
-                
-                <!-- File Input for Mobile Gallery -->
-                <label style="color: #fff; font-size: 14px; margin-top: 10px; display: block;">Upload Dish Photo:</label>
-                <input type="file" id="item-photo" accept="image/*" class="input-field" style="padding: 8px;">
-                
-                <!-- Image Preview Box -->
-                <div id="image-preview-box" style="margin-top: 10px; display: none;">
-                    <img id="image-preview" style="width: 100%; max-height: 150px; object-fit: cover; border-radius: 10px; border: 2px solid #e0aaff;">
-                </div>
-
-                <button class="btn-3d" onclick="saveMenuItem()" style="margin-top: 15px;">Update Menu Item 💾</button>
-            </div>
         </div>
     </div>
 
+    <!-- Firebase Config aur Asli Logic -->
+    <script src="firebase-config.js"></script>
     <script src="owner-logic.js"></script>
 </body>
 </html>
-
