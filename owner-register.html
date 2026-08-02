@@ -7,6 +7,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
+ <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <style>
   * { box-sizing: border-box; margin:0; padding:0; font-family:'Segoe UI', sans-serif; }
   body {
@@ -70,7 +71,8 @@
   <label>Login Mobile Number</label>
   <input type="tel" id="ownerMobile" placeholder="10-digit mobile number" maxlength="10">
   <p class="hint">Use this number to login to your dashboard</p>
-
+<label>Set a Password</label>
+  <input type="password" id="ownerPassword" placeholder="Create a password (min 6 characters)">
   <label>WhatsApp Order Number</label>
   <input type="tel" id="whatsappNumber" placeholder="10-digit WhatsApp number" maxlength="10">
   <p class="hint">Customer orders will be sent to this WhatsApp number</p>
