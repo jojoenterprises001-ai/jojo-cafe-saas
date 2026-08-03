@@ -302,11 +302,22 @@ function generateTableQR() {
 }
 
 function downloadQR() {
-  const canvas = document.querySelector('#qrcode canvas');
-  if (!canvas) return;
+  const originalCanvas = document.querySelector('#qrcode canvas');
+  if (!originalCanvas) return;
+
+  const padding = 40;
+  const newCanvas = document.createElement('canvas');
+  newCanvas.width = originalCanvas.width + (padding * 2);
+  newCanvas.height = originalCanvas.height + (padding * 2);
+
+  const ctx = newCanvas.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
+  ctx.drawImage(originalCanvas, padding, padding);
+
   const link = document.createElement('a');
   link.download = cafeData.cafeName + '-Table' + currentTableNumber + '-QR.png';
-  link.href = canvas.toDataURL();
+  link.href = newCanvas.toDataURL();
   link.click();
 }
 
