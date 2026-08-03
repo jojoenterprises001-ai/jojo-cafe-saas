@@ -270,6 +270,126 @@ function drawMemoryBoard() {
   memoryCards.forEach((emoji, i) => {
     const div = document.createElement('div');
     const isFlipped = flippedCards.includes(i);
-    const isMatched = document.getElementById('matched-' + i) !== null;
     div.className = 'memory-card' + (isFlipped ? ' flipped' : '') + (matchedIndexes.includes(i) ? ' matched' : '');
-    div.innerText = (isFlipped || matchedIndexes.includes(i)) ?
+    div.innerText = (isFlipped || matchedIndexes.includes(i)) ? emoji : '';
+    div.onclick = () => flipMemoryCard(i);
+    boardEl.appendChild(div);
+  });
+}
+
+let matchedIndexes = [];
+
+function flipMemoryCard(index) {
+  if (memoryLocked || flippedCards.includes(index) || matchedIndexes.includes(index)) return;
+
+  flippedCards.push(index);
+  drawMemoryBoard();
+
+  if (flippedCards.length === 2) {
+    memoryLocked = true;
+    const [first, second] = flippedCards;
+
+    if (memoryCards[first] === memoryCards[second]) {
+      matchedIndexes.push(first, second);
+      matchedCount++;
+      flippedCards = [];
+      memoryLocked = false;
+      drawMemoryBoard();
+
+      if (matchedCount === memoryEmojis.length) {
+        addPoints(20);
+        setTimeout(() => {
+          document.getElementById('gameContainer').innerHTML += '<div style="text-align:center; padding:20px;"><h3 style="color:#27ae60;">🎉 You Won! +20 points</h3><button class="play-again-btn" onclick="renderMemoryGame(document.getElementById(\'gameContainer\'))">Play Again</button></div>';
+        }, 300);
+      }
+    } else {
+      setTimeout(() => {
+        flippedCards = [];
+        memoryLocked = false;
+        drawMemoryBoard();
+      }, 800);
+    }
+  }
+}
+
+// =====================================================
+// ===== GAME 4: GK QUIZ =====
+// =====================================================
+const quizQuestions = [
+  { q: "What is the capital of India?", options: ["Mumbai", "New Delhi", "Kolkata", "Chennai"], answer: 1 },
+  { q: "Which is the largest planet in our solar system?", options: ["Earth", "Mars", "Jupiter", "Saturn"], answer: 2 },
+  { q: "Who wrote the Indian National Anthem?", options: ["Rabindranath Tagore", "Bankim Chandra", "Sarojini Naidu", "Munshi Premchand"], answer: 0 },
+  { q: "How many continents are there?", options: ["5", "6", "7", "8"], answer: 2 },
+  { q: "What is the national animal of India?", options: ["Lion", "Elephant", "Tiger", "Peacock"], answer: 2 },
+  { q: "Which is the longest river in the world?", options: ["Ganga", "Amazon", "Nile", "Yangtze"], answer: 2 },
+  { q: "What is H2O commonly known as?", options: ["Salt", "Water", "Oxygen", "Hydrogen"], answer: 1 },
+  { q: "Which country invented tea?", options: ["India", "China", "Japan", "England"], answer: 1 },
+  { q: "How many players are in a cricket team?", options: ["9", "10", "11", "12"], answer: 2 },
+  { q: "What is the currency of Japan?", options: ["Yuan", "Won", "Yen", "Dollar"], answer: 2 }
+];
+
+let currentQuizIndex = 0;
+let quizScore = 0;
+let quizAnswered = false;
+
+function renderQuiz(container) {
+  currentQuizIndex = 0;
+  quizScore = 0;
+  const shuffled = [...quizQuestions].sort(() => Math.random() - 0.5).slice(0, 5);
+  window.activeQuizQuestions = shuffled;
+  showQuizQuestion(container);
+}
+
+function showQuizQuestion(container) {
+  quizAnswered = false;
+  const questions = window.activeQuizQuestions;
+
+  if (currentQuizIndex >= questions.length) {
+    addPoints(quizScore * 5);
+    container.innerHTML = `
+      <div class="result-box">
+        <h2>Quiz Complete!</h2>
+        <p style="font-size:16px; color:#666;">You scored ${quizScore} out of ${questions.length}</p>
+        <p style="font-size:14px; color:#27ae60; margin-top:10px;">+${quizScore * 5} points earned!</p>
+        <button class="play-again-btn" onclick="renderQuiz(document.getElementById('gameContainer'))">Play Again</button>
+      </div>
+    `;
+    return;
+  }
+
+  const q = questions[currentQuizIndex];
+  container.innerHTML = `
+    <div class="quiz-box">
+      <p style="font-size:13px; color:#999; margin-bottom:8px;">Question ${currentQuizIndex + 1} of ${questions.length}</p>
+      <div class="quiz-question">${q.q}</div>
+      <div id="quizOptions"></div>
+    </div>
+  `;
+
+  const optionsContainer = document.getElementById('quizOptions');
+  q.options.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-option';
+    div.innerText = opt;
+    div.onclick = () => selectQuizAnswer(i, q.answer, container);
+    optionsContainer.appendChild(div);
+  });
+}
+
+function selectQuizAnswer(selectedIndex, correctIndex, container) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+
+  const options = document.querySelectorAll('.quiz-option');
+  options[correctIndex].classList.add('correct');
+  if (selectedIndex !== correctIndex) {
+    options[selectedIndex].classList.add('wrong');
+  } else {
+    quizScore++;
+  }
+
+  setTimeout(() => {
+    currentQuizIndex++;
+    showQuizQuestion(container);
+  }, 1000);
+}
