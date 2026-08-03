@@ -289,12 +289,13 @@ function generateTableQR() {
   const menuUrl = baseUrl + '?cafe=' + ownerMobile + '&table=' + tableNum;
 
   new QRCode(qrContainer, {
-    text: menuUrl,
-    width: 180,
-    height: 180,
-    colorDark: '#667eea',
-    colorLight: '#ffffff'
-  });
+      text: menuUrl,
+      width: 300,
+      height: 300,
+      colorDark: '#000000',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H
+    });
 
   document.getElementById('qrTableLabel').innerText = 'Table ' + tableNum;
   document.getElementById('qrResultBox').style.display = 'block';
