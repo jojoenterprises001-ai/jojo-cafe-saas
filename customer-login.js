@@ -1,11 +1,13 @@
-
-// ===== Get cafe ID and Table from URL =====
+// Get cafe ID and table number from URL (?cafe=CAFEID&table=N) e.g. via QR code
 const urlParams = new URLSearchParams(window.location.search);
 const cafeIdFromUrl = urlParams.get('cafe');
 const tableFromUrl = urlParams.get('table');
 
 if (cafeIdFromUrl) {
-    localStorage.setItem('cafeId', cafeIdFromUrl);
+  localStorage.setItem('cafeId', cafeIdFromUrl);
+}
+if (tableFromUrl) {
+  localStorage.setItem('tableNumber', tableFromUrl);
 }
 if (tableFromUrl) {
     localStorage.setItem('tableNumber', tableFromUrl);
