@@ -2,7 +2,7 @@
 const cafeId = localStorage.getItem('cafeId');
 const customerName = localStorage.getItem('customerName');
 const customerMobile = localStorage.getItem('customerMobile');
-
+const tableNumber = localStorage.getItem('tableNumber');
 if (!cafeId || !customerMobile) {
   window.location.href = 'customer-login.html';
 }
@@ -198,11 +198,14 @@ function placeOrder() {
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
 
-  // Build WhatsApp message
+// Build WhatsApp message
   let itemsList = cart.map(i => `${i.qty}x ${i.name}`).join(', ');
   let message = `🛒 *New Order - Jojo Cafe*\n\n`;
   message += `Customer Name: ${customerName}\n`;
   message += `Mobile: ${customerMobile}\n`;
+  if (tableNumber) {
+    message += `Table No: Table ${tableNumber}\n`;
+  }
   message += `Order Details: ${itemsList}\n`;
   message += `Total Price: ₹${total}`;
 
