@@ -1,395 +1,231 @@
-// ===== SETUP =====
-const gCafeId = localStorage.getItem('cafeId');
-const gCustomerName = localStorage.getItem('customerName');
-const gCustomerMobile = localStorage.getItem('customerMobile');
-
-if (!gCustomerMobile) {
-  window.location.href = 'customer-login.html';
-}
-
+// ===== INITIALIZATION & USER DATA =====
 let currentPoints = 0;
+const customerMobile = localStorage.getItem('customerMobile');
+const customerName = localStorage.getItem('customerName') || 'Guest';
 
-// Load current points
-db.collection('Customers').doc(gCustomerMobile).get().then((doc) => {
-  if (doc.exists) {
-    currentPoints = doc.data().gamePoints || 0;
-    document.getElementById('totalPoints').innerText = currentPoints;
-  }
-});
-
-function addPoints(points) {
-  currentPoints += points;
-  document.getElementById('totalPoints').innerText = currentPoints;
-
-  const custRef = db.collection('Customers').doc(gCustomerMobile);
-  custRef.get().then((doc) => {
-    if (!doc.exists) return;
-    const existing = doc.data().gamePoints || 0;
-    custRef.update({
-      gamePoints: existing + points,
-      cafeId: gCafeId,
-      name: gCustomerName
-    });
-  });
-}
-
-function goBack() {
-  const container = document.getElementById('gameContainer');
-  if (container.style.display === 'block') {
-    // If inside a game, go back to game selector
-    container.style.display = 'none';
-    document.getElementById('gameSelector').style.display = 'grid';
-  } else {
-    window.location.href = 'customer-dashboard.html';
-  }
-}
-
-// ===== LOAD SELECTED GAME =====
-function loadGame(gameName) {
-  document.getElementById('gameSelector').style.display = 'none';
-  const container = document.getElementById('gameContainer');
-  container.style.display = 'block';
-
-  if (gameName === 'spin') renderSpinWheel(container);
-  else if (gameName === 'tictactoe') renderTicTacToe(container);
-  else if (gameName === 'memory') renderMemoryGame(container);
-  else if (gameName === 'quiz') renderQuiz(container);
-}
-// Auto-load game if URL has ?game= param
-const urlParams = new URLSearchParams(window.location.search);
-const gameParam = urlParams.get('game');
-if (gameParam) {
-  loadGame(gameParam);
-}
-
-// =====================================================
-// ===== GAME 1: SPIN THE WHEEL =====
-// =====================================================
-const wheelPrizes = [10, 5, 20, 0, 15, 5, 25, 10];
-const wheelColors = ['#ff7e5f', '#feb47b', '#ffcbb3', '#ff9478', '#ffb199', '#ffd4b3', '#ff8c66', '#ffa985'];
-let wheelSpinning = false;
-let wheelRotation = 0;
-
-function renderSpinWheel(container) {
-  container.innerHTML = `
-    <div class="wheel-wrap">
-      <canvas id="wheelCanvas" width="280" height="280"></canvas>
-      <button class="spin-btn" id="spinBtn" onclick="spinWheel()">🎡 SPIN NOW</button>
-    </div>
-  `;
-  drawWheel(0);
-}
-
-function drawWheel(rotation) {
-  const canvas = document.getElementById('wheelCanvas');
-  const ctx = canvas.getContext('2d');
-  const cx = 140, cy = 140, radius = 130;
-  const sliceAngle = (2 * Math.PI) / wheelPrizes.length;
-
-  ctx.clearRect(0, 0, 280, 280);
-  ctx.save();
-  ctx.translate(cx, cy);
-  ctx.rotate(rotation);
-
-  wheelPrizes.forEach((prize, i) => {
-    const startAngle = i * sliceAngle;
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.arc(0, 0, radius, startAngle, startAngle + sliceAngle);
-    ctx.fillStyle = wheelColors[i];
-    ctx.fill();
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    ctx.save();
-    ctx.rotate(startAngle + sliceAngle / 2);
-    ctx.textAlign = 'right';
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 16px Segoe UI';
-    ctx.fillText(prize + ' pts', radius - 15, 5);
-    ctx.restore();
-  });
-
-  ctx.restore();
-
-  // Pointer
-  ctx.beginPath();
-  ctx.moveTo(cx - 10, 5);
-  ctx.lineTo(cx + 10, 5);
-  ctx.lineTo(cx, 25);
-  ctx.closePath();
-  ctx.fillStyle = '#333';
-  ctx.fill();
-}
-
-function spinWheel() {
-  if (wheelSpinning) return;
-  wheelSpinning = true;
-  document.getElementById('spinBtn').disabled = true;
-
-  const spins = 5 + Math.random() * 3;
-  const winningIndex = Math.floor(Math.random() * wheelPrizes.length);
-  const sliceAngle = (2 * Math.PI) / wheelPrizes.length;
-  const targetRotation = (spins * 2 * Math.PI) + (2 * Math.PI - (winningIndex * sliceAngle) - sliceAngle / 2);
-
-  let startTime = null;
-  const duration = 4000;
-  const startRotation = wheelRotation;
-
-  function animateSpin(timestamp) {
-    if (!startTime) startTime = timestamp;
-    const elapsed = timestamp - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-    const easeOut = 1 - Math.pow(1 - progress, 4);
-
-    wheelRotation = startRotation + (targetRotation * easeOut);
-    drawWheel(wheelRotation);
-
-    if (progress < 1) {
-      requestAnimationFrame(animateSpin);
-    } else {
-      wheelSpinning = false;
-      document.getElementById('spinBtn').disabled = false;
-      const won = wheelPrizes[winningIndex];
-      addPoints(won);
-      setTimeout(() => alert(`🎉 You won ${won} points!`), 300);
+// जब पेज लोड होगा, चेक करेगा कि कस्टमर लॉगिन है या नहीं
+window.onload = () => {
+    if(!customerMobile) {
+        alert("Please login from the QR Code first!");
+        window.location.href = 'customer-login.html';
+        return;
     }
-  }
-  requestAnimationFrame(animateSpin);
+    loadUserPoints();
+};
+
+// Firebase से कस्टमर के पॉइंट्स रियल-टाइम में लाना
+function loadUserPoints() {
+    db.collection('Customers').doc(customerMobile).onSnapshot((doc) => {
+        if (doc.exists) {
+            currentPoints = doc.data().points || 0;
+            document.getElementById('userPoints').innerText = `🏆 ${currentPoints} Pts`;
+        }
+    });
 }
 
-// =====================================================
-// ===== GAME 2: TIC-TAC-TOE (vs Computer) =====
-// =====================================================
-let tttBoard = ['', '', '', '', '', '', '', '', ''];
-let tttGameOver = false;
-
-function renderTicTacToe(container) {
-  tttBoard = ['', '', '', '', '', '', '', '', ''];
-  tttGameOver = false;
-  container.innerHTML = `
-    <div class="ttt-status" id="tttStatus">Your turn (X)</div>
-    <div class="ttt-board" id="tttBoard"></div>
-  `;
-  drawTTTBoard();
+// कस्टमर के अकाउंट में जीतने पर पॉइंट्स जोड़ना
+function addPoints(pts) {
+    currentPoints += pts;
+    db.collection('Customers').doc(customerMobile).set({
+        points: currentPoints
+    }, { merge: true }) // Merge: true से पुराना डेटा (जैसे नाम, टेबल) डिलीट नहीं होता
+    .then(() => {
+        alert(`🎉 Awesome! You won ${pts} Points!`);
+    })
+    .catch((err) => console.error("Error adding points: ", err));
 }
 
-function drawTTTBoard() {
-  const boardEl = document.getElementById('tttBoard');
-  boardEl.innerHTML = '';
-  tttBoard.forEach((cell, i) => {
-    const div = document.createElement('div');
-    div.className = 'ttt-cell';
-    div.innerText = cell;
-    div.onclick = () => tttMove(i);
-    boardEl.appendChild(div);
-  });
+// ===== UI NAVIGATION =====
+function openGame(sectionId) {
+    document.getElementById('mainMenu').style.display = 'none';
+    document.querySelectorAll('.game-section').forEach(el => el.style.display = 'none');
+    document.getElementById(sectionId).style.display = 'block';
+    
+    if(sectionId === 'tictactoeSection') initTicTacToe();
+    if(sectionId === 'quizSection') loadQuiz();
 }
 
-function tttMove(index) {
-  if (tttBoard[index] !== '' || tttGameOver) return;
-  tttBoard[index] = 'X';
-  drawTTTBoard();
+function closeGame() {
+    document.getElementById('mainMenu').style.display = 'block';
+    document.querySelectorAll('.game-section').forEach(el => el.style.display = 'none');
+    clearInterval(quizTimer); // क्विज़ बंद करने पर टाइमर रोक दें
+}
 
-  const result = checkTTTWinner();
-  if (result) return endTTT(result);
+// ==========================================
+// 1. TIC-TAC-TOE LOGIC (VS COMPUTER)
+// ==========================================
+let board = ["", "", "", "", "", "", "", "", ""];
+let currentPlayer = "X";
+let gameActive = true;
 
-  document.getElementById('tttStatus').innerText = "Computer's turn...";
-  setTimeout(() => {
-    computerMove();
-    const result2 = checkTTTWinner();
-    if (result2) return endTTT(result2);
-    document.getElementById('tttStatus').innerText = 'Your turn (X)';
-  }, 500);
+function initTicTacToe() {
+    board = ["", "", "", "", "", "", "", "", ""];
+    currentPlayer = "X";
+    gameActive = true;
+    const boardEl = document.getElementById('tttBoard');
+    boardEl.innerHTML = "";
+    
+    for(let i = 0; i < 9; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.onclick = () => handleCellClick(cell, i);
+        boardEl.appendChild(cell);
+    }
+}
+
+function handleCellClick(cell, index) {
+    if(board[index] !== "" || !gameActive) return;
+    
+    // Player's move
+    board[index] = currentPlayer;
+    cell.innerText = currentPlayer;
+    cell.style.color = "#ff4757"; // Red for X
+    
+    checkWin();
+    
+    // Computer's turn (AI)
+    if(gameActive) {
+        currentPlayer = "O";
+        setTimeout(computerMove, 500); 
+    }
 }
 
 function computerMove() {
-  const emptyCells = tttBoard.map((v, i) => v === '' ? i : null).filter(v => v !== null);
-  if (emptyCells.length === 0) return;
-  const randomIndex = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-  tttBoard[randomIndex] = 'O';
-  drawTTTBoard();
-}
-
-function checkTTTWinner() {
-  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  for (const line of lines) {
-    const [a,b,c] = line;
-    if (tttBoard[a] && tttBoard[a] === tttBoard[b] && tttBoard[a] === tttBoard[c]) {
-      return tttBoard[a];
+    if(!gameActive) return;
+    let emptyCells = [];
+    board.forEach((val, i) => { if(val === "") emptyCells.push(i) });
+    
+    if(emptyCells.length > 0) {
+        let randomIndex = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        board[randomIndex] = "O";
+        
+        const cells = document.querySelectorAll('.cell');
+        cells[randomIndex].innerText = "O";
+        cells[randomIndex].style.color = "#2ed573"; // Green for O
+        
+        checkWin();
+        currentPlayer = "X"; // Back to player
     }
-  }
-  if (!tttBoard.includes('')) return 'draw';
-  return null;
 }
 
-function endTTT(result) {
-  tttGameOver = true;
-  const statusEl = document.getElementById('tttStatus');
-  if (result === 'X') {
-    statusEl.innerText = '🎉 You Won!';
-    addPoints(15);
-  } else if (result === 'O') {
-    statusEl.innerText = '😢 Computer Won!';
-  } else {
-    statusEl.innerText = "It's a Draw!";
-    addPoints(5);
-  }
-  setTimeout(() => {
-    const container = document.getElementById('gameContainer');
-    container.innerHTML += '<div style="text-align:center;"><button class="play-again-btn" onclick="renderTicTacToe(document.getElementById(\'gameContainer\'))">Play Again</button></div>';
-  }, 500);
-  }
-// =====================================================
-// ===== GAME 3: MEMORY FLIP =====
-// =====================================================
-const memoryEmojis = ['☕', '🍕', '🍔', '🍰', '🍟', '🍩', '🥤', '🍪'];
-let memoryCards = [];
-let flippedCards = [];
-let matchedCount = 0;
-let memoryLocked = false;
-
-function renderMemoryGame(container) {
-  const cardPairs = [...memoryEmojis, ...memoryEmojis];
-  memoryCards = cardPairs.sort(() => Math.random() - 0.5);
-  flippedCards = [];
-  matchedCount = 0;
-  memoryLocked = false;
-
-  container.innerHTML = `
-    <div class="ttt-status">Find all matching pairs!</div>
-    <div class="memory-board" id="memoryBoard"></div>
-  `;
-  drawMemoryBoard();
-}
-
-function drawMemoryBoard() {
-  const boardEl = document.getElementById('memoryBoard');
-  boardEl.innerHTML = '';
-  memoryCards.forEach((emoji, i) => {
-    const div = document.createElement('div');
-    const isFlipped = flippedCards.includes(i);
-    div.className = 'memory-card' + (isFlipped ? ' flipped' : '') + (matchedIndexes.includes(i) ? ' matched' : '');
-    div.innerText = (isFlipped || matchedIndexes.includes(i)) ? emoji : '';
-    div.onclick = () => flipMemoryCard(i);
-    boardEl.appendChild(div);
-  });
-}
-
-let matchedIndexes = [];
-
-function flipMemoryCard(index) {
-  if (memoryLocked || flippedCards.includes(index) || matchedIndexes.includes(index)) return;
-
-  flippedCards.push(index);
-  drawMemoryBoard();
-
-  if (flippedCards.length === 2) {
-    memoryLocked = true;
-    const [first, second] = flippedCards;
-
-    if (memoryCards[first] === memoryCards[second]) {
-      matchedIndexes.push(first, second);
-      matchedCount++;
-      flippedCards = [];
-      memoryLocked = false;
-      drawMemoryBoard();
-
-      if (matchedCount === memoryEmojis.length) {
-        addPoints(20);
-        setTimeout(() => {
-          document.getElementById('gameContainer').innerHTML += '<div style="text-align:center; padding:20px;"><h3 style="color:#27ae60;">🎉 You Won! +20 points</h3><button class="play-again-btn" onclick="renderMemoryGame(document.getElementById(\'gameContainer\'))">Play Again</button></div>';
-        }, 300);
-      }
-    } else {
-      setTimeout(() => {
-        flippedCards = [];
-        memoryLocked = false;
-        drawMemoryBoard();
-      }, 800);
+function checkWin() {
+    const winConditions = [
+        [0,1,2], [3,4,5], [6,7,8], // Horizontal
+        [0,3,6], [1,4,7], [2,5,8], // Vertical
+        [0,4,8], [2,4,6]           // Diagonal
+    ];
+    
+    for(let i=0; i<winConditions.length; i++) {
+        const [a,b,c] = winConditions[i];
+        if(board[a] && board[a] === board[b] && board[a] === board[c]) {
+            gameActive = false;
+            if(board[a] === "X") {
+                addPoints(20);
+            } else {
+                alert("💻 Computer Wins! Try again.");
+            }
+            return;
+        }
     }
-  }
+    
+    if(!board.includes("")) {
+        gameActive = false;
+        alert("It's a Draw! 🤝");
+    }
 }
 
-// =====================================================
-// ===== GAME 4: GK QUIZ =====
-// =====================================================
-const quizQuestions = [
-  { q: "What is the capital of India?", options: ["Mumbai", "New Delhi", "Kolkata", "Chennai"], answer: 1 },
-  { q: "Which is the largest planet in our solar system?", options: ["Earth", "Mars", "Jupiter", "Saturn"], answer: 2 },
-  { q: "Who wrote the Indian National Anthem?", options: ["Rabindranath Tagore", "Bankim Chandra", "Sarojini Naidu", "Munshi Premchand"], answer: 0 },
-  { q: "How many continents are there?", options: ["5", "6", "7", "8"], answer: 2 },
-  { q: "What is the national animal of India?", options: ["Lion", "Elephant", "Tiger", "Peacock"], answer: 2 },
-  { q: "Which is the longest river in the world?", options: ["Ganga", "Amazon", "Nile", "Yangtze"], answer: 2 },
-  { q: "What is H2O commonly known as?", options: ["Salt", "Water", "Oxygen", "Hydrogen"], answer: 1 },
-  { q: "Which country invented tea?", options: ["India", "China", "Japan", "England"], answer: 1 },
-  { q: "How many players are in a cricket team?", options: ["9", "10", "11", "12"], answer: 2 },
-  { q: "What is the currency of Japan?", options: ["Yuan", "Won", "Yen", "Dollar"], answer: 2 }
+// ==========================================
+// 2. GK QUIZ LOGIC (WITH TIMER)
+// ==========================================
+const questions = [
+    { q: "What is the capital of India?", opts: ["Mumbai", "New Delhi", "Jaipur", "Kolkata"], ans: "New Delhi" },
+    { q: "Which planet is known as the Red Planet?", opts: ["Earth", "Mars", "Jupiter", "Venus"], ans: "Mars" },
+    { q: "Who is known as the Iron Man of India?", opts: ["Bhagat Singh", "Sardar Patel", "Gandhi Ji", "Nehru"], ans: "Sardar Patel" },
+    { q: "What is 15 + 25?", opts: ["30", "40", "45", "50"], ans: "40" },
+    { q: "Which is the largest animal on Earth?", opts: ["Elephant", "Blue Whale", "Giraffe", "Shark"], ans: "Blue Whale" }
 ];
+let quizTimer;
 
-let currentQuizIndex = 0;
-let quizScore = 0;
-let quizAnswered = false;
+function loadQuiz() {
+    let qNum = Math.floor(Math.random() * questions.length);
+    let currentQ = questions[qNum];
+    
+    document.getElementById('questionText').innerText = currentQ.q;
+    const optsDiv = document.getElementById('quizOptions');
+    optsDiv.innerHTML = "";
+    
+    currentQ.opts.forEach(opt => {
+        let btn = document.createElement('button');
+        btn.innerText = opt;
+        btn.onclick = () => checkAnswer(opt, currentQ.ans);
+        optsDiv.appendChild(btn);
+    });
 
-function renderQuiz(container) {
-  currentQuizIndex = 0;
-  quizScore = 0;
-  const shuffled = [...quizQuestions].sort(() => Math.random() - 0.5).slice(0, 5);
-  window.activeQuizQuestions = shuffled;
-  showQuizQuestion(container);
+    // 15 Second Timer
+    let timeLeft = 15;
+    document.getElementById('timeRemaining').innerText = timeLeft;
+    clearInterval(quizTimer);
+    
+    quizTimer = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timeRemaining').innerText = timeLeft;
+        if(timeLeft <= 0) {
+            clearInterval(quizTimer);
+            alert("⏰ Time's Up! You lost this question.");
+            closeGame();
+        }
+    }, 1000);
 }
 
-function showQuizQuestion(container) {
-  quizAnswered = false;
-  const questions = window.activeQuizQuestions;
-
-  if (currentQuizIndex >= questions.length) {
-    addPoints(quizScore * 5);
-    container.innerHTML = `
-      <div class="result-box">
-        <h2>Quiz Complete!</h2>
-        <p style="font-size:16px; color:#666;">You scored ${quizScore} out of ${questions.length}</p>
-        <p style="font-size:14px; color:#27ae60; margin-top:10px;">+${quizScore * 5} points earned!</p>
-        <button class="play-again-btn" onclick="renderQuiz(document.getElementById('gameContainer'))">Play Again</button>
-      </div>
-    `;
-    return;
-  }
-
-  const q = questions[currentQuizIndex];
-  container.innerHTML = `
-    <div class="quiz-box">
-      <p style="font-size:13px; color:#999; margin-bottom:8px;">Question ${currentQuizIndex + 1} of ${questions.length}</p>
-      <div class="quiz-question">${q.q}</div>
-      <div id="quizOptions"></div>
-    </div>
-  `;
-
-  const optionsContainer = document.getElementById('quizOptions');
-  q.options.forEach((opt, i) => {
-    const div = document.createElement('div');
-    div.className = 'quiz-option';
-    div.innerText = opt;
-    div.onclick = () => selectQuizAnswer(i, q.answer, container);
-    optionsContainer.appendChild(div);
-  });
+function checkAnswer(selected, correct) {
+    clearInterval(quizTimer); // Stop timer immediately
+    if(selected === correct) {
+        addPoints(10);
+    } else {
+        alert(`❌ Wrong Answer! The correct answer was: ${correct}`);
+    }
+    setTimeout(closeGame, 500);
 }
 
-function selectQuizAnswer(selectedIndex, correctIndex, container) {
-  if (quizAnswered) return;
-  quizAnswered = true;
+// ==========================================
+// 3. LIVE LEADERBOARD LOGIC
+// ==========================================
+function loadLeaderboard() {
+    const listEl = document.getElementById('leaderboardList');
+    listEl.innerHTML = "Fetching top players... ⏳";
+    
+    // Firebase से सबसे ज़्यादा Points वाले Top 10 कस्टमर लाना
+    db.collection('Customers')
+      .orderBy('points', 'desc')
+      .limit(10)
+      .get()
+      .then(snapshot => {
+          listEl.innerHTML = "";
+          if(snapshot.empty) {
+              listEl.innerHTML = "<p>No players yet. Play a game to be #1!</p>";
+              return;
+          }
+          let rank = 1;
+          snapshot.forEach(doc => {
+              let data = doc.data();
+              let name = data.name || "Unknown";
+              let pts = data.points || 0;
+              
+              // टॉप 3 के लिए स्पेशल Emojis 🥇🥈🥉
+              let rankIcon = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : `#${rank}`;
+              
+              listEl.innerHTML += `
+                <div class="leaderboard-item">
+                    <span>${rankIcon} &nbsp; <b>${name}</b></span>
+                    <span style="color:#2ed573; font-weight:bold;">${pts} Pts</span>
+                </div>
+              `;
+              rank++;
+          });
+      })
+      .catch(err => {
+          console.error(err);
+          listEl.innerHTML = "<p style='color:red;'>Error loading leaderboard.</p>";
+      });
+                              }
 
-  const options = document.querySelectorAll('.quiz-option');
-  options[correctIndex].classList.add('correct');
-  if (selectedIndex !== correctIndex) {
-    options[selectedIndex].classList.add('wrong');
-  } else {
-    quizScore++;
-  }
-
-  setTimeout(() => {
-    currentQuizIndex++;
-    showQuizQuestion(container);
-  }, 1000);
-}
