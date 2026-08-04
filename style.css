@@ -104,4 +104,72 @@ body {
 }
 .input-field::placeholder { color: #ddd; }
 .input-field:focus { outline: none; border: 1px solid #e0aaff; }
-                           
+/* ===== 3D VIP LIQUID GLOW BACKGROUND ===== */
+
+body {
+    position: relative;
+    overflow-x: hidden;
+    background-color: #f8fafc; /* प्रीमियम ऑफ-वाइट कलर */
+    z-index: 0;
+}
+
+/* बैकग्राउंड कंटेनर (सबसे पीछे रखने के लिए) */
+.bg-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1; /* -1 इसे आपके मेन्यू और गेम्स के पीछे रखेगा */
+    overflow: hidden;
+    pointer-events: none; /* ताकि कस्टमर आसानी से बटन्स पर क्लिक कर सके */
+}
+
+/* 3D ग्लोइंग शेप्स (धुंधले रंग) */
+.shape {
+    position: absolute;
+    filter: blur(70px); /* यह ब्लर इसे प्रीमियम 'ग्लो' इफ़ेक्ट देगा */
+    opacity: 0.5; /* हल्का रंग ताकि लिखावट साफ दिखे */
+    animation: floatGlow 10s infinite alternate ease-in-out;
+}
+
+/* लाल/पिंक शेड (ऊपर बायीं तरफ) */
+.shape-1 {
+    width: 350px;
+    height: 350px;
+    background: linear-gradient(135deg, #ff4757, #ff6b81);
+    top: -5%;
+    left: -10%;
+    border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+}
+
+/* हरा शेड (नीचे दायीं तरफ) */
+.shape-2 {
+    width: 400px;
+    height: 400px;
+    background: linear-gradient(135deg, #2ed573, #7bed9f);
+    bottom: -10%;
+    right: -10%;
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    animation-delay: -3s; /* अलग समय पर हिलने के लिए */
+}
+
+/* पीला/ऑरेंज शेड (बीच में) */
+.shape-3 {
+    width: 300px;
+    height: 300px;
+    background: linear-gradient(135deg, #ffa502, #ff7f50);
+    top: 40%;
+    left: 50%;
+    border-radius: 50%;
+    transform: translateX(-50%);
+    animation-delay: -6s;
+}
+
+/* हवा में तैरने का 3D एनिमेशन */
+@keyframes floatGlow {
+    0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+    50% { transform: translate(-30px, 30px) scale(1.05) rotate(10deg); }
+    100% { transform: translate(20px, -20px) scale(0.95) rotate(-10deg); }
+}
+
