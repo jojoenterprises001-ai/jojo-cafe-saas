@@ -1,116 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Games - Jojo Cafe</title>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
-<style>
-  * { box-sizing: border-box; margin:0; padding:0; font-family:'Segoe UI', sans-serif; }
-  body { background: #fff5f0; min-height: 100vh; padding-bottom: 30px; }
-  .topbar {
-    background: linear-gradient(135deg,#ff7e5f,#feb47b);
-    padding: 16px 20px; color: #fff; display: flex; align-items: center; gap: 12px;
-  }
-  .back-btn { background: rgba(255,255,255,0.25); border: none; color: #fff; padding: 8px 12px; border-radius: 10px; font-size: 16px; cursor: pointer; }
-  .topbar h2 { font-size: 18px; }
-  .points-bar {
-    text-align: center; padding: 14px; font-size: 14px; color: #666;
-    background: #fff; margin: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  }
-  .points-bar b { color: #ff7e5f; font-size: 18px; }
-
-  .game-container { padding: 20px; }
-
-  /* Game selector cards */
-  .games-list-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 15px; }
-  .game-select-card {
-    background: #fff; border-radius: 16px; padding: 24px 10px; text-align: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08); cursor: pointer;
-  }
-  .game-select-card .icon { font-size: 40px; margin-bottom: 10px; }
-  .game-select-card p { font-size: 14px; font-weight: 600; color: #333; }
-
-  /* Spin Wheel */
-  .wheel-wrap { display: flex; flex-direction: column; align-items: center; padding: 20px; }
-  #wheelCanvas { width: 280px; height: 280px; margin-bottom: 20px; }
-  .spin-btn {
-    background: #ff7e5f; color: #fff; border: none; padding: 14px 40px;
-    border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer;
-  }
-  .spin-btn:disabled { background: #ccc; }
-
-  /* Tic Tac Toe */
-  .ttt-board {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-    width: 280px; margin: 20px auto;
-  }
-  .ttt-cell {
-    background: #fff; aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
-    font-size: 36px; font-weight: bold; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    cursor: pointer; color: #ff7e5f;
-  }
-  .ttt-status { text-align: center; font-size: 16px; font-weight: bold; margin: 15px 0; color: #333; }
-
-  /* Memory Flip */
-  .memory-board {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
-    max-width: 320px; margin: 20px auto;
-  }
-  .memory-card {
-    aspect-ratio: 1; background: #ff7e5f; border-radius: 10px; display: flex;
-    align-items: center; justify-content: center; font-size: 24px; cursor: pointer;
-    transition: 0.3s; color: transparent;
-  }
-  .memory-card.flipped { background: #fff; color: #333; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-  .memory-card.matched { background: #d4edda; color: #333; }
-
-  /* Quiz */
-  .quiz-box { background: #fff; border-radius: 16px; padding: 24px; margin: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-  .quiz-question { font-size: 17px; font-weight: bold; margin-bottom: 20px; color: #333; }
-  .quiz-option {
-    background: #fff8f5; border: 2px solid #ffe0d3; padding: 14px; border-radius: 10px;
-    margin-bottom: 10px; cursor: pointer; font-size: 14px;
-  }
-  .quiz-option.correct { background: #d4edda; border-color: #4CAF50; }
-  .quiz-option.wrong { background: #f8d7da; border-color: #dc3545; }
-
-  .result-box { text-align: center; padding: 40px 20px; }
-  .result-box h2 { font-size: 24px; margin-bottom: 10px; color: #ff7e5f; }
-  .play-again-btn {
-    background: #ff7e5f; color: #fff; border: none; padding: 12px 30px;
-    border-radius: 25px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 15px;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOJO Games & Leaderboard</title>
+    <style>
+        /* Premium JOJO Games UI */
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #f4f7f6; margin: 0; padding: 0; }
+        
+        .header { background: #ff4757; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: sticky; top: 0; }
+        .header-btn { cursor: pointer; font-weight: bold; font-size: 16px; background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 8px;}
+        
+        .container { padding: 20px; max-width: 500px; margin: auto; }
+        
+        .game-btn { width: 100%; padding: 18px; margin-bottom: 15px; background: #fff; border: 2px solid #ddd; border-radius: 12px; font-size: 17px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; transition: 0.2s; }
+        .game-btn:active { transform: scale(0.96); border-color: #ff4757; }
+        .pts-tag { color: #ff4757; background: #ffeaa7; padding: 3px 8px; border-radius: 6px; font-size: 14px;}
+        
+        .game-section { display: none; background: #fff; padding: 25px 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-top: 10px; text-align: center; }
+        
+        /* Tic Tac Toe */
+        .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 280px; margin: 20px auto; }
+        .cell { height: 80px; background: #f1f2f6; display: flex; align-items: center; justify-content: center; font-size: 45px; font-weight: bold; cursor: pointer; border-radius: 10px; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.1); }
+        
+        /* Quiz */
+        .quiz-opts button { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #dfe4ea; border-radius: 8px; background: #fff; font-size: 16px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .quiz-opts button:active { background: #dfe4ea; }
+        
+        /* Leaderboard */
+        .leaderboard-item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #f1f2f6; font-size: 16px; font-weight: 500;}
+        .leaderboard-item:nth-child(1) { background: #fff20020; border-radius: 8px; font-weight: bold;}
+        
+        .action-btn { background: #2ed573; color: white; padding: 12px 20px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 15px; }
+        .action-btn.red { background: #ff4757; }
+    </style>
 </head>
 <body>
 
-<div class="topbar">
-  <button class="back-btn" onclick="goBack()">← Back</button>
-  <h2>🎮 Games Zone</h2>
-</div>
+    <!-- Header (Points Top Right) -->
+    <div class="header">
+        <span class="header-btn" onclick="window.location.href='customer-dashboard.html'">🔙 Menu</span>
+        <span style="font-weight: bold; font-size: 18px;">JOJO Zone</span>
+        <span class="header-btn" id="userPoints">🏆 0 Pts</span>
+    </div>
+    
+    <!-- Main Games Menu -->
+    <div class="container" id="mainMenu">
+        <h3 style="text-align: center; color: #333; margin-bottom: 25px;">Play Games & Top the Leaderboard!</h3>
+        
+        <button class="game-btn" onclick="openGame('quizSection')">
+            <span>🧠 Daily GK Quiz</span> <span class="pts-tag">+10 Pts</span>
+        </button>
+        
+        <button class="game-btn" onclick="openGame('tictactoeSection')">
+            <span>❌⭕ Tic-Tac-Toe</span> <span class="pts-tag">+20 Pts</span>
+        </button>
+        
+        <button class="game-btn" onclick="openGame('leaderboardSection'); loadLeaderboard();" style="border-color:#2ed573;">
+            <span>🏆 Live Leaderboard</span> <span class="pts-tag" style="background:#2ed573; color:white;">Top 10</span>
+        </button>
+    </div>
 
-<div class="points-bar">Your Points: <b id="totalPoints">0</b></div>
+    <!-- 🧠 Quiz Section -->
+    <div class="container game-section" id="quizSection">
+        <h3 id="questionText" style="color: #2f3542;">Loading Question...</h3>
+        <p style="color: #ff4757; font-weight: bold; font-size: 18px;">⏱️ Timer: <span id="timeRemaining">15</span>s</p>
+        <div id="quizOptions" class="quiz-opts"></div>
+        <button class="action-btn red" onclick="closeGame()">Cancel</button>
+    </div>
 
-<div id="gameSelector" class="games-list-grid">
-  <div class="game-select-card" onclick="loadGame('spin')">
-    <div class="icon">🎡</div><p>Spin the Wheel</p>
-  </div>
- <div class="game-select-card" onclick="alert('Calling loadGame with: tictactoe'); loadGame('tictactoe')">
-    <div class="icon">⭕</div><p>Tic-Tac-Toe</p>
-  </div>
-  <div class="game-select-card" onclick="loadGame('memory')">
-    <div class="icon">🃏</div><p>Memory Flip</p>
-  </div>
-  <div class="game-select-card" onclick="loadGame('quiz')">
-    <div class="icon">🧠</div><p>GK Quiz</p>
-  </div>
-</div>
+    <!-- ❌⭕ Tic Tac Toe Section -->
+    <div class="container game-section" id="tictactoeSection">
+        <h3 style="margin-top: 0;">Play against JOJO AI</h3>
+        <div class="board" id="tttBoard"></div>
+        <button class="action-btn" onclick="initTicTacToe()">🔄 Restart Game</button>
+        <button class="action-btn red" onclick="closeGame()">🔙 Back</button>
+    </div>
 
-<div id="gameContainer" class="game-container" style="display:none;"></div>
+    <!-- 🏆 Leaderboard Section -->
+    <div class="container game-section" id="leaderboardSection">
+        <h3 style="margin-top: 0;">🏆 JOJO Leaderboard</h3>
+        <div id="leaderboardList" style="text-align: left; margin-bottom: 20px;">Loading top players... ⏳</div>
+        <button class="action-btn red" onclick="closeGame()">🔙 Back to Games</button>
+    </div>
 
-<script src="games.js"></script>
+    <!-- Firebase SDK (ये लिंक्स वही हैं जो आपके प्रोजेक्ट में यूज़ हो रहे हैं) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <!-- आपकी Firebase Config फाइल -->
+    <script src="firebase-config.js"></script>
+    <!-- हमारा नया गेम्स लॉजिक -->
+    <script src="games.js"></script>
 </body>
 </html>
