@@ -1,82 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jojo Cafe - Welcome</title>
-<style>
-  * { box-sizing: border-box; margin:0; padding:0; font-family: 'Segoe UI', sans-serif; }
-  body {
-    background: linear-gradient(135deg,#ff7e5f,#feb47b);
-    min-height: 100vh;
-    display: flex; align-items: center; justify-content: center;
-    padding: 20px;
-  }
-  .container {
-    background: #fff; border-radius: 24px; padding: 40px 28px;
-    width: 100%; max-width: 420px; box-shadow: 0 15px 40px rgba(0,0,0,0.25);
-    text-align: center;
-  }
-  .container h1 { font-size: 32px; color: #ff7e5f; margin-bottom: 5px; }
-  .container p { color: #888; margin-bottom: 30px; font-size: 14px; }
-
-  .menu-btn {
-    display: flex; align-items: center; gap: 14px;
-    width: 100%; padding: 16px 18px; margin-bottom: 14px;
-    border: 2px solid #f0f0f0; border-radius: 14px;
-    background: #fff; text-decoration: none; color: #333;
-    font-size: 16px; font-weight: 600; text-align: left;
-    transition: 0.2s;
-  }
-  .menu-btn:active { transform: scale(0.97); background: #fff8f5; }
-  .menu-btn .icon { font-size: 24px; }
-  .menu-btn .sub { display: block; font-size: 12px; color: #999; font-weight: 400; margin-top: 2px; }
-
-  .owner-btn { border-color: #c9d4ff; }
-  .register-btn { border-color: #c9f0d4; }
-  .admin-btn { border-color: #333; background: #1a1a2e; color: #fff; }
-  .admin-btn .sub { color: #aaa; }
-
-  .note {
-    background: #fff8f0; border: 1px dashed #ffcbb3; border-radius: 12px;
-    padding: 14px; font-size: 12px; color: #a05a3c; margin-bottom: 16px;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jojo Cafe SaaS - Smart QR Menu</title>
+    <!-- Tailwind CSS (Modern Design ke liye) -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-50 min-h-screen flex flex-col items-center justify-center p-4">
 
-<div class="container">
-  <h1>☕ Jojo Cafe</h1>
-  <p>Smart Cafe Management System</p>
+    <!-- Header / Branding Section -->
+    <div class="text-center mb-10">
+        <h1 class="text-5xl font-extrabold text-blue-600 mb-2 tracking-tight">Jojo Cafe SaaS</h1>
+        <p class="text-gray-600 font-medium">Smart QR Menu & Hack-Proof Loyalty Platform</p>
+    </div>
 
-  <div class="note">
-    👤 Customers: Please scan the QR code on your table to view the menu and order.
-  </div>
+    <!-- Main Buttons -->
+    <div class="space-y-4 w-full max-w-sm">
+        <button onclick="window.location.href='super-admin.html'" class="w-full bg-red-600 text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-red-700 transition transform hover:scale-105">
+            Super Admin Login
+        </button>
 
-  <a href="owner-login.html" class="menu-btn owner-btn">
-    <span class="icon">🏪</span>
-    <span>
-      Cafe Owner Login
-      <span class="sub">Manage your cafe dashboard</span>
-    </span>
-  </a>
+        <button onclick="window.location.href='owner-login.html'" class="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-blue-700 transition transform hover:scale-105">
+            Cafe Owner Login
+        </button>
 
-  <a href="owner-register.html" class="menu-btn register-btn">
-    <span class="icon">📝</span>
-    <span>
-      Register New Cafe
-      <span class="sub">Get started with Jojo Cafe SaaS</span>
-    </span>
-  </a>
+        <button onclick="openModal()" class="w-full bg-green-600 text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-green-700 transition transform hover:scale-105">
+            New Cafe Registration
+        </button>
+    </div>
 
-  <a href="super-admin.html" class="menu-btn admin-btn">
-    <span class="icon">👑</span>
-    <span>
-      Super Admin Panel
-      <span class="sub">Manage cafe approvals</span>
-    </span>
-  </a>
-</div>
+    <!-- Registration Modal Popup -->
+    <div id="regModal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md transform transition-all">
+            
+            <!-- Form Section -->
+            <div id="formSection">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Register New Cafe</h2>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-red-500 font-bold text-3xl leading-none transition">&times;</button>
+                </div>
+                
+                <!-- Yahan pehle se theek kiya hua Form Code hai -->
+                <form id="cafeForm" class="space-y-4">
+                    <input type="text" id="cafeName" placeholder="Cafe Name (e.g., Sharma Dhaba)" required class="w-full border-2 border-gray-200 p-3 rounded-lg text-black focus:border-blue-500 focus:outline-none transition" />
+                    <input type="text" id="ownerName" placeholder="Owner Name" required class="w-full border-2 border-gray-200 p-3 rounded-lg text-black focus:border-blue-500 focus:outline-none transition" />
+                    <input type="tel" id="mobile" placeholder="Mobile Number" required class="w-full border-2 border-gray-200 p-3 rounded-lg text-black focus:border-blue-500 focus:outline-none transition" />
+                    <input type="password" id="password" placeholder="Create Password" required class="w-full border-2 border-gray-200 p-3 rounded-lg text-black focus:border-blue-500 focus:outline-none transition" />
+                    
+                    <button type="submit" class="w-full bg-green-600 text-white font-bold py-3.5 rounded-lg hover:bg-green-700 transition shadow-lg mt-2">
+                        Submit Details
+                    </button>
+                </form>
+            </div>
+
+            <!-- Success Section -->
+            <div id="successSection" class="hidden text-center space-y-4 py-6">
+                <div class="text-6xl animate-bounce">✅</div>
+                <h2 class="text-2xl font-bold text-green-600">Account Created!</h2>
+                <p class="text-gray-600 text-sm px-2">
+                    Aapka account ban gaya hai. Apna panel activate karne ke liye Super Admin ko WhatsApp par request bhejein.
+                </p>
+                <button onclick="sendWhatsAppRequest()" class="w-full bg-[#25D366] text-white font-bold py-3.5 rounded-lg shadow-lg flex justify-center items-center gap-2 hover:bg-[#20b858] transition">
+                    Send Activation Request
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- UI Handle karne ka JavaScript -->
+    <script>
+        function openModal() {
+            document.getElementById('regModal').classList.remove('hidden');
+            document.getElementById('formSection').classList.remove('hidden');
+            document.getElementById('successSection').classList.add('hidden');
+            document.getElementById('cafeForm').reset();
+        }
+
+        function closeModal() {
+            document.getElementById('regModal').classList.add('hidden');
+        }
+
+        function sendWhatsAppRequest() {
+            const cafeName = document.getElementById('cafeName').value;
+            const adminNumber = "917689874945";
+            const message = `Hello Admin, I have registered a new cafe *${cafeName}*. Please activate my panel.`;
+            const whatsappLink = `https://wa.me/${adminNumber}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappLink, "_blank");
+            closeModal();
+        }
+    </script>
+
+    <!-- Tumhara Firebase Registration Engine yahan link ho gaya hai -->
+    <script type="module" src="register-db.js"></script>
 
 </body>
 </html>
