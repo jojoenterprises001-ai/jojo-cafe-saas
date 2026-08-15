@@ -1,69 +1,55 @@
-function showError(msg) {
-  const el = document.getElementById('errorMsg');
-  el.innerText = msg;
-  el.style.display = 'block';
-}
+import { db, auth } from './firebase-config.js';
+import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-function handleRegister() {
-  const cafeName = document.getElementById('cafeName').value.trim();
-  const ownerName = document.getElementById('ownerName').value.trim();
-  const ownerMobile = document.getElementById('ownerMobile').value.trim();
-  const whatsappNumber = document.getElementById('whatsappNumber').value.trim();
-  const cafeAddress = document.getElementById('cafeAddress').value.trim();
-  const ownerPassword = document.getElementById('ownerPassword').value;
+// Jab page load ho jaye
+document.addEventListener('DOMContentLoaded', () => {
+    const cafeForm = document.getElementById('cafeForm');
+    
+    if(cafeForm) {
+        cafeForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Page refresh hone se rokna
 
-  if (!cafeName) return showError('Please enter cafe name');
-  if (!ownerName) return showError('Please enter owner name');
-  if (!/^[0-9]{10}$/.test(ownerMobile)) return showError('Enter a valid 10-digit login mobile number');
-  if (!/^[0-9]{10}$/.test(whatsappNumber)) return showError('Enter a valid 10-digit WhatsApp number');
-  if (!cafeAddress) return showError('Please enter cafe address');
-  if (!ownerPassword || ownerPassword.length < 6) return showError('Password must be at least 6 characters');
+            const cafeName = document.getElementById('cafeName').value;
+            const ownerName = document.getElementById('ownerName').value;
+            const mobile = document.getElementById('mobile').value;
+            const password = document.getElementById('password').value;
+            const submitBtn = cafeForm.querySelector('button[type="submit"]');
 
-  const cafeRef = db.collection('Cafes').doc(ownerMobile);
+            // Button ko 'Loading' state mein daalna
+            submitBtn.innerText = "Registering...";
+            submitBtn.disabled = true;
 
-  cafeRef.get().then((doc) => {
-    if (doc.exists) {
-      return showError('This mobile number is already registered.');
-    }
+            try {
+                // Smart Trick: Mobile ko dummy email mein badalna free Auth ke liye
+                const dummyEmail = mobile + "@jojocafe.com";
 
-    // Create a Firebase Auth account using a fake email based on mobile number
-    const fakeEmail = ownerMobile + '@jojocafe.app';
-    const auth = firebase.auth();
+                // 1. Firebase Auth mein secure account banana
+                const userCredential = await createUserWithEmailAndPassword(auth, dummyEmail, password);
+                const user = userCredential.user;
 
-    auth.createUserWithEmailAndPassword(fakeEmail, ownerPassword)
-      .then(() => {
-        // Auth account created, now save cafe data in Firestore
-        return cafeRef.set({
-          cafeName: cafeName,
-          ownerName: ownerName,
-          ownerMobile: ownerMobile,
-          whatsappNumber: whatsappNumber,
-          address: cafeAddress,
-          status: 'pending',
-          plan: null,
-          expiryDate: null,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                // 2. Firestore Database mein Cafe ki details save karna
+                await setDoc(doc(db, "Cafes", user.uid), {
+                    CafeID: user.uid,
+                    Name: cafeName,
+                    OwnerName: ownerName,
+                    OwnerPhone: mobile,
+                    PlanExpiry: "Pending", // Super Admin baad mein active karega
+                    StaffPIN: "1234", // Default PIN
+                    IsActive: false,
+                    CreatedAt: new Date().toISOString()
+                });
+
+                // 3. UI Update: Form chupao aur Success message dikhao
+                document.getElementById('formSection').classList.add('hidden');
+                document.getElementById('successSection').classList.remove('hidden');
+
+            } catch (error) {
+                alert("Error: " + error.message);
+                // Agar error aaye toh button wapas theek kar do
+                submitBtn.innerText = "Submit Details";
+                submitBtn.disabled = false;
+            }
         });
-      })
-      .then(() => {
-        document.getElementById('errorMsg').style.display = 'none';
-        auth.signOut(); // sign out so they must login properly
-        showSuccessPopup(cafeName, ownerName, ownerMobile);
-      })
-      .catch((err) => {
-        if (err.code === 'auth/email-already-in-use') {
-          showError('This mobile number is already registered.');
-        } else {
-          showError('Error: ' + err.message);
-        }
-      });
-  });
-}
-
-function showSuccessPopup(cafeName, ownerName, ownerMobile) {
-  const adminNumber = '917689874945';
-  const message = `Hi, I registered a new cafe.\n\nCafe Name: ${cafeName}\nOwner: ${ownerName}\nMobile ID: ${ownerMobile}\n\nPlease activate my 7-day free trial.`;
-  const encodedMsg = encodeURIComponent(message);
-  document.getElementById('waActivateBtn').href = `https://wa.me/${adminNumber}?text=${encodedMsg}`;
-  document.getElementById('successOverlay').classList.add('active');
-}
+    }
+});
