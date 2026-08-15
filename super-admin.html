@@ -1,110 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Super Admin - Jojo Cafe</title>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="firebase-config.js"></script>
-<style>
-  * { box-sizing: border-box; margin:0; padding:0; font-family:'Segoe UI', sans-serif; }
-  body { background: #1a1a2e; padding-bottom: 40px; min-height: 100vh; }
-  .topbar {
-    background: #16213e; padding: 18px 20px; color: #fff;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .topbar h2 { font-size: 20px; }
-  .logout-btn { background: #ff4757; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-size:13px; cursor:pointer; }
-
-  .tabs { display: flex; gap: 8px; padding: 15px; }
-  .tab-btn {
-    flex: 1; padding: 10px; background: #16213e; color: #aaa; border: none;
-    border-radius: 10px; font-size: 13px; font-weight: bold; cursor: pointer;
-  }
-  .tab-btn.active { background: #667eea; color: #fff; }
-
-  .cafe-card {
-    background: #16213e; margin: 10px 15px; border-radius: 14px; padding: 16px;
-    color: #fff;
-  }
-  .cafe-card h3 { font-size: 16px; margin-bottom: 4px; }
-  .cafe-card p { font-size: 13px; color: #aaa; margin-bottom: 3px; }
-  .cafe-card .mobile-id { color: #667eea; font-weight: bold; }
-
-  .plan-row { display: flex; gap: 8px; margin-top: 12px; }
-  .plan-btn {
-    flex: 1; padding: 10px; border: none; border-radius: 8px;
-    font-size: 12px; font-weight: bold; cursor: pointer; color: #fff;
-  }
-  .plan-trial { background: #f39c12; }
-  .plan-paid { background: #27ae60; }
-  .plan-reject { background: #ff4757; }
-
-  .status-tag {
-    display: inline-block; padding: 3px 10px; border-radius: 20px;
-    font-size: 11px; font-weight: bold; margin-top: 6px;
-  }
-  .tag-approved { background: #27ae60; color: #fff; }
-  .tag-expired { background: #ff4757; color: #fff; }
-
-  .empty-msg { text-align: center; color: #666; padding: 40px 20px; }
-
-  .login-screen {
-    display: flex; align-items: center; justify-content: center;
-    min-height: 100vh; padding: 20px;
-  }
-  .login-card {
-    background: #16213e; border-radius: 20px; padding: 35px 25px;
-    width: 100%; max-width: 380px; text-align: center;
-  }
-  .login-card h1 { color: #fff; margin-bottom: 20px; }
-  .login-card input {
-    width: 100%; padding: 14px; margin-bottom: 15px;
-    border: 2px solid #2a2a4a; border-radius: 10px; font-size: 16px;
-    background: #0f0f23; color: #fff; outline: none;
-  }
-  .login-card button {
-    width: 100%; padding: 14px; background: #667eea; color: #fff;
-    border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;
-  }
-  #loginError { color: #ff4757; font-size: 13px; margin-bottom: 10px; display:none; }
-
-  .action-btn {
-    margin-top: 10px; width: 100%; padding: 10px; background: #667eea;
-    color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin - Jojo Cafe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100 min-h-screen p-4">
 
-<!-- LOGIN SCREEN -->
-<div id="loginScreen" class="login-screen">
-  <div class="login-card">
-    <h1>👑 Super Admin</h1>
-    <div id="loginError"></div>
-    <input type="email" id="adminEmail" placeholder="Admin Email">
-    <input type="password" id="adminPassword" placeholder="Password">
-    <button onclick="checkAdminLogin()">Login</button>
-  </div>
-</div>
+    <!-- Login Section -->
+    <div id="loginSection" class="max-w-md mx-auto mt-20 bg-white p-8 rounded-xl shadow-lg">
+        <h2 class="text-3xl font-extrabold text-center text-red-600 mb-6">Admin Panel</h2>
+        <form id="adminLoginForm" class="space-y-4">
+            <input type="email" id="adminEmail" placeholder="Admin Email" required class="w-full border-2 border-gray-200 p-3 rounded-lg focus:border-red-500 focus:outline-none">
+            <input type="password" id="adminPassword" placeholder="Password" required class="w-full border-2 border-gray-200 p-3 rounded-lg focus:border-red-500 focus:outline-none">
+            <button type="submit" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 shadow-md">Secure Login</button>
+        </form>
+    </div>
 
-<!-- ADMIN PANEL -->
-<div id="adminPanel" style="display:none;">
-  <div class="topbar">
-    <h2>👑 Super Admin</h2>
-    <button class="logout-btn" onclick="adminLogout()">Logout</button>
-  </div>
+    <!-- Dashboard Section (Login hone ke baad dikhega) -->
+    <div id="dashboardSection" class="hidden max-w-4xl mx-auto mt-10">
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h2 class="text-3xl font-extrabold text-gray-800">Control Room</h2>
+                <p class="text-gray-600">Manage all Jojo Cafe clients here.</p>
+            </div>
+            <button id="logoutBtn" class="bg-gray-800 text-white px-5 py-2 rounded-lg font-bold hover:bg-black">Logout</button>
+        </div>
 
-  <div class="tabs">
-    <button class="tab-btn active" id="tabPending" onclick="switchTab('pending')">Pending</button>
-    <button class="tab-btn" id="tabApproved" onclick="switchTab('approved')">Approved</button>
-  </div>
+        <!-- Cafes List -->
+        <div class="bg-white p-6 rounded-xl shadow-lg">
+            <h3 class="text-xl font-bold mb-4 border-b pb-2 text-gray-800">Registered Cafes</h3>
+            <div id="cafesList" class="space-y-4">
+                <p class="text-gray-500 animate-pulse">Loading cafe data...</p>
+            </div>
+        </div>
+    </div>
 
-  <div id="cafeList"></div>
-</div>
-
-<script src="admin-logic.js"></script>
+    <!-- Logic File Connect -->
+    <script type="module" src="admin-logic.js"></script>
 </body>
 </html>
