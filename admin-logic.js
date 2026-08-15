@@ -1,130 +1,120 @@
-// ===== FIREBASE AUTH LOGIN =====
-const auth = firebase.auth();
+import { db, auth } from './firebase-config.js';
+import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-function checkAdminLogin() {
-  const email = document.getElementById('adminEmail').value.trim();
-  const pass = document.getElementById('adminPassword').value;
-  const errorEl = document.getElementById('loginError');
-  errorEl.style.display = 'none';
+const loginSection = document.getElementById('loginSection');
+const dashboardSection = document.getElementById('dashboardSection');
+const adminLoginForm = document.getElementById('adminLoginForm');
+const logoutBtn = document.getElementById('logoutBtn');
+const cafesList = document.getElementById('cafesList');
 
-  if (!email || !pass) {
-    errorEl.innerText = 'Enter email and password';
-    errorEl.style.display = 'block';
-    return;
-  }
-
-  auth.signInWithEmailAndPassword(email, pass)
-    .then(() => {
-      // onAuthStateChanged below will handle showing the panel
-    })
-    .catch((err) => {
-      errorEl.innerText = 'Wrong email or password';
-      errorEl.style.display = 'block';
-    });
-}
-
-// ===== AUTH STATE LISTENER (auto login if already signed in) =====
-auth.onAuthStateChanged((user) => {
-  if (user) {
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('adminPanel').style.display = 'block';
-    loadCafes('pending');
-  } else {
-    document.getElementById('loginScreen').style.display = 'flex';
-    document.getElementById('adminPanel').style.display = 'none';
-  }
+// 1. Check karna ki Admin Login hai ya nahi
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        loginSection.classList.add('hidden');
+        dashboardSection.classList.remove('hidden');
+        loadCafes(); // Agar login hai toh data load karo
+    } else {
+        loginSection.classList.remove('hidden');
+        dashboardSection.classList.add('hidden');
+    }
 });
 
-function adminLogout() {
-  auth.signOut();
-}
+// 2. Admin Login Process
+adminLoginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('adminEmail').value;
+    const password = document.getElementById('adminPassword').value;
 
-// ===== TABS =====
-let currentTab = 'pending';
-function switchTab(tab) {
-  currentTab = tab;
-  document.getElementById('tabPending').classList.toggle('active', tab === 'pending');
-  document.getElementById('tabApproved').classList.toggle('active', tab === 'approved');
-  loadCafes(tab);
-}
-
-// ===== LOAD CAFES (real-time) =====
-function loadCafes(filterStatus) {
-  db.collection('Cafes').onSnapshot((snapshot) => {
-    const container = document.getElementById('cafeList');
-    let cafes = [];
-    snapshot.forEach((doc) => {
-      cafes.push({ id: doc.id, ...doc.data() });
-    });
-
-    if (filterStatus === 'pending') {
-      cafes = cafes.filter(c => c.status !== 'approved');
-    } else {
-      cafes = cafes.filter(c => c.status === 'approved');
+    try {
+        await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+        alert("Login Failed: Galat Email ya Password!");
     }
+});
 
-    if (cafes.length === 0) {
-      container.innerHTML = `<p class="empty-msg">No ${filterStatus} cafes</p>`;
-      return;
-    }
+// 3. Logout
+logoutBtn.addEventListener('click', async () => {
+    await signOut(auth);
+});
 
-    container.innerHTML = '';
-    cafes.forEach((cafe) => {
-      const card = document.createElement('div');
-      card.className = 'cafe-card';
+// 4. Database se Cafes ki details lana
+async function loadCafes() {
+    cafesList.innerHTML = "<p class='text-blue-500'>Loading...</p>";
+    try {
+        const querySnapshot = await getDocs(collection(db, "Cafes"));
+        cafesList.innerHTML = ""; 
 
-      let statusHtml = '';
-      if (cafe.status === 'approved') {
-        const isExpired = cafe.expiryDate && new Date(cafe.expiryDate) < new Date();
-        statusHtml = `<span class="status-tag ${isExpired ? 'tag-expired' : 'tag-approved'}">
-          ${isExpired ? 'EXPIRED' : cafe.plan?.toUpperCase() || 'ACTIVE'}
-        </span>`;
-        if (cafe.expiryDate) {
-          statusHtml += `<p style="margin-top:6px;">Expires: ${new Date(cafe.expiryDate).toLocaleDateString()}</p>`;
+        if(querySnapshot.empty) {
+            cafesList.innerHTML = "<p class='text-gray-500'>Koi cafe register nahi hua hai abhi tak.</p>";
+            return;
         }
-      }
 
-      card.innerHTML = `
-        <h3>${cafe.cafeName}</h3>
-        <p>Owner: ${cafe.ownerName}</p>
-        <p class="mobile-id">ID: ${cafe.ownerMobile}</p>
-        <p>${cafe.address || ''}</p>
-        ${statusHtml}
-        ${cafe.status !== 'approved' || (cafe.expiryDate && new Date(cafe.expiryDate) < new Date()) ? `
-        <div class="plan-row">
-          <button class="plan-btn plan-trial" onclick="approveCafe('${cafe.id}', '7days')">7 Days Trial</button>
-          <button class="plan-btn plan-paid" onclick="approveCafe('${cafe.id}', '30days')">30 Days Paid</button>
-        </div>
-        <button class="plan-btn plan-reject" style="margin-top:8px; width:100%;" onclick="deleteCafe('${cafe.id}')">Reject / Delete</button>
-        ` : `
-        <button class="action-btn" onclick="approveCafe('${cafe.id}', '30days')">Renew 30 Days</button>
-        `}
-      `;
-      container.appendChild(card);
-    });
-  });
+        querySnapshot.forEach((document) => {
+            const cafe = document.data();
+            const cafeId = document.id;
+            
+            const statusColor = cafe.IsActive ? "text-green-600" : "text-red-500";
+            const statusText = cafe.IsActive ? "🟢 Active" : "🔴 Pending";
+
+            // Har cafe ka ek card banana
+            const cafeCard = document.createElement('div');
+            cafeCard.className = "border-2 p-4 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center bg-gray-50 gap-4";
+            
+            cafeCard.innerHTML = `
+                <div>
+                    <h4 class="font-extrabold text-xl text-blue-700">${cafe.Name}</h4>
+                    <p class="text-sm text-gray-700 font-medium mt-1">👤 Owner: ${cafe.OwnerName} | 📞 ${cafe.OwnerPhone}</p>
+                    <p class="text-sm font-bold mt-1 ${statusColor}">Status: ${statusText} <span class="text-gray-500 ml-2">| Plan Expiry: ${cafe.PlanExpiry}</span></p>
+                </div>
+                <div class="flex gap-2 w-full md:w-auto">
+                    ${!cafe.IsActive 
+                        ? `<button onclick="activateCafe('${cafeId}', 30)" class="w-full md:w-auto bg-green-500 hover:bg-green-600 text-white font-bold px-4 py-2 rounded-lg shadow transition">Activate (30 Days)</button>` 
+                        : `<button onclick="deactivateCafe('${cafeId}')" class="w-full md:w-auto bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-2 rounded-lg shadow transition">Deactivate</button>`}
+                </div>
+            `;
+            cafesList.appendChild(cafeCard);
+        });
+    } catch (error) {
+        console.error(error);
+        cafesList.innerHTML = "<p class='text-red-500'>Data load karne mein error aayi.</p>";
+    }
 }
 
-// ===== APPROVE CAFE =====
-function approveCafe(cafeId, plan) {
-  const days = plan === '7days' ? 7 : 30;
-  const expiry = new Date();
-  expiry.setDate(expiry.getDate() + days);
-
-  db.collection('Cafes').doc(cafeId).update({
-    status: 'approved',
-    plan: plan,
-    expiryDate: expiry.toISOString()
-  }).then(() => {
-    alert(`✅ Approved with ${plan === '7days' ? '7-Day Trial' : '30-Day Paid Plan'}`);
-  }).catch((err) => {
-    alert('Error: ' + err.message);
-  });
+// 5. Cafe ko 30 din ke liye Activate karna
+window.activateCafe = async function(cafeId, days) {
+    const confirmAction = confirm(`Kya aap is cafe ko ${days} din ke liye Active karna chahte hain?`);
+    if(confirmAction) {
+        try {
+            const expiryDate = new Date();
+            expiryDate.setDate(expiryDate.getDate() + days); // Aaj se 30 din aage
+            
+            await updateDoc(doc(db, "Cafes", cafeId), {
+                IsActive: true,
+                PlanExpiry: expiryDate.toLocaleDateString('en-IN') 
+            });
+            alert("Cafe Successfully Activated!");
+            loadCafes(); 
+        } catch(error) {
+            alert("Error: " + error.message);
+        }
+    }
 }
 
-// ===== REJECT / DELETE CAFE =====
-function deleteCafe(cafeId) {
-  if (confirm('Are you sure you want to reject/delete this cafe registration?')) {
-    db.collection('Cafes').doc(cafeId).delete();
-  }
+// 6. Cafe ko Deactivate (Band) karna
+window.deactivateCafe = async function(cafeId) {
+    const confirmAction = confirm("Kya aap sure hain ki is cafe ka system band karna hai?");
+    if(confirmAction) {
+        try {
+            await updateDoc(doc(db, "Cafes", cafeId), {
+                IsActive: false,
+                PlanExpiry: "Expired"
+            });
+            alert("Cafe Deactivated!");
+            loadCafes(); 
+        } catch(error) {
+            alert("Error: " + error.message);
+        }
+    }
 }
+
