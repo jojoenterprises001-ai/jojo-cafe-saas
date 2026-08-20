@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Dashboard</title>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        /* आपकी प्रीमियम पिंक थीम */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fce4ec;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 90%;
+            width: 500px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(233, 30, 99, 0.2);
+            box-sizing: border-box;
+        }
+        h2, h3 {
+            color: #e91e63;
+            text-align: center;
+        }
+        label {
+            color: #333;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 20px 0;
+            border: 1px solid #f48fb1;
+            border-radius: 8px;
+            box-sizing: border-box;
+            outline: none;
+        }
+        input:focus, select:focus {
+            border-color: #e91e63;
+            box-shadow: 0 0 5px rgba(233, 30, 99, 0.5);
+        }
+        .btn-pink {
+            background-color: #e91e63;
+            color: white;
+            border: none;
+            padding: 14px;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .btn-pink:active {
+            transform: scale(0.92);
+            background-color: #c2185b;
+        }
+        .logout-btn {
+            background-color: #333;
+            width: auto;
+            padding: 8px 15px;
+            float: right;
+            border-radius: 5px;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .item-card {
+            border: 1px solid #f8bbd0;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background-color: #fffafb;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: auto;
+        }
+        .footer-text {
+            color: #ff66b2;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        #dashboardSection { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. दुकानदार लॉगिन फॉर्म -->
+    <div class="container" id="loginSection">
+        <h2>दुकानदार लॉगिन</h2>
+        <form id="shopLoginForm">
+            <label>ईमेल आईडी</label>
+            <input type="email" id="loginEmail" placeholder="अपनी रजिस्टर्ड ईमेल डालें" required>
+            
+            <label>पासवर्ड</label>
+            <input type="password" id="loginPassword" placeholder="अपना पासवर्ड डालें" required>
+            
+            <button type="submit" class="btn-pink">लॉगिन करें</button>
+        </form>
+    </div>
+
+    <!-- 2. मेन डैशबोर्ड -->
+    <div class="container" id="dashboardSection">
+        <button class="logout-btn" onclick="logoutShop()">Logout</button>
+        <h2 id="welcomeText">डैशबोर्ड में स्वागत है!</h2>
+        <hr style="border: 0; border-top: 1px solid #f48fb1; margin-bottom: 20px;">
+
+        <!-- UPI और WhatsApp सेटिंग्स -->
+        <h3>दुकान की सेटिंग्स</h3>
+        <form id="settingsForm">
+            <label>पेमेंट के लिए UPI ID</label>
+            <input type="text" id="upiId" placeholder="ex: 9876543210@ybl" required>
+            
+            <label>ऑर्डर लेने के लिए WhatsApp नंबर</label>
+            <input type="tel" id="waNumber" placeholder="बिना +91 के नंबर डालें" required>
+            
+            <button type="button" class="btn-pink" onclick="saveSettings()">सेटिंग्स सेव करें</button>
+        </form>
+
+        <hr style="border: 0; border-top: 1px solid #f48fb1; margin: 30px 0;">
+
+        <!-- नया सामान (Item) ऐड करने का फॉर्म -->
+        <h3>नया सामान ऐड करें</h3>
+        <form id="addItemForm">
+            <label>सामान का नाम</label>
+            <input type="text" id="itemName" placeholder="जैसे: आशीर्वाद आटा 5kg" required>
+            
+            <label>कीमत (₹)</label>
+            <input type="number" id="itemPrice" placeholder="कीमत डालें" required>
+
+            <label>वजन (Kg में) - डिलीवरी के लिए</label>
+            <input type="number" step="0.1" id="itemWeight" placeholder="जैसे: 1.5 या 5" required>
+
+            <label>कैटेगरी (फोटो अपने आप लग जाएगी)</label>
+            <select id="itemCategory">
+                <option value="dairy">डेयरी / दूध / पनीर</option>
+                <option value="grocery">राशन / आटा / दाल</option>
+                <option value="snacks">स्नैक्स / बिस्कुट / कोल्ड ड्रिंक</option>
+                <option value="vegetables">सब्जी / फल</option>
+            </select>
+            
+            <button type="submit" class="btn-pink">सामान ऐड करें</button>
+        </form>
+
+        <!-- सामान की लिस्ट -->
+        <h3 style="margin-top: 30px;">आपकी दुकान का सामान</h3>
+        <div id="itemsList"></div>
+    </div>
+
+    <!-- आपका सिग्नेचर फूटर -->
+    <footer>
+        <p class="footer-text">designed by shlok Chaudhary</p>
+    </footer>
+
+    <!-- असली JavaScript लॉजिक -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBav2xy-Ta0ALvGBYuomsN1MqcMvQ7vcFc",
+            authDomain: "myshop-c8141.firebaseapp.com",
+            projectId: "myshop-c8141",
+            storageBucket: "myshop-c8141.firebasestorage.app",
+            messagingSenderId: "166012507213",
+            appId: "1:166012507213:web:49b73bb01c79f6e6f2f804"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let currentShopId = localStorage.getItem("shopId");
+
+        // अगर पहले से लॉगिन है तो सीधा डैशबोर्ड दिखाएं
+        if(currentShopId) {
+            showDashboard();
+        }
+
+        // 1. लॉगिन लॉजिक
+        document.getElementById('shopLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let email = document.getElementById('loginEmail').value;
+            let pass = document.getElementById('loginPassword').value;
+
+            // डेटाबेस में ईमेल और पासवर्ड चेक करना
+            db.collection("shops").where("email", "==", email).where("password", "==", pass).get()
+            .then((querySnapshot) => {
+                if (querySnapshot.empty) {
+                    alert("गलत ईमेल या पासवर्ड!");
+                } else {
+                    querySnapshot.forEach((doc) => {
+                        let shopData = doc.data();
+                        
+                        // चेक करें कि सुपर एडमिन ने चालू किया है या नहीं
+                        if(shopData.status === "Pending") {
+                            alert("आपकी आईडी अभी पेंडिंग है। कृपया एडमिन (7689874945) से चालू करवाएं।");
+                        } else if(shopData.status === "Deactivated") {
+                            alert("आपकी आईडी बंद कर दी गई है।");
+                        } else {
+                            // लॉगिन सफल!
+                            localStorage.setItem("shopId", doc.id);
+                            currentShopId = doc.id;
+                            alert("लॉगिन सफल!");
+                            showDashboard();
+                        }
+                    });
+                }
+            }).catch((error) => {
+                alert("कुछ गलती हुई: " + error.message);
+            });
+        });
+
+        // डैशबोर्ड दिखाना और डेटा लोड करना
+        function showDashboard() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'block';
+            
+            // दुकान की डिटेल्स मंगाना
+            db.collection("shops").doc(currentShopId).get().then((doc) => {
+                let data = doc.data();
+                document.getElementById('welcomeText').innerText = data.shopName + " - डैशबोर्ड";
+                if(data.upiId) document.getElementById('upiId').value = data.upiId;
+                if(data.whatsapp) document.getElementById('waNumber').value = data.whatsapp;
+            });
+
+            loadItems();
+        }
+
+        // सेटिंग्स (UPI/WA) सेव करना
+        function saveSettings() {
+            let upi = document.getElementById('upiId').value;
+            let wa = document.getElementById('waNumber').value;
+            db.collection("shops").doc(currentShopId).update({
+                upiId: upi,
+                whatsapp: wa
+            }).then(() => {
+                alert("सेटिंग्स सेव हो गईं!");
+            });
+        }
+
+        // सामान ऐड करना (वजन और कैटेगरी के साथ)
+        document.getElementById('addItemForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let name = document.getElementById('itemName').value;
+            let price = document.getElementById('itemPrice').value;
+            let weight = document.getElementById('itemWeight').value;
+            let category = document.getElementById('itemCategory').value;
+
+            db.collection("products").add({
+                shopId: currentShopId,
+                name: name,
+                price: Number(price),
+                weight: Number(weight),
+                category: category,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                alert("सामान ऐड हो गया!");
+                document.getElementById('addItemForm').reset();
+            });
+        });
+
+        // सामान की लिस्ट रियल-टाइम में दिखाना
+        function loadItems() {
+            db.collection("products").where("shopId", "==", currentShopId)
+            .onSnapshot((querySnapshot) => {
+                let list = document.getElementById('itemsList');
+                list.innerHTML = "";
+                querySnapshot.forEach((doc) => {
+                    let item = doc.data();
+                    list.innerHTML += `
+                        <div class="item-card">
+                            <b style="color: #e91e63;">${item.name}</b><br>
+                            💰 ₹${item.price} | ⚖️ ${item.weight} Kg<br>
+                            <small style="color: gray;">कैटेगरी: ${item.category}</small>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // लॉगआउट
+        function logoutShop() {
+            localStorage.removeItem("shopId");
+            location.reload();
+        }
+    </script>
+</body>
+</html>
+
