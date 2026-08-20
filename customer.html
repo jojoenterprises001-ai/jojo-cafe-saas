@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>दुकान का मेन्यू - ऑर्डर करें</title>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        /* प्रीमियम पिंक थीम और बाउंस एनिमेशन */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fce4ec;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .header {
+            background-color: #e91e63;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 10px;
+            padding-bottom: 100px; /* कार्ट के लिए जगह */
+        }
+        
+        /* प्रोडक्ट कार्ड का डिज़ाइन */
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 3px 10px rgba(233, 30, 99, 0.15);
+        }
+        .product-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-right: 15px;
+            border: 1px solid #f8bbd0;
+        }
+        .product-info {
+            flex-grow: 1;
+        }
+        .product-title {
+            color: #e91e63;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 0 0 5px 0;
+        }
+        .product-price {
+            color: #333;
+            font-size: 14px;
+            margin: 0;
+        }
+        
+        /* पिंक बटन */
+        .btn-pink {
+            background-color: #e91e63;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn-pink:active { transform: scale(0.90); } /* बाउंस इफ़ेक्ट */
+
+        /* कार्ट और चेकआउट का पॉप-अप */
+        .checkout-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            padding: 15px;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+            z-index: 1000;
+        }
+        
+        /* चेकआउट फॉर्म (शुरू में छुपा रहेगा) */
+        #checkoutModal {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 400px;
+            z-index: 2000;
+        }
+        input, select {
+            width: 100%; padding: 10px; margin: 10px 0;
+            border: 1px solid #f48fb1; border-radius: 6px;
+            box-sizing: border-box; outline: none;
+        }
+        input:focus, select:focus { border-color: #e91e63; }
+
+        /* फूटर */
+        footer { text-align: center; padding: 20px; margin-top: auto; }
+        .footer-text { color: #ff66b2; font-weight: bold; font-size: 16px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 1500; }
+    </style>
+</head>
+<body>
+
+    <div class="header" id="shopHeader">दुकान का मेन्यू</div>
+
+    <div class="container" id="menuList">
+        <h3 style="text-align: center; color: #888;">सामान लोड हो रहा है...</h3>
+    </div>
+
+    <!-- नीचे दिखने वाली कार्ट की पट्टी -->
+    <div class="checkout-bar" id="cartBar" style="display: none;">
+        <div>
+            <b style="color: #e91e63; font-size: 16px;">कुल: ₹<span id="cartTotal">0</span></b><br>
+            <small style="color: gray;">वजन: <span id="cartWeight">0</span> Kg</small>
+        </div>
+        <button class="btn-pink" style="padding: 12px 20px; font-size: 16px;" onclick="openCheckout()">चेकआउट करें ➔</button>
+    </div>
+
+    <!-- बैकग्राउंड डार्क करने के लिए -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- चेकआउट फॉर्म (लोकेशन और गाँव का नाम) -->
+    <div id="checkoutModal">
+        <h2 style="color: #e91e63; text-align: center; margin-top: 0;">डिलीवरी डिटेल्स</h2>
+        
+        <label><b>आपका नाम</b></label>
+        <input type="text" id="custName" placeholder="अपना नाम लिखें" required>
+        
+        <label><b>गाँव / मोहल्ले का नाम 📍</b></label>
+        <input type="text" id="custVillage" placeholder="जैसे: मदनपुरा" required>
+        
+        <label><b>पेमेंट का तरीका</b></label>
+        <select id="paymentMode">
+            <option value="COD (Cash on Delivery)">Cash on Delivery (घर पर पैसे दें)</option>
+            <option value="Online (UPI)">Online Payment (UPI/QR)</option>
+        </select>
+        
+        <p style="font-size: 13px; color: #555;"><i>* ऑर्डर करते ही यह आपसे आपकी सटीक GPS लोकेशन लेगा ताकि डिलीवरी आसानी से हो सके।</i></p>
+
+        <button class="btn-pink" style="width: 100%; margin-top: 10px; background-color: #25D366;" onclick="placeOrder()">WhatsApp पर ऑर्डर भेजें</button>
+        <button class="btn-pink" style="width: 100%; margin-top: 10px; background-color: #aaa;" onclick="closeCheckout()">वापस जाएँ</button>
+    </div>
+
+    <footer>
+        <p class="footer-text">designed by shlok Chaudhary</p>
+    </footer>
+
+    <!-- JavaScript लॉजिक -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBav2xy-Ta0ALvGBYuomsN1MqcMvQ7vcFc",
+            authDomain: "myshop-c8141.firebaseapp.com",
+            projectId: "myshop-c8141",
+            storageBucket: "myshop-c8141.firebasestorage.app",
+            messagingSenderId: "166012507213",
+            appId: "1:166012507213:web:49b73bb01c79f6e6f2f804"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let cart = [];
+        let shopWhatsApp = ""; 
+        let shopName = "दुकान";
+
+        // 50-फ्री फोटो लाइब्रेरी (कैटेगरी के हिसाब से ऑटोमैटिक फोटो)
+        const photoLibrary = {
+            "dairy": "https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=200",
+            "grocery": "https://images.unsplash.com/photo-1542838132-92c53300491e?w=200",
+            "snacks": "https://images.unsplash.com/photo-1621939514649-280e2ee25f60?w=200",
+            "vegetables": "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=200"
+        };
+
+        // दुकान का सारा सामान मंगाना
+        function loadProducts() {
+            db.collection("products").get().then((querySnapshot) => {
+                let menu = document.getElementById('menuList');
+                menu.innerHTML = "";
+                
+                if(querySnapshot.empty) {
+                    menu.innerHTML = "<h3 style='text-align:center;'>अभी कोई सामान नहीं है।</h3>";
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    let item = doc.data();
+                    let itemId = doc.id;
+                    // ऑटोमैटिक फोटो लगाना
+                    let imgUrl = photoLibrary[item.category] || "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=200";
+
+                    menu.innerHTML += `
+                        <div class="product-card">
+                            <img src="${imgUrl}" class="product-img">
+                            <div class="product-info">
+                                <h4 class="product-title">${item.name}</h4>
+                                <p class="product-price">₹${item.price} <small style="color:gray;">(${item.weight}Kg)</small></p>
+                            </div>
+                            <button class="btn-pink" onclick="addToCart('${itemId}', '${item.name}', ${item.price}, ${item.weight})">+ Add</button>
+                        </div>
+                    `;
+
+                    // टेस्टिंग के लिए दुकानदार का WhatsApp नंबर निकाल रहे हैं
+                    getShopDetails(item.shopId);
+                });
+            });
+        }
+
+        function getShopDetails(shopId) {
+            db.collection("shops").doc(shopId).get().then((doc) => {
+                if(doc.exists) {
+                    shopWhatsApp = doc.data().whatsapp;
+                    document.getElementById('shopHeader').innerText = doc.data().shopName + " - मेन्यू";
+                }
+            });
+        }
+
+        // सामान कार्ट में डालना
+        function addToCart(id, name, price, weight) {
+            let existingItem = cart.find(i => i.id === id);
+            if(existingItem) {
+                existingItem.qty += 1;
+            } else {
+                cart.push({ id, name, price, weight, qty: 1 });
+            }
+            updateCartUI();
+        }
+
+        // कार्ट और डिलीवरी चार्ज अपडेट करना
+        function updateCartUI() {
+            if(cart.length > 0) {
+                document.getElementById('cartBar').style.display = 'flex';
+            }
+            
+            let totalRs = 0;
+            let totalWt = 0;
+            cart.forEach(item => {
+                totalRs += item.price * item.qty;
+                totalWt += item.weight * item.qty;
+            });
+
+            document.getElementById('cartTotal').innerText = totalRs;
+            document.getElementById('cartWeight').innerText = totalWt.toFixed(2);
+        }
+
+        // स्मार्ट डिलीवरी चार्ज कैलकुलेटर
+        function calculateDelivery(weight) {
+            if(weight <= 5) return 29;
+            if(weight <= 10) return 39;
+            if(weight <= 20) return 45;
+            if(weight <= 50) return 75;
+            return 129; // 50kg से ऊपर
+        }
+
+        function openCheckout() {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('checkoutModal').style.display = 'block';
+        }
+        function closeCheckout() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('checkoutModal').style.display = 'none';
+        }
+
+        // 📍 ऑर्डर प्लेस करना और लोकेशन लेना
+        function placeOrder() {
+            let name = document.getElementById('custName').value;
+            let village = document.getElementById('custVillage').value;
+            let payment = document.getElementById('paymentMode').value;
+
+            if(!name || !village) {
+                alert("कृपया अपना नाम और गाँव का नाम जरूर भरें!");
+                return;
+            }
+
+            // लोकेशन की परमिशन मांगना
+            let btn = document.querySelector("#checkoutModal .btn-pink");
+            btn.innerText = "लोकेशन ले रहा है... कृपया इंतज़ार करें";
+            btn.disabled = true;
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        sendWhatsAppMessage(name, village, payment, position.coords.latitude, position.coords.longitude);
+                    }, 
+                    function(error) {
+                        alert("आपने लोकेशन की परमिशन नहीं दी! हम बिना सटीक लोकेशन के ऑर्डर भेज रहे हैं।");
+                        sendWhatsAppMessage(name, village, payment, "Not Provided", "Not Provided");
+                    }
+                );
+            } else {
+                sendWhatsAppMessage(name, village, payment, "Not Supported", "Not Supported");
+            }
+        }
+
+        // WhatsApp मैसेज तैयार करना
+        function sendWhatsAppMessage(name, village, payment, lat, lng) {
+            if(!shopWhatsApp) {
+                alert("दुकानदार का नंबर सेट नहीं है!");
+                return;
+            }
+
+            let totalWt = 0;
+            let itemTotal = 0;
+            let itemListText = "";
+
+            cart.forEach((item, index) => {
+                itemListText += `${index+1}. ${item.name} (x${item.qty}) - ₹${item.price * item.qty}\n`;
+                totalWt += item.weight * item.qty;
+                itemTotal += item.price * item.qty;
+            });
+
+            let dCharge = calculateDelivery(totalWt);
+            let finalBill = itemTotal + dCharge;
+
+            let mapLink = (lat !== "Not Provided") ? `https://www.google.com/maps?q=${lat},${lng}` : "लोकेशन नहीं मिली";
+
+            let message = `🚨 *नया ऑर्डर प्राप्त हुआ!* 🚨\n\n` +
+                          `👤 *नाम:* ${name}\n` +
+                          `📍 *गाँव:* ${village}\n` +
+                          `🔗 *सटीक GPS लोकेशन:* ${mapLink}\n\n` +
+                          `--- *सामान की लिस्ट* ---\n${itemListText}\n` +
+                          `⚖️ *कुल वजन:* ${totalWt.toFixed(2)} Kg\n` +
+                          `🚚 *डिलीवरी चार्ज:* ₹${dCharge}\n` +
+                          `💰 *कुल बिल (Total):* ₹${finalBill}\n` +
+                          `💳 *पेमेंट:* ${payment}\n\n` +
+                          `*Please confirm my order.*`;
+
+            let waUrl = `https://wa.me/91${shopWhatsApp}?text=${encodeURIComponent(message)}`;
+            window.open(waUrl, "_blank");
+
+            // ऑर्डर भेजने के बाद फॉर्म बंद करना
+            closeCheckout();
+            let btn = document.querySelector("#checkoutModal .btn-pink");
+            btn.innerText = "WhatsApp पर ऑर्डर भेजें";
+            btn.disabled = false;
+        }
+
+        window.onload = loadProducts;
+    </script>
+</body>
+</html>
+
