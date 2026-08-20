@@ -1,99 +1,202 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jojo Cafe SaaS - Smart QR Menu</title>
-    <!-- Tailwind CSS (Modern Design ke liye) -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Shopkeeper Registration</title>
+    
+    <!-- Firebase की असली फाइल्स -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        /* आपकी शानदार पिंक थीम और एनिमेशन */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fce4ec; /* हल्का पिंक बैकग्राउंड */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 90%;
+            width: 400px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(233, 30, 99, 0.2);
+            box-sizing: border-box;
+        }
+        h2 {
+            color: #e91e63; /* डार्क पिंक हेडिंग */
+            text-align: center;
+        }
+        label {
+            color: #333;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 20px 0;
+            border: 1px solid #f48fb1;
+            border-radius: 8px;
+            box-sizing: border-box;
+            outline: none;
+        }
+        input:focus {
+            border-color: #e91e63;
+            box-shadow: 0 0 5px rgba(233, 30, 99, 0.5);
+        }
+        /* बटन का डिज़ाइन और क्लिक (बाउंस) एनिमेशन */
+        .btn-pink {
+            background-color: #e91e63;
+            color: white;
+            border: none;
+            padding: 14px;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .btn-pink:active {
+            transform: scale(0.92); /* क्लिक करने पर अंदर दबेगा */
+            background-color: #c2185b;
+        }
+        /* WhatsApp बटन */
+        .btn-whatsapp {
+            background-color: #25D366;
+            color: white;
+            text-decoration: none;
+            padding: 14px;
+            display: block;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: transform 0.2s;
+            text-align: center;
+        }
+        .btn-whatsapp:active {
+            transform: scale(0.92);
+        }
+        /* फूटर का डिज़ाइन */
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: auto;
+        }
+        .footer-text {
+            color: #ff66b2;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col items-center justify-center p-4">
+<body>
 
-    <!-- Header / Branding Section -->
-    <div class="text-center mb-10">
-        <h1 class="text-5xl font-extrabold text-blue-600 mb-2 tracking-tight">Jojo Cafe SaaS</h1>
-        <p class="text-gray-600 font-medium">Smart QR Menu & Hack-Proof Loyalty Platform</p>
-    </div>
-
-    <!-- Main Buttons -->
-    <div class="space-y-4 w-full max-w-sm">
-        <button onclick="window.location.href='super-admin.html'" class="w-full bg-red-600 text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-red-700 transition transform hover:scale-105">
-            Super Admin Login
-        </button>
-
-        <button onclick="window.location.href='owner-login.html'" class="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-blue-700 transition transform hover:scale-105">
-            Cafe Owner Login
-        </button>
-
-        <button onclick="openModal()" class="w-full bg-green-600 text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-green-700 transition transform hover:scale-105">
-            New Cafe Registration
-        </button>
-    </div>
-
-    <!-- Registration Modal Popup -->
-    <div id="regModal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md transform transition-all">
+    <!-- रजिस्ट्रेशन फॉर्म -->
+    <div class="container" id="regFormContainer">
+        <h2>दुकानदार रजिस्ट्रेशन</h2>
+        <form id="registerForm">
+            <label>दुकान का नाम</label>
+            <input type="text" id="shopName" placeholder="अपनी दुकान का नाम डालें" required>
             
-            <!-- Form Section -->
-            <div id="formSection">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800">Register New Cafe</h2>
-                    <button onclick="closeModal()" class="text-gray-400 hover:text-red-500 font-bold text-3xl leading-none transition">&times;</button>
-                </div>
-                
-                <!-- Yahan pehle se theek kiya hua Form Code hai -->
-                <form id="cafeForm" class="space-y-4">
-                    <input type="text" id="cafeName" placeholder="Cafe Name (e.g., Sharma Dhaba)" required class="w-full border-2 border-gray-200 p-3 rounded-lg text-black focus:border-blue-500 focus:outline-none transition" />
-                    <input type="text" id="ownerName" placeholder="Owner Name" required class="w-full border-2 border-gray-200 p-3 rounded-lg text-black focus:border-blue-500 focus:outline-none transition" />
-                    <input type="tel" id="mobile" placeholder="Mobile Number" required class="w-full border-2 border-gray-200 p-3 rounded-lg text-black focus:border-blue-500 focus:outline-none transition" />
-                    <input type="password" id="password" placeholder="Create Password" required class="w-full border-2 border-gray-200 p-3 rounded-lg text-black focus:border-blue-500 focus:outline-none transition" />
-                    
-                    <button type="submit" class="w-full bg-green-600 text-white font-bold py-3.5 rounded-lg hover:bg-green-700 transition shadow-lg mt-2">
-                        Submit Details
-                    </button>
-                </form>
-            </div>
-
-            <!-- Success Section -->
-            <div id="successSection" class="hidden text-center space-y-4 py-6">
-                <div class="text-6xl animate-bounce">✅</div>
-                <h2 class="text-2xl font-bold text-green-600">Account Created!</h2>
-                <p class="text-gray-600 text-sm px-2">
-                    Aapka account ban gaya hai. Apna panel activate karne ke liye Super Admin ko WhatsApp par request bhejein.
-                </p>
-                <button onclick="sendWhatsAppRequest()" class="w-full bg-[#25D366] text-white font-bold py-3.5 rounded-lg shadow-lg flex justify-center items-center gap-2 hover:bg-[#20b858] transition">
-                    Send Activation Request
-                </button>
-            </div>
-
-        </div>
+            <label>मोबाइल नंबर</label>
+            <input type="tel" id="mobileNo" placeholder="अपना 10 अंकों का नंबर डालें" required>
+            
+            <label>ईमेल आईडी</label>
+            <input type="email" id="email" placeholder="अपनी ईमेल आईडी डालें" required>
+            
+            <label>पासवर्ड बनाएं</label>
+            <input type="password" id="password" placeholder="एक मजबूत पासवर्ड बनाएं" required>
+            
+            <button type="submit" class="btn-pink">रजिस्टर करें</button>
+        </form>
     </div>
 
-    <!-- UI Handle karne ka JavaScript -->
+    <!-- सबमिट के बाद दिखने वाला सक्सेस पॉप-अप (शुरू में छुपा रहेगा) -->
+    <div class="container" id="successPopup" style="display: none; text-align: center;">
+        <h2 style="color: #4CAF50;">रजिस्ट्रेशन सफल रहा! 🎉</h2>
+        <p style="color: #555; font-size: 15px; margin-top: 15px;">आपकी आईडी अभी <b style="color: red;">Pending</b> है। इसे तुरंत चालू (Active) करवाने के लिए नीचे दिए गए नंबर पर सुपर एडमिन को मैसेज करें:</p>
+        <h1 style="color: #333; margin: 20px 0; font-size: 28px;">📞 7689874945</h1>
+        
+        <!-- सीधा WhatsApp पर मैसेज भेजने का लिंक -->
+        <a id="waLink" href="#" target="_blank" class="btn-whatsapp">
+            WhatsApp पर मैसेज भेजें
+        </a>
+    </div>
+
+    <!-- आपका ब्रांडिंग फूटर -->
+    <footer>
+        <p class="footer-text">designed by shlok Chaudhary</p>
+    </footer>
+
+    <!-- असली JavaScript लॉजिक और डेटाबेस कनेक्शन -->
     <script>
-        function openModal() {
-            document.getElementById('regModal').classList.remove('hidden');
-            document.getElementById('formSection').classList.remove('hidden');
-            document.getElementById('successSection').classList.add('hidden');
-            document.getElementById('cafeForm').reset();
-        }
+        // आपके असली Firebase की Config Keys
+        const firebaseConfig = {
+            apiKey: "AIzaSyBav2xy-Ta0ALvGBYuomsN1MqcMvQ7vcFc",
+            authDomain: "myshop-c8141.firebaseapp.com",
+            projectId: "myshop-c8141",
+            storageBucket: "myshop-c8141.firebasestorage.app",
+            messagingSenderId: "166012507213",
+            appId: "1:166012507213:web:49b73bb01c79f6e6f2f804"
+        };
+        
+        // Firebase चालू करना
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-        function closeModal() {
-            document.getElementById('regModal').classList.add('hidden');
-        }
+        // फॉर्म सबमिट होने का फंक्शन
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            
+            // बटन को 'Loading...' में बदलना ताकि यूज़र दोबारा क्लिक न करे
+            let submitBtn = document.querySelector('.btn-pink');
+            submitBtn.innerText = "रजिस्टर हो रहा है...";
+            submitBtn.disabled = true;
+            
+            // डिटेल्स निकालना
+            let shopName = document.getElementById('shopName').value;
+            let mobileNo = document.getElementById('mobileNo').value;
+            let email = document.getElementById('email').value;
+            let password = document.getElementById('password').value; 
 
-        function sendWhatsAppRequest() {
-            const cafeName = document.getElementById('cafeName').value;
-            const adminNumber = "917689874945";
-            const message = `Hello Admin, I have registered a new cafe *${cafeName}*. Please activate my panel.`;
-            const whatsappLink = `https://wa.me/${adminNumber}?text=${encodeURIComponent(message)}`;
-            window.open(whatsappLink, "_blank");
-            closeModal();
-        }
+            // असली डेटाबेस (Firestore) में डेटा भेजना
+            db.collection("shops").add({
+                shopName: shopName,
+                mobile: mobileNo,
+                email: email,
+                password: password,
+                status: "Pending", // डिफ़ॉल्ट स्टेटस पेंडिंग रहेगा
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then(() => {
+                // डेटा सेव होने के बाद फॉर्म छुपाना और पॉप-अप दिखाना
+                document.getElementById('regFormContainer').style.display = 'none';
+                document.getElementById('successPopup').style.display = 'block';
+
+                // WhatsApp मैसेज तैयार करना (7689874945 के लिए)
+                let message = `Hello Admin, मैंने नई दुकान रजिस्टर की है।\n\n*दुकान का नाम:* ${shopName}\n*मोबाइल:* ${mobileNo}\n\nकृपया मेरी ID Active कर दें।`;
+                let waLink = `https://wa.me/917689874945?text=${encodeURIComponent(message)}`;
+                
+                document.getElementById('waLink').href = waLink;
+            })
+            .catch((error) => {
+                alert("कुछ गलती हुई: " + error.message);
+                submitBtn.innerText = "रजिस्टर करें";
+                submitBtn.disabled = false;
+            });
+        });
     </script>
-
-    <!-- Tumhara Firebase Registration Engine yahan link ho gaya hai -->
-    <script type="module" src="register-db.js"></script>
-
 </body>
-</html>
+            </html>
+            
