@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin Panel</title>
+    
+    <!-- Firebase की असली फाइल्स -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        /* आपकी पिंक थीम */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fce4ec;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 95%;
+            width: 800px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(233, 30, 99, 0.2);
+            box-sizing: border-box;
+        }
+        h2 {
+            color: #e91e63;
+            text-align: center;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0 20px 0;
+            border: 1px solid #f48fb1;
+            border-radius: 8px;
+            box-sizing: border-box;
+            outline: none;
+        }
+        input:focus {
+            border-color: #e91e63;
+            box-shadow: 0 0 5px rgba(233, 30, 99, 0.5);
+        }
+        .btn-pink {
+            background-color: #e91e63;
+            color: white;
+            border: none;
+            padding: 14px;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .btn-pink:active {
+            transform: scale(0.92);
+            background-color: #c2185b;
+        }
+        
+        /* टेबल का डिज़ाइन */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #f8bbd0;
+        }
+        th {
+            background-color: #f48fb1;
+            color: white;
+        }
+        
+        /* एक्शन बटन */
+        .btn-approve {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        .btn-deactivate {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-logout {
+            background-color: #333;
+            width: auto;
+            float: right;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+        }
+
+        /* फूटर */
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: auto;
+        }
+        .footer-text {
+            color: #ff66b2;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* सेक्शन छुपाने के लिए */
+        #dashboardSection { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. एडमिन लॉगिन फॉर्म -->
+    <div class="container" id="loginSection">
+        <h2>सुपर एडमिन लॉगिन</h2>
+        <form id="loginForm">
+            <label>एडमिन ईमेल</label>
+            <input type="email" id="adminEmail" placeholder="अपना एडमिन ईमेल डालें" required>
+            
+            <label>पासवर्ड</label>
+            <input type="password" id="adminPassword" placeholder="पासवर्ड डालें" required>
+            
+            <button type="submit" class="btn-pink">लॉगिन करें</button>
+        </form>
+    </div>
+
+    <!-- 2. एडमिन डैशबोर्ड (लॉगिन के बाद दिखेगा) -->
+    <div class="container" id="dashboardSection">
+        <button class="btn-pink btn-logout" onclick="logoutAdmin()">Logout</button>
+        <h2>दुकानदारों की लिस्ट</h2>
+        
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>दुकान का नाम</th>
+                        <th>मोबाइल</th>
+                        <th>स्टेटस</th>
+                        <th>एक्शन (Action)</th>
+                    </tr>
+                </thead>
+                <tbody id="shopList">
+                    <!-- लिस्ट रियल-टाइम में आएगी -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- आपका ब्रांडिंग फूटर -->
+    <footer>
+        <p class="footer-text">designed by shlok Chaudhary</p>
+    </footer>
+
+    <!-- असली JavaScript लॉजिक -->
+    <script>
+        // आपके असली Firebase की Config Keys
+        const firebaseConfig = {
+            apiKey: "AIzaSyBav2xy-Ta0ALvGBYuomsN1MqcMvQ7vcFc",
+            authDomain: "myshop-c8141.firebaseapp.com",
+            projectId: "myshop-c8141",
+            storageBucket: "myshop-c8141.firebasestorage.app",
+            messagingSenderId: "166012507213",
+            appId: "1:166012507213:web:49b73bb01c79f6e6f2f804"
+        };
+        
+        // Firebase चालू करना
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // 1. लॉगिन लॉजिक
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let email = document.getElementById('adminEmail').value;
+            let pass = document.getElementById('adminPassword').value;
+
+            auth.signInWithEmailAndPassword(email, pass)
+            .then((userCredential) => {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('dashboardSection').style.display = 'block';
+                fetchShops(); 
+            })
+            .catch((error) => {
+                alert("गलत ईमेल या पासवर्ड! कृपया दोबारा चेक करें।");
+            });
+        });
+
+        // 2. दुकानों की लिस्ट मंगाना (रियल-टाइम)
+        function fetchShops() {
+            db.collection("shops").orderBy("timestamp", "desc").onSnapshot((querySnapshot) => {
+                let shopList = document.getElementById('shopList');
+                shopList.innerHTML = ""; 
+
+                querySnapshot.forEach((doc) => {
+                    let shop = doc.data();
+                    let shopId = doc.id;
+                    
+                    let statusColor = shop.status === "Active" ? "green" : (shop.status === "Pending" ? "orange" : "red");
+
+                    let row = `<tr>
+                        <td><b>${shop.shopName}</b></td>
+                        <td>${shop.mobile}</td>
+                        <td style="color: ${statusColor}; font-weight: bold;">${shop.status}</td>
+                        <td>
+                            <button class="btn-approve" onclick="updateStatus('${shopId}', 'Active')">Active</button>
+                            <button class="btn-deactivate" onclick="updateStatus('${shopId}', 'Deactivated')">Deactivate</button>
+                        </td>
+                    </tr>`;
+                    shopList.innerHTML += row;
+                });
+            });
+        }
+
+        // 3. दुकान का स्टेटस बदलना (Active / Deactivate)
+        function updateStatus(shopId, newStatus) {
+            let confirmMessage = newStatus === "Active" ? "क्या आप इस दुकान को चालू करना चाहते हैं?" : "क्या आप इस दुकान को बंद करना चाहते हैं?";
+            if(confirm(confirmMessage)) {
+                db.collection("shops").doc(shopId).update({
+                    status: newStatus
+                }).catch((error) => {
+                    alert("कुछ गलती हुई: " + error.message);
+                });
+            }
+        }
+
+        // 4. लॉगआउट करना
+        function logoutAdmin() {
+            auth.signOut().then(() => {
+                document.getElementById('dashboardSection').style.display = 'none';
+                document.getElementById('loginSection').style.display = 'block';
+                document.getElementById('loginForm').reset();
+            });
+        }
+
+        // चेक करना कि एडमिन पहले से लॉगिन है या नहीं
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('dashboardSection').style.display = 'block';
+                fetchShops();
+            }
+        });
+    </script>
+</body>
+</html>
+
