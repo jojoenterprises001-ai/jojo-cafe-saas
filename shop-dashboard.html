@@ -17,6 +17,8 @@
         .btn-pink:active { transform: scale(0.92); }
         .logout-btn { background-color: #333; padding: 8px 15px; float: right; border-radius: 5px; color: white; border: none; cursor: pointer; }
         .item-card { border: 1px solid #f8bbd0; padding: 10px; border-radius: 8px; margin-bottom: 10px; background-color: #fffafb; }
+        .weight-row { display: flex; gap: 10px; }
+        .weight-row div { flex: 1; }
         footer { text-align: center; padding: 20px; margin-top: auto; }
         .footer-text { color: #ff66b2; font-weight: bold; font-size: 16px; margin: 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
         #dashboardSection { display: none; }
@@ -27,10 +29,8 @@
     <div class="container" id="loginSection">
         <h2>दुकानदार लॉगिन</h2>
         <form id="shopLoginForm">
-            <label>ईमेल आईडी</label>
-            <input type="email" id="loginEmail" required>
-            <label>पासवर्ड</label>
-            <input type="password" id="loginPassword" required>
+            <label>ईमेल आईडी</label> <input type="email" id="loginEmail" required>
+            <label>पासवर्ड</label> <input type="password" id="loginPassword" required>
             <button type="submit" class="btn-pink">लॉगिन करें</button>
         </form>
     </div>
@@ -42,10 +42,8 @@
 
         <h3>दुकान की सेटिंग्स</h3>
         <form id="settingsForm">
-            <label>पेमेंट के लिए UPI ID</label>
-            <input type="text" id="upiId" placeholder="ex: 9876543210@ybl" required>
-            <label>WhatsApp नंबर</label>
-            <input type="tel" id="waNumber" placeholder="बिना +91 के" required>
+            <label>पेमेंट के लिए UPI ID</label> <input type="text" id="upiId" placeholder="ex: 9876543210@ybl" required>
+            <label>WhatsApp नंबर</label> <input type="tel" id="waNumber" placeholder="बिना +91 के" required>
             <button type="button" class="btn-pink" onclick="saveSettings()">सेटिंग्स सेव करें</button>
         </form>
 
@@ -54,25 +52,52 @@
         <h3>नया सामान ऐड करें</h3>
         <form id="addItemForm">
             <label>सामान का नाम</label>
-            <input type="text" id="itemName" placeholder="जैसे: आशीर्वाद आटा 5kg" required>
+            <input type="text" id="itemName" placeholder="जैसे: आशीर्वाद आटा या मैगी" required>
+            
             <label>कीमत (₹)</label>
-            <input type="number" id="itemPrice" required>
-            <label>वजन (Kg में)</label>
-            <input type="number" step="0.1" id="itemWeight" required>
+            <input type="number" id="itemPrice" placeholder="कीमत डालें" required>
+            
+            <!-- वजन और Kg/Gm चुनने का ऑप्शन -->
+            <div class="weight-row">
+                <div>
+                    <label>वजन</label>
+                    <input type="number" step="0.01" id="itemWeight" placeholder="जैसे: 1 या 500" required>
+                </div>
+                <div>
+                    <label>यूनिट (Kg / Gm)</label>
+                    <select id="itemUnit">
+                        <option value="kg">Kg (किलो)</option>
+                        <option value="gm">Gm (ग्राम)</option>
+                    </select>
+                </div>
+            </div>
 
-            <label>सही कैटेगरी चुनें (ताकि सही फोटो लगे)</label>
-            <select id="itemCategory">
-                <option value="grains">आटा / चावल / दाल / चीनी</option>
-                <option value="oil">तेल / रिफाइंड / घी</option>
-                <option value="masala">मसाले / नमक</option>
-                <option value="dairy">दूध / पनीर / डेयरी</option>
-                <option value="snacks">स्नैक्स / बिस्कुट / नमकीन</option>
-                <option value="drinks">कोल्ड ड्रिंक / जूस / पानी</option>
-                <option value="cleaning">साबुन / सर्फ / साफ़-सफाई</option>
-                <option value="personal">शैम्पू / क्रीम / पर्सनल केयर</option>
-                <option value="vegetables">सब्जी</option>
-                <option value="fruits">फल</option>
+            <!-- फोटो चुनने का ऑप्शन -->
+            <label>सामान की फोटो चुनें (यह कस्टमर को दिखेगी)</label>
+            <select id="itemImageKey">
+                <optgroup label="राशन / किराना">
+                    <option value="grains">आटा / चावल / मैदा / सूजी</option>
+                    <option value="dal">दालें (मूंग, चना, अरहर)</option>
+                    <option value="oil">तेल / रिफाइंड / घी</option>
+                    <option value="tea_sugar">चीनी / चायपत्ती / कॉफी</option>
+                    <option value="masala">मसाले / नमक / हल्दी</option>
+                </optgroup>
+                <optgroup label="स्नैक्स और ड्रिंक्स">
+                    <option value="snacks">बिस्कुट / नमकीन / चिप्स / मैगी</option>
+                    <option value="drinks">कोल्ड ड्रिंक / जूस / पानी</option>
+                </optgroup>
+                <optgroup label="डेयरी और ताज़ा">
+                    <option value="dairy">दूध / दही / पनीर / अंडे</option>
+                    <option value="vegetables">सब्जियां (आलू, प्याज, टमाटर)</option>
+                    <option value="fruits">फल (केला, सेब, आम)</option>
+                </optgroup>
+                <optgroup label="सफाई और अन्य">
+                    <option value="cleaning">साबुन / सर्फ / साफ़-सफाई</option>
+                    <option value="personal">शैम्पू / क्रीम / तेल (बालों का)</option>
+                    <option value="default">अन्य (Default Photo)</option>
+                </optgroup>
             </select>
+            
             <button type="submit" class="btn-pink">सामान ऐड करें</button>
         </form>
 
@@ -89,8 +114,7 @@
 
         document.getElementById('shopLoginForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            let email = document.getElementById('loginEmail').value, pass = document.getElementById('loginPassword').value;
-            db.collection("shops").where("email", "==", email).where("password", "==", pass).get().then((snap) => {
+            db.collection("shops").where("email", "==", document.getElementById('loginEmail').value).where("password", "==", document.getElementById('loginPassword').value).get().then(snap => {
                 if(snap.empty) alert("गलत डिटेल!");
                 else snap.forEach(doc => { 
                     if(doc.data().status === "Active") { localStorage.setItem("shopId", doc.id); currentShopId = doc.id; showDashboard(); }
@@ -108,21 +132,29 @@
             }); loadItems();
         }
 
-        function saveSettings() {
-            db.collection("shops").doc(currentShopId).update({ upiId: document.getElementById('upiId').value, whatsapp: document.getElementById('waNumber').value }).then(() => alert("सेटिंग्स सेव हो गईं!"));
-        }
+        function saveSettings() { db.collection("shops").doc(currentShopId).update({ upiId: document.getElementById('upiId').value, whatsapp: document.getElementById('waNumber').value }).then(() => alert("सेटिंग्स सेव हो गईं!")); }
 
         document.getElementById('addItemForm').addEventListener('submit', function(e) {
             e.preventDefault();
             db.collection("products").add({
-                shopId: currentShopId, name: document.getElementById('itemName').value, price: Number(document.getElementById('itemPrice').value), weight: Number(document.getElementById('itemWeight').value), category: document.getElementById('itemCategory').value, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                shopId: currentShopId, 
+                name: document.getElementById('itemName').value, 
+                price: Number(document.getElementById('itemPrice').value), 
+                weight: Number(document.getElementById('itemWeight').value), 
+                unit: document.getElementById('itemUnit').value,
+                imageKey: document.getElementById('itemImageKey').value,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => { alert("सामान ऐड हो गया!"); document.getElementById('addItemForm').reset(); });
         });
 
         function loadItems() {
             db.collection("products").where("shopId", "==", currentShopId).onSnapshot(snap => {
                 let list = document.getElementById('itemsList'); list.innerHTML = "";
-                snap.forEach(doc => { let item = doc.data(); list.innerHTML += `<div class="item-card"><b style="color:#e91e63;">${item.name}</b><br>💰 ₹${item.price} | ⚖️ ${item.weight} Kg<br><button onclick="db.collection('products').doc('${doc.id}').delete()" style="background:red; color:white; border:none; padding:5px; margin-top:5px; border-radius:3px;">Delete</button></div>`; });
+                snap.forEach(doc => { 
+                    let item = doc.data(); 
+                    let unitDisplay = item.unit ? item.unit : 'kg'; // For older items
+                    list.innerHTML += `<div class="item-card"><b style="color:#e91e63;">${item.name}</b><br>💰 ₹${item.price} | ⚖️ ${item.weight} ${unitDisplay}<br><small style="color:gray;">कैटेगरी: ${item.imageKey || 'Auto'}</small><br><button onclick="db.collection('products').doc('${doc.id}').delete()" style="background:red; color:white; border:none; padding:5px; margin-top:5px; border-radius:3px;">Delete</button></div>`; 
+                });
             });
         }
         function logoutShop() { localStorage.removeItem("shopId"); location.reload(); }
