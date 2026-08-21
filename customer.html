@@ -21,8 +21,6 @@
         #checkoutModal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 90%; max-width: 400px; z-index: 2000; }
         input, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #f48fb1; border-radius: 6px; box-sizing: border-box; outline: none; }
         .overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 1500; }
-        
-        /* नया UPI बॉक्स डिज़ाइन */
         #upiInfoBox { background: #e8f5e9; border: 1px dashed #4CAF50; padding: 10px; text-align: center; border-radius: 8px; margin-bottom: 10px; display: none; }
         footer { text-align: center; padding: 20px; margin-top: auto; }
         .footer-text { color: #ff66b2; font-weight: bold; font-size: 16px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
@@ -50,7 +48,6 @@
             <option value="Online (UPI)">Online Payment (UPI/QR)</option>
         </select>
         
-        <!-- यहीं दिखेगी दुकानदार की UPI ID -->
         <div id="upiInfoBox"></div>
 
         <button class="btn-pink" style="width: 100%; background-color: #25D366;" onclick="placeOrder()">WhatsApp पर ऑर्डर भेजें</button>
@@ -64,31 +61,142 @@
 
         let cart = [], shopWhatsApp = "", shopUpi = "सेट नहीं है";
 
-        // एकदम सटीक भारतीय किराने की फोटोज
-        const photoLibrary = {
-            "grains": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=200", // आटा/चावल/दाल
-            "oil": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=200", // तेल
-            "masala": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=200", // मसाले
-            "dairy": "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=200", // दूध/डेयरी
-            "snacks": "https://images.unsplash.com/photo-1599490659213-e2b9527bd087?w=200", // स्नैक्स
-            "drinks": "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=200", // कोल्ड ड्रिंक
-            "cleaning": "https://images.unsplash.com/photo-1584820927498-cafe5c152a4e?w=200", // साबुन/सर्फ
-            "personal": "https://images.unsplash.com/photo-1629198688000-71f23e745b6e?w=200", // शैम्पू/क्रीम
-            "vegetables": "https://images.unsplash.com/photo-1518843875459-f738682238a6?w=200", // सब्जी
-            "fruits": "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=200", // फल
-            "default": "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=200" // अन्य
+        // लगभग 100+ स्मार्ट फोटो लाइब्रेरी (नाम और कैटेगरी के आधार पर)
+        const advancedPhotoLibrary = {
+            // आटा, चावल और अनाज
+            "aata": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=200",
+            "atta": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=200",
+            "maida": "https://images.unsplash.com/photo-1627485939987-5421cf20275a?w=200",
+            "suji": "https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?w=200",
+            "rava": "https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?w=200",
+            "chawal": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=200",
+            "rice": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=200",
+            "poha": "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=200",
+            
+            // दालें
+            "dal": "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=200",
+            "daal": "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=200",
+            "moong": "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=200",
+            "chana": "https://images.unsplash.com/photo-1599940824399-b87987ceb72a?w=200",
+            "rajma": "https://images.unsplash.com/photo-1599940824399-b87987ceb72a?w=200",
+            "toor": "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=200",
+            
+            // तेल और घी
+            "tel": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=200",
+            "oil": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=200",
+            "sarso": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=200",
+            "refined": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=200",
+            "ghee": "https://images.unsplash.com/photo-1631379578550-7038263db699?w=200",
+            "butter": "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=200",
+            
+            // चीनी, चाय और मीठा
+            "chini": "https://images.unsplash.com/photo-1581441363689-1f3c3c5f465d?w=200",
+            "sugar": "https://images.unsplash.com/photo-1581441363689-1f3c3c5f465d?w=200",
+            "chai": "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=200",
+            "tea": "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=200",
+            "coffee": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=200",
+            "biscuit": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=200",
+            "parle": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=200",
+            "chocolate": "https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=200",
+            "chips": "https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=200",
+            "namkeen": "https://images.unsplash.com/photo-1599490659213-e2b9527bd087?w=200",
+            "maggi": "https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=200",
+            "noodle": "https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=200",
+            
+            // मसाले और नमक
+            "masala": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=200",
+            "haldi": "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=200",
+            "mirch": "https://images.unsplash.com/photo-1588854337236-6889d631faa8?w=200",
+            "dhaniya": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=200",
+            "namak": "https://images.unsplash.com/photo-1518110992059-8fa91a40d12e?w=200",
+            "salt": "https://images.unsplash.com/photo-1518110992059-8fa91a40d12e?w=200",
+            "jeera": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=200",
+            
+            // डेयरी और दूध
+            "doodh": "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=200",
+            "milk": "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=200",
+            "paneer": "https://images.unsplash.com/photo-1631379578550-7038263db699?w=200",
+            "dahi": "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=200",
+            "curd": "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=200",
+            "egg": "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=200",
+            "anda": "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=200",
+            
+            // कोल्ड ड्रिंक और पानी
+            "cold": "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=200",
+            "drink": "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=200",
+            "pepsi": "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=200",
+            "coca": "https://images.unsplash.com/photo-1554866585-cd94860890b7?w=200",
+            "sprite": "https://images.unsplash.com/photo-1625772299848-391b6a87d7b3?w=200",
+            "pani": "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=200",
+            "water": "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=200",
+            "juice": "https://images.unsplash.com/photo-1613478223719-2ab802602423?w=200",
+            
+            // साबुन, सर्फ और सफाई
+            "sabun": "https://images.unsplash.com/photo-1584820927498-cafe5c152a4e?w=200",
+            "soap": "https://images.unsplash.com/photo-1584820927498-cafe5c152a4e?w=200",
+            "surf": "https://images.unsplash.com/photo-1585837135237-d2424fae3f1d?w=200",
+            "rin": "https://images.unsplash.com/photo-1585837135237-d2424fae3f1d?w=200",
+            "wheel": "https://images.unsplash.com/photo-1585837135237-d2424fae3f1d?w=200",
+            "vim": "https://images.unsplash.com/photo-1585837135237-d2424fae3f1d?w=200",
+            "detergent": "https://images.unsplash.com/photo-1585837135237-d2424fae3f1d?w=200",
+            "harpic": "https://images.unsplash.com/photo-1585837135237-d2424fae3f1d?w=200",
+            "colgate": "https://images.unsplash.com/photo-1559595500-e14b121fb6ad?w=200",
+            "brush": "https://images.unsplash.com/photo-1559595500-e14b121fb6ad?w=200",
+            
+            // पर्सनल केयर और शैम्पू
+            "shampoo": "https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=200",
+            "oil-hair": "https://images.unsplash.com/photo-1608248597359-9d747c746bc1?w=200",
+            "cream": "https://images.unsplash.com/photo-1629198688000-71f23e745b6e?w=200",
+            "powder": "https://images.unsplash.com/photo-1629198688000-71f23e745b6e?w=200",
+            "face": "https://images.unsplash.com/photo-1629198688000-71f23e745b6e?w=200",
+            
+            // सब्जियां
+            "aloo": "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=200",
+            "potato": "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=200",
+            "pyaaj": "https://images.unsplash.com/photo-1618512495048-df039fd03bf2?w=200",
+            "onion": "https://images.unsplash.com/photo-1618512495048-df039fd03bf2?w=200",
+            "tamatar": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=200",
+            "tomato": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=200",
+            "mirchi": "https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=200",
+            "adrak": "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=200",
+            "lasan": "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=200",
+            "sabzi": "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=200",
+            "vegetable": "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=200",
+            
+            // फल
+            "banana": "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=200",
+            "kela": "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=200",
+            "apple": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=200",
+            "seb": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=200",
+            "aam": "https://images.unsplash.com/photo-1553279768-865429fa0078?w=200",
+            "mango": "https://images.unsplash.com/photo-1553279768-865429fa0078?w=200",
+            "phal": "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=200",
+            "fruit": "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=200",
+
+            // फॉलबैक डिफ़ॉल्ट फोटो
+            "default": "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=200"
         };
 
         function loadProducts() {
             db.collection("products").get().then((snap) => {
                 let menu = document.getElementById('menuList'); menu.innerHTML = "";
-                if(snap.empty) { menu.innerHTML = "<h3>कोई सामान नहीं है।</h3>"; return; }
+                if(snap.empty) { menu.innerHTML = "<h3 style='text-align:center;'>अभी कोई सामान नहीं है।</h3>"; return; }
                 snap.forEach(doc => {
                     let item = doc.data();
-                    let imgUrl = photoLibrary[item.category] || photoLibrary["default"];
+                    let itemNameLower = item.name.toLowerCase();
+                    
+                    // नाम के हिसाब से सही फोटो ढूंढना
+                    let matchedImg = advancedPhotoLibrary["default"];
+                    for (let key in advancedPhotoLibrary) {
+                        if (itemNameLower.includes(key)) {
+                            matchedImg = advancedPhotoLibrary[key];
+                            break;
+                        }
+                    }
+
                     menu.innerHTML += `
                         <div class="product-card">
-                            <img src="${imgUrl}" class="product-img">
+                            <img src="${matchedImg}" class="product-img">
                             <div class="product-info">
                                 <h4 class="product-title">${item.name}</h4>
                                 <p class="product-price">₹${item.price} <small>(${item.weight}Kg)</small></p>
@@ -129,7 +237,6 @@
         function openCheckout() { document.getElementById('overlay').style.display = 'block'; document.getElementById('checkoutModal').style.display = 'block'; }
         function closeCheckout() { document.getElementById('overlay').style.display = 'none'; document.getElementById('checkoutModal').style.display = 'none'; }
 
-        // ऑनलाइन सेलेक्ट करने पर UPI ID दिखाना
         function checkPaymentMode() {
             let mode = document.getElementById('paymentMode').value;
             let upiBox = document.getElementById('upiInfoBox');
@@ -143,7 +250,7 @@
 
         function placeOrder() {
             let name = document.getElementById('custName').value, village = document.getElementById('custVillage').value, payment = document.getElementById('paymentMode').value;
-            if(!name || !village) { alert("नाम और गाँव भरें!"); return; }
+            if(!name || !village) { alert("कृपया अपना नाम और गाँव का नाम भरें!"); return; }
             let btn = document.querySelector("#checkoutModal .btn-pink"); btn.innerText = "लोकेशन ले रहा है..."; btn.disabled = true;
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
