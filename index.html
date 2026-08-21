@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>हमारी डिजिटल दुकान</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fce4ec;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(233, 30, 99, 0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+        h1 { color: #e91e63; margin-bottom: 10px; font-size: 28px; }
+        p { color: #555; margin-bottom: 30px; font-size: 16px; font-weight: bold; }
+        
+        .btn-main {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            margin-bottom: 15px;
+            background-color: #e91e63;
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+            box-sizing: border-box;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 4px 6px rgba(233, 30, 99, 0.3);
+        }
+        .btn-main:active { transform: scale(0.95); }
+        
+        .btn-outline {
+            background-color: white;
+            color: #e91e63;
+            border: 2px solid #e91e63;
+            box-shadow: none;
+        }
+        .btn-outline:active { background-color: #fce4ec; }
+        
+        .admin-btn {
+            background-color: #333;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        footer { margin-top: 40px; }
+        .footer-text { color: #ff66b2; font-weight: bold; font-size: 16px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>डिजिटल मार्केट 🏪</h1>
+        <p>आप कहाँ जाना चाहते हैं?</p>
+
+        <a href="customer.html" class="btn-main">🛍️ कस्टमर मेन्यू (ऑर्डर करें)</a>
+        <a href="shop-dashboard.html" class="btn-main">🏪 दुकानदार लॉगिन</a>
+        <a href="register.html" class="btn-main btn-outline">📝 नई दुकान रजिस्टर करें</a>
+        
+        <a href="admin.html" class="btn-main admin-btn" style="margin-top: 30px;">👨‍💻 सुपर एडमिन पैनल</a>
+    </div>
+
+    <footer>
+        <p class="footer-text">designed by shlok Chaudhary</p>
+    </footer>
+</body>
+</html>
+
